@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Printable Card Decks – Cloud Workshop</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/print.css">
+<style>
+  .bingo { width: 90mm; background: #fff; border: .25mm solid #DCD6CA; border-radius: 3mm; padding: 5mm; break-inside: avoid; position: relative; overflow: hidden; }
+  .bingo::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 1.2mm; background: var(--clay); }
+  .bingo h4 { margin: 0 0 3.5mm; display: flex; justify-content: space-between; align-items: baseline; }
+  .bingo h4 span:first-child { font-family: var(--serif); font-weight: 500; font-size: 15pt; letter-spacing: .35em; color: var(--ink); }
+  .bingo h4 span:last-child { font-size: 6pt; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  .bingo table { table-layout: fixed; background: transparent; border-collapse: separate; border-spacing: 1mm; }
+  .bingo td { height: 14mm; text-align: center; vertical-align: middle; font-size: 7pt; font-weight: 500; padding: 1mm; border: .25mm solid var(--line); border-radius: 1.5mm; background: #fff; color: var(--ink-2); line-height: 1.25; }
+  .bingo td.free { background: var(--clay-t); border-color: var(--clay-t); color: var(--clay-d); font-size: 6.5pt; font-weight: 600; letter-spacing: .12em; }
+  .bingo-grid { display: flex; flex-wrap: wrap; gap: 3mm; }
+  .ticket { width: 90mm; height: 64mm; }
+  .ticket table { background: transparent; }
+  .ticket th, .ticket td { font-size: 7pt; padding: 1.2mm 1.5mm; border-color: var(--line); }
+  .ticket th { background: var(--ivory-2); font-weight: 600; color: var(--ink-2); }
+  .tent { width: 100%; height: 128mm; background: #fff; border: .25mm solid #DCD6CA; border-radius: 3mm; margin-bottom: 6mm; display: grid; grid-template-rows: 1fr 1fr; break-inside: avoid; page-break-inside: avoid; overflow: hidden; }
+  .tent .half { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; position: relative; }
+  .tent .half.flip { transform: rotate(180deg); border-top: .3mm dashed #B9B5AA; }
+  .tent .rg { font-size: 9pt; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; color: var(--clay-d); }
+  .tent .nm { font-family: var(--serif); font-size: 44pt; font-weight: 500; letter-spacing: -.01em; margin: 2mm 0; color: var(--ink); }
+  .tent .tg { font-size: 8.5pt; color: var(--muted); letter-spacing: .08em; }
+  .tent .half::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1.2mm; background: var(--clay); }
+  .tent .half.flip::after { display: none; }
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <b>Card Decks</b>
+  <button onclick="window.print()">Print all</button>
+  <label>Print only: <select id="only"><option value="">All decks</option></select></label>
+  <span class="hint">Print on A4, 100% scale, “Background graphics” ON. Cut around each card.</span>
+  <a href="index.html">← Hub</a>
+</div>
+<div id="root"></div>
+
+<script>
+const decks = [
+{
+  id: 'timeline', name: 'Human Timeline', color: 'var(--chai)', icon: '⏳',
+  note: 'Day 1 · One set per team: print 24 copies of these pages. Years are not printed. Remove the answer-key card from each set and give it to the region captains.',
+  cards: [
+    ['🖥️', 'Mainframe time-sharing lets many users share one giant computer'],
+    ['📡', 'ARPANET, the ancestor of the internet, sends its first message'],
+    ['🌐', 'Tim Berners-Lee invents the World Wide Web'],
+    ['🧩', 'VMware is founded and brings virtualization to ordinary x86 servers'],
+    ['🚫💿', 'Salesforce launches with its “No Software” campaign'],
+    ['📦', 'Amazon launches S3 storage and EC2 servers — AWS is born'],
+    ['🚀', 'Google App Engine launches, an early big PaaS'],
+    ['🔷', 'Microsoft Azure becomes generally available'],
+    ['🐳', 'Docker makes containers easy for every developer'],
+    ['☸️', 'Google open-sources Kubernetes'],
+    ['📲', 'India launches UPI for instant mobile payments'],
+    ['🤖', 'ChatGPT launches — GenAI runs on massive cloud GPU clusters'],
+  ].map(([i, t]) => ({ t, cls: 'statement', b: '<p class="write">Year</p>', foot: 'When did this happen?' }))
+   .concat([{ i: '🔑', t: 'Timeline answers', b: '<p>1960s time-sharing · 1969 ARPANET · 1989 WWW · 1998 VMware · 1999 Salesforce · 2006 AWS · 2008 App Engine · 2010 Azure · 2013 Docker · 2014 Kubernetes · 2016 UPI · 2022 ChatGPT</p>', foot: 'Facilitator only' }])
+},
+{
+  id: 'service', name: 'Service Model Sort', color: 'var(--blue)', icon: '🍛',
+  note: 'Day 1 · One set per team: print 24 copies. Remove the answer-key card from each set before handing out.',
+  cards: [
+    ['📧', 'Gmail', 'Email in your browser', 'SaaS'],
+    ['📎', 'Microsoft 365', 'Word, Excel, Teams online', 'SaaS'],
+    ['🤝', 'Salesforce', 'Customer relationship management', 'SaaS'],
+    ['🎥', 'Zoom', 'Video meetings', 'SaaS'],
+    ['🎨', 'Canva', 'Design in the browser', 'SaaS'],
+    ['🛠️', 'ServiceNow', 'IT tickets & workflows', 'SaaS'],
+    ['👥', 'Workday', 'HR & payroll', 'SaaS'],
+    ['🔭', 'Dynatrace', 'Observability platform', 'SaaS'],
+    ['🌐', 'Azure App Service', 'Upload your web app code, it runs', 'PaaS'],
+    ['🚀', 'Google App Engine', 'Deploy code, Google scales it', 'PaaS'],
+    ['🟣', 'Heroku', '“git push” and your app is live', 'PaaS'],
+    ['🗄️', 'Azure SQL Database', 'Managed database, no server to patch', 'PaaS'],
+    ['⚡', 'Azure Functions', 'Code runs only when triggered', 'PaaS (serverless)'],
+    ['🔥', 'Firebase', 'Backend for mobile apps', 'PaaS'],
+    ['🖥️', 'Azure Virtual Machines', 'Rent a server, install anything', 'IaaS'],
+    ['🟧', 'AWS EC2', 'Elastic compute instances', 'IaaS'],
+    ['🔵', 'Google Compute Engine', 'Virtual machines on Google', 'IaaS'],
+    ['🪣', 'Azure Blob Storage', 'Raw object storage', 'IaaS'],
+    ['💧', 'DigitalOcean Droplets', 'Simple cloud servers', 'IaaS'],
+    ['🕸️', 'Azure Virtual Network', 'Your private network in the cloud', 'IaaS'],
+  ].map(([i, t, s]) => ({ t, s, b: '', foot: 'IaaS · PaaS · SaaS ?' }))
+   .concat([{ i: '🔑', t: 'Sorting answers', b: '<p><b>SaaS:</b> Gmail, M365, Salesforce, Zoom, Canva, ServiceNow, Workday, Dynatrace</p><p><b>PaaS:</b> App Service, App Engine, Heroku, Azure SQL DB, Azure Functions, Firebase</p><p><b>IaaS:</b> Azure VMs, EC2, Compute Engine, Blob Storage, Droplets, VNet</p>', foot: 'Facilitator only' }])
+},
+{
+  id: 'deploy', name: 'Where Should They Live?', color: 'var(--green)', icon: '🏘️',
+  note: 'Day 1 · Print 3 copies: 24 scenario cards, one per team, three teams per scenario. Keep the suggested-answers cards for yourself.',
+  cards: [
+    { i: '🏦', t: 'A large Indian bank', b: '<p>Core banking on 20-year-old systems. Crores of customers. RBI regulated. Wants a modern mobile app and AI fraud detection.</p>' },
+    { i: '🏏', t: 'OTT cricket startup', b: '<p>Launching a live-streaming app in 3 months. Traffic is near zero on normal days and explodes during matches.</p>' },
+    { i: '🏥', t: 'Multi-city hospital chain', b: '<p>Patient records, MRI machines in every hospital, wants AI to read scans. Health data is highly sensitive.</p>' },
+    { i: '🏛️', t: 'State government portal', b: '<p>Land records, certificates and scholarships for 5 crore citizens. Must follow government cloud guidelines.</p>' },
+    { i: '🌍', t: 'Global e-commerce company', b: '<p>Sells in 30 countries. The board is worried about depending on one vendor. Some countries require local data storage.</p>' },
+    { i: '🛡️', t: 'Defence research lab', b: '<p>Top-secret designs. No internet connectivity allowed for core systems.</p>' },
+    { i: '🎉', t: 'College fest website', b: '<p>Needed for 3 weeks: registrations, schedule, live leaderboard. Budget: almost zero.</p>' },
+    { i: '🚗', t: 'Smart car factory', b: '<p>Robots on the assembly line need responses in under 10 ms. Management wants global analytics dashboards.</p>' },
+    { i: '🔑', t: 'Suggested answers', b: '<p>Bank → Hybrid · OTT → Public (+CDN) · Hospital → Hybrid · Govt → Govt/community cloud (GI Cloud “MeghRaj”, empanelled providers) · E-commerce → Multi-cloud · Defence → Private, air-gapped · College fest → Public / serverless / SaaS · Factory → Hybrid + edge</p>', foot: 'Facilitator only' },
+  ]
+},
+{
+  id: 'shark', name: 'Cloud Shark Tank', color: 'var(--purple)', icon: '🦈',
+  note: 'Day 1 · One region set = 6 client briefs + 6 platform cards (AWS ×2, Azure ×2, Google Cloud, OCI). Print 4 copies, one per region.',
+  cards: [
+    { i: '☕', qty: 6, t: 'Client brief: ChaiCart', s: 'What the Sharks want', b: '<ul><li>Launch in 6 weeks in 5 Indian cities</li><li>Customer data must stay in India</li><li>Team knows Python &amp; JavaScript</li><li>Tight budget, startup credits welcome</li><li>Wants AI recommendations</li><li>20× traffic spikes on cricket match days</li></ul>', foot: 'Give one to every team' },
+    { i: '🟧', qty: 2, t: 'You are AWS', s: 'Launched 2006 — the pioneer', b: '<ul><li>Largest market share &amp; broadest service catalogue</li><li>Biggest partner &amp; startup ecosystem</li><li>Indian regions: Mumbai, Hyderabad</li><li>Amazon Bedrock for GenAI</li></ul><p><b>They will ask:</b> “Isn\'t AWS complicated and pricing confusing?”</p>' },
+    { i: '🔷', qty: 2, t: 'You are Microsoft Azure', s: 'Enterprise &amp; hybrid champion', b: '<ul><li>Works with Microsoft 365, Teams, Entra ID, GitHub</li><li>Strong hybrid (Azure Arc) story</li><li>Indian regions: Central India (Pune), South India (Chennai), West India (Mumbai) + more</li><li>Azure OpenAI / AI Foundry</li></ul><p><b>They will ask:</b> “Aren\'t you only for big corporates?”</p>' },
+    { i: '🔵', t: 'You are Google Cloud', s: 'Data &amp; AI native', b: '<ul><li>BigQuery analytics, Vertex AI, Gemini models, TPUs</li><li>Kubernetes was born at Google (GKE)</li><li>Indian regions: Mumbai, Delhi</li><li>Huge global private network</li></ul><p><b>They will ask:</b> “Your enterprise footprint is smaller — will you be around?”</p>' },
+    { i: '🟥', t: 'You are Oracle Cloud (OCI)', s: 'The database powerhouse', b: '<ul><li>Oracle Database &amp; Autonomous Database</li><li>Strong price-performance claims</li><li>Indian regions: Mumbai, Hyderabad</li><li>Oracle Database available inside Azure/AWS/Google</li></ul><p><b>They will ask:</b> “Why would a chai startup need Oracle?”</p>' },
+  ]
+},
+{
+  id: 'arch', name: 'Architecture Lego', color: 'var(--navy)', icon: '🧱',
+  note: 'Day 1 · Print 12 copies: one set shared by two neighbouring teams. Components can be used more than once. Twist cards are optional extras for fast teams.',
+  cards: [
+    ['🌐', 'DNS', 'Turns chaicart.in into an IP address', 'Azure DNS'],
+    ['🚚', 'CDN', 'Caches images/menus close to users', 'Azure Front Door / CDN'],
+    ['🛡️', 'WAF / Firewall', 'Blocks bots & attacks', 'Azure WAF, Azure Firewall'],
+    ['⚖️', 'Load Balancer', 'Spreads traffic across servers', 'Azure Load Balancer / App Gateway'],
+    ['🚪', 'API Gateway', 'Front door for mobile-app APIs, rate limits', 'Azure API Management'],
+    ['🖥️', 'Virtual Machine', 'A full server you manage', 'Azure VMs'],
+    ['☸️', 'Kubernetes / Containers', 'Runs your microservices', 'AKS, Container Apps'],
+    ['⚡', 'Serverless Function', 'Runs code on events (e.g. send SMS)', 'Azure Functions'],
+    ['🗄️', 'SQL Database', 'Orders & payments — consistent data', 'Azure SQL / PostgreSQL'],
+    ['📦', 'NoSQL Database', 'Menus, carts, sessions — huge scale', 'Cosmos DB'],
+    ['🔥', 'Cache', 'Super-fast memory for hot data', 'Azure Cache for Redis'],
+    ['📬', 'Message Queue', 'Absorbs spikes, decouples services', 'Service Bus / Storage Queue'],
+    ['🪣', 'Object Storage', 'Photos, invoices, backups', 'Blob Storage'],
+    ['🪪', 'Identity & Secrets', 'Logins, roles, keys', 'Entra ID, Key Vault'],
+    ['🔭', 'Observability', 'Metrics, logs, traces, alerts', 'Azure Monitor, Dynatrace'],
+  ].map(([i, t, s, az]) => ({ t, s, b: `<p><b>On Azure:</b> ${az}</p><p class="write">ChaiCart use</p>` }))
+   .concat([
+    { i: '🪔', t: 'TWIST: Diwali Mega Sale', b: '<p>50× traffic for 6 hours. No extra budget.</p><p>What scales? What gets cached? What goes into a queue?</p>', cls: 'twist' },
+    { i: '🌩️', t: 'TWIST: Region outage', b: '<p>Your primary cloud region is down for 2 hours.</p><p>What keeps working?</p>', cls: 'twist' },
+    { i: '⚖️', t: 'TWIST: New data law', b: '<p>All customer personal data must stay in India, and users can request deletion.</p>', cls: 'twist' },
+    { i: '✂️', t: 'TWIST: CFO says cut 30%', b: '<p>Reduce the monthly bill by 30% without hurting checkout.</p>', cls: 'twist' },
+  ])
+},
+{
+  id: 'kitchen', name: 'Human Kitchen', color: 'var(--chai)', icon: '🧑‍🍳',
+  note: 'Day 1 · Print 1 copy: 5 station cards and the monolith card for the six volunteers. Order tickets are on a separate page.',
+  cards: [
+    { i: '📝', t: 'Order service', s: 'Station 1', b: '<p>Take a blank ticket. Write an <b>Order ID</b> (e.g. CC-001) and the customer name. Write your timestamp. Pass to Payment.</p>' },
+    { i: '💳', t: 'Payment service', s: 'Station 2', b: '<p>Write <b>PAID</b> and the amount. Write your timestamp. Pass to Kitchen.</p><p><i>If the facilitator taps you — freeze!</i></p>' },
+    { i: '☕', t: 'Kitchen service', s: 'Station 3', b: '<p>Draw a chai cup on the ticket. Write your timestamp. Pass to Delivery.</p>' },
+    { i: '🛵', t: 'Delivery service', s: 'Station 4', b: '<p>Write a rider name. Write your timestamp. Pass to Notification.</p>' },
+    { i: '📱', t: 'Notification service', s: 'Station 5', b: '<p>Write “SMS sent”. Write your timestamp. Drop it in the DONE pile.</p>' },
+    { i: '👨‍🍳', t: 'The monolith', s: 'Round 1 only', b: '<p>You are the whole restaurant. Do ALL five steps yourself on each ticket, one ticket at a time.</p>' },
+  ]
+},
+{
+  id: 'budget', name: 'Error Budget Poker', color: 'var(--green)', icon: '🃏',
+  note: 'Day 2 · Print 1 copy for the facilitator. Read one card at a time; every team chooses A or B. Budget: 43 minutes. One die per team.',
+  cards: [
+    { i: '🎁', t: 'Friday 6 PM feature', b: '<p>Loyalty feature ready. Ship now?</p><p><b>A) Ship now:</b> roll a die. 1–3 → lose 20 min. 4–6 → +60 credits.</p><p><b>B) Wait till Monday:</b> +20 credits, 0 min.</p>' },
+    { i: '🧨', t: 'Flash sale tonight', b: '<p>Marketing wants a surprise sale.</p><p><b>A) Go without load test:</b> roll a die. 1–2 → lose 30 min. 3–6 → +80.</p><p><b>B) Load test first:</b> pay 30 credits, then +80, 0 min.</p>' },
+    { i: '🌩️', t: 'Zone outage', b: '<p>One availability zone goes down (no choice!).</p><p>Multi-zone in your Day 1 design → <b>0 min</b>. Otherwise → <b>lose 25 min</b>.</p>' },
+    { i: '📜', t: 'Certificate expiring', b: '<p>TLS certificate expires in 2 days.</p><p><b>A) Renew now:</b> 0 min.</p><p><b>B) “Later”:</b> lose 30 min when it expires. (Yes, this happens to big companies!)</p>' },
+    { i: '🐤', t: 'Canary looks sick', b: '<p>New version on 5% of users shows +2% errors.</p><p><b>A) Roll back:</b> lose 2 min.</p><p><b>B) Push to 100%:</b> lose 15 min.</p>' },
+    { i: '🤖', t: 'Automate the toil', b: '<p>An engineer wants a sprint to automate manual restarts.</p><p><b>A) Approve:</b> pay 40 credits; all later minute losses are halved.</p><p><b>B) Decline:</b> nothing happens.</p>' },
+    { i: '🌙', t: 'Sunday-night bug', b: '<p>A bug shows the wrong price for samosas.</p><p><b>A) Hotfix now, skip tests:</b> roll a die. 1–3 → lose 10 min.</p><p><b>B) Proper fix Monday morning:</b> lose 5 min.</p>' },
+    { i: '💳', t: 'Payment gateway wobble', b: '<p>PayFast degrades for an hour (no choice!).</p><p>Circuit breaker / second gateway in your design → <b>lose 3 min</b>. Otherwise → <b>lose 20 min</b>.</p>' },
+    { i: '🐒', t: 'Chaos experiment', b: '<p>Run a planned game day?</p><p><b>A) Yes:</b> lose 5 min now; ignore the next forced outage card.</p><p><b>B) No:</b> nothing happens.</p>' },
+    { i: '🏁', t: 'End of month', b: '<p>Minutes left × 3 = bonus credits.</p><p>Budget below 0 → −100 credits and a feature freeze.</p>', foot: 'Read last' },
+  ]
+},
+{
+  id: 'bill', name: 'Cloud Bill Shock', color: 'var(--red)', icon: '💸',
+  note: 'Day 2 · Print 6 copies (84 cards) and shuffle into 4 region piles. Each CFO draws 3. Naming the preventing control on a negative card refunds half the loss.',
+  cards: [
+    { i: '🎮', t: 'GPU left running', d: -150, b: '<p>An intern left a GPU VM running all weekend “for testing”.</p><p><b>Control:</b> auto-shutdown, budgets &amp; alerts.</p>' },
+    { i: '🪣', t: 'Public storage bucket', d: -300, b: '<p>A storage container was public. Customer invoices were indexed by a search engine.</p><p><b>Control:</b> private by default, policy to block public access.</p>' },
+    { i: '🏏', t: 'IPL final surge', d: '+150 / −200', b: '<p><b>+150</b> if your Day 1 design had autoscaling or pre-scaling.</p><p><b>−200</b> if not — the app crashed at the final over.</p>' },
+    { i: '📅', t: 'Reserved capacity', d: 100, b: '<p>You committed to 1-year reserved instances for your steady database.</p><p>Nice FinOps move.</p>' },
+    { i: '💽', t: 'Orphaned disks', d: -60, b: '<p>200 unattached disks from deleted VMs still being billed.</p><p><b>Control:</b> regular cleanup, tagging, resource graph queries.</p>' },
+    { i: '🔑', t: 'Keys on GitHub', d: -250, b: '<p>Cloud keys were pushed to a public repo. Crypto miners launched 50 VMs in 2 hours.</p><p><b>Control:</b> Key Vault, secret scanning, managed identities.</p>' },
+    { i: '🎲', t: 'Spot VMs for batch', d: 80, b: '<p>Nightly report jobs moved to discounted Spot VMs.</p>' },
+    { i: '📜', t: 'Debug logs forever', d: -100, b: '<p>DEBUG logging left on in production, stored forever. Telemetry bill tripled.</p><p><b>Control:</b> log levels, sampling, retention policies.</p>' },
+    { i: '📏', t: 'Rightsizing', d: 90, b: '<p>Metrics showed VMs at 8% average CPU. You downsized them.</p>' },
+    { i: '🌍', t: 'Egress surprise', d: -120, b: '<p>Promo videos served cross-region without a CDN. Data-transfer charges exploded.</p><p><b>Control:</b> CDN, keep data close to users.</p>' },
+    { i: '🔐', t: 'MFA saves the day', d: 100, b: '<p>An admin clicked a phishing link, but MFA blocked the login.</p>' },
+    { i: '🏷️', t: 'Tag everything', d: 50, b: '<p>Every resource is tagged by team &amp; app. The CFO finally knows who spends what.</p>' },
+    { i: '🧨', t: 'DDoS on launch day', d: '+50 / −200', b: '<p><b>+50</b> if your design had a WAF / DDoS protection.</p><p><b>−200</b> if not.</p>' },
+    { i: '🌙', t: 'Night shutdown', d: 70, b: '<p>Dev/test environments now auto-stop at 8 PM and on weekends.</p>' },
+  ].map(c => ({ ...c, delta: c.d }))
+},
+{
+  id: 'biz', name: 'Follow the Order', color: 'var(--purple)', icon: '📦',
+  note: 'Day 2 · Print 1 copy: 7 system cards for the volunteers and 1 order token.',
+  cards: [
+    { i: '🛒', t: 'Commerce / order app', s: 'Shopify, custom app', b: '<p>Say: “Order CC-1042 placed, ₹180, paid by UPI.”</p><p>Stamp and pass to CRM.</p>' },
+    { i: '🤝', t: 'CRM', s: 'Salesforce, Dynamics 365, Zoho', b: '<p>Say: “Priya gets 18 loyalty points. 5th order this week — VIP!”</p><p>Stamp and pass to ERP.</p>' },
+    { i: '🏭', t: 'ERP – Finance', s: 'SAP S/4HANA, Oracle, Dynamics 365', b: '<p>Say: “Invoice generated, GST recorded, revenue booked.”</p><p>Stamp and pass to SCM.</p>' },
+    { i: '🚚', t: 'SCM – Inventory', s: 'SAP IBP, Oracle SCM', b: '<p>Say: “Milk stock at Koramangala below 10 L — purchase order raised to dairy supplier.”</p><p>Stamp and pass to HCM.</p>' },
+    { i: '👥', t: 'HCM – People', s: 'Workday, SuccessFactors, Darwinbox', b: '<p>Say: “Rider Ravi completed delivery — ₹25 incentive added to payroll.”</p><p>Stamp and pass to BI.</p>' },
+    { i: '📊', t: 'BI – Analytics', s: 'Power BI, Tableau, Looker', b: '<p>Say: “Ginger chai sales up 30% at 4 PM in Bengaluru!”</p><p>Stamp. Done!</p>' },
+    { i: '🛠️', t: 'ITSM', s: 'ServiceNow, Jira Service Mgmt', b: '<p>Only act if something breaks! Say: “Incident INC-771 opened, on-call engineer paged, customer notified.”</p>' },
+    { i: '🎫', t: 'Order token #CC-1042', b: '<p>2 Masala Chai + 1 Samosa · ₹180 · Koramangala</p><p>☐ Commerce ☐ CRM ☐ ERP ☐ SCM ☐ HCM ☐ BI</p>', foot: 'Travels between systems' },
+  ]
+},
+{
+  id: 'career', name: 'Career Tarot', color: 'var(--pink)', icon: '🔮', size: 'large',
+  note: 'Day 2 · Print 12 copies: one deck shared by two neighbouring teams. Shuffle; each student draws one, reads it, and returns it.',
+  cards: [
+    { i: '🏛️', t: 'The Cloud Architect', s: '“I see the whole city before it is built.”', b: '<p><b>You:</b> design systems — pick services, draw diagrams, balance cost vs reliability vs security.</p><p><b>Skills:</b> networking, identity, databases, Well-Architected thinking, communication.</p><p><b>Certs:</b> AZ-104 → AZ-305 · AWS SA Associate/Professional.</p><p><b>A day:</b> design reviews, whiteboards, customer calls.</p>' },
+    { i: '🔁', t: 'The DevOps Engineer', s: '“Nothing ships by hand while I am around.”', b: '<p><b>You:</b> build CI/CD pipelines and automate everything from code to production.</p><p><b>Skills:</b> Git, Linux, scripting, Docker, pipelines, IaC.</p><p><b>Certs:</b> AZ-400 · Terraform Associate · CKAD.</p><p><b>A day:</b> fixing a flaky pipeline, speeding up builds, helping devs ship.</p>' },
+    { i: '🚒', t: 'The Site Reliability Engineer', s: '“I guard the nines.”', b: '<p><b>You:</b> keep production reliable using software engineering — SLOs, automation, incident response.</p><p><b>Skills:</b> coding, Linux, Kubernetes, observability, calm under pressure.</p><p><b>Certs:</b> CKA · cloud associate level · observability certs.</p><p><b>A day:</b> reviewing SLOs, killing toil, leading a postmortem.</p>' },
+    { i: '🏗️', t: 'The Platform Engineer', s: '“I build the roads others drive on.”', b: '<p><b>You:</b> build the internal developer platform — self-service environments, templates, golden paths.</p><p><b>Skills:</b> Kubernetes, IaC, APIs, developer empathy.</p><p><b>Certs:</b> CKA/CKS · Terraform Associate.</p><p><b>A day:</b> a new “create service” template in the developer portal.</p>' },
+    { i: '🛡️', t: 'The Cloud Security Engineer', s: '“Trust nothing. Verify everything.”', b: '<p><b>You:</b> secure identities, networks and data; hunt misconfigurations; respond to threats.</p><p><b>Skills:</b> IAM, networking, encryption, policy-as-code, threat modelling.</p><p><b>Certs:</b> SC-900 → AZ-500 · AWS Security Specialty · CKS.</p><p><b>A day:</b> fixing a public storage finding before attackers do.</p>' },
+    { i: '💰', t: 'The FinOps Analyst', s: '“Every rupee in the cloud has a name.”', b: '<p><b>You:</b> make cloud spend visible and efficient — tagging, forecasting, savings plans, showback.</p><p><b>Skills:</b> cloud pricing, Excel/Power BI, SQL, negotiation.</p><p><b>Certs:</b> FinOps Certified Practitioner · AZ-900.</p><p><b>A day:</b> “Why did the bill jump 40%?” — and finding out.</p>' },
+    { i: '🔭', t: 'The Observability Engineer', s: '“I see what others cannot.”', b: '<p><b>You:</b> make systems observable — instrumentation, dashboards, alerting, SLOs, AIOps.</p><p><b>Skills:</b> OpenTelemetry, metrics/logs/traces, query languages (DQL, KQL, PromQL), APM tools.</p><p><b>Certs:</b> Dynatrace Associate · cloud monitoring certs.</p><p><b>A day:</b> turning a 2-hour outage into a 2-minute alert.</p>' },
+    { i: '🤖', t: 'The AI / MLOps Engineer', s: '“I teach machines, then keep them honest.”', b: '<p><b>You:</b> take AI models to production — pipelines, GPUs, evaluation, monitoring, cost control.</p><p><b>Skills:</b> Python, ML basics, containers, cloud AI services, data engineering.</p><p><b>Certs:</b> AI-900 → AI-102 · Azure Data Scientist · Vertex AI / Bedrock learning paths.</p><p><b>A day:</b> deploying a chatbot and checking it doesn\'t hallucinate prices.</p>' },
+  ]
+},
+];
+
+const root = document.getElementById('root');
+const only = document.getElementById('only');
+
+function renderDeck(d) {
+  const page = document.createElement('div');
+  page.className = 'page';
+  page.dataset.deck = d.id;
+  page.insertAdjacentHTML('beforeend', deckTitle(d.name, d.note));
+  const wrap = document.createElement('div');
+  wrap.className = 'cards';
+  d.cards.flatMap((c, n) => Array.from({ length: c.qty || 1 }, () => [c, n])).forEach(([c, n]) => {
+    const isKey = c.foot === 'Facilitator only';
+    const isTwist = c.cls === 'twist';
+    const el = document.createElement('div');
+    el.className = ['gcard', d.size === 'large' ? 'large' : '', c.cls || '', isKey ? 'key' : ''].join(' ').trim();
+    el.style.setProperty('--acc', d.color);
+    const label = isKey ? 'Answer key' : isTwist ? 'Plot twist' : d.name;
+    const title = isTwist ? c.t.replace(/^TWIST:\s*/, '') : c.t;
+    let html = `<div class="top"><span class="deck"><i></i>${label}</span><span class="no">${String(n + 1).padStart(2, '0')}</span></div>`;
+    if (title) html += `<div class="ttl">${title}</div>`;
+    if (c.s) html += `<div class="sub">${c.s}</div>`;
+    if (c.delta !== undefined) {
+      const num = typeof c.delta === 'number';
+      const cls = num ? (c.delta < 0 ? 'neg' : 'pos') : 'mix';
+      const txt = num ? (c.delta > 0 ? '+' : '−') + Math.abs(c.delta) : c.delta;
+      html += `<div class="delta ${cls}">${txt}<small>credits</small></div>`;
+    }
+    if (c.cls !== 'statement') html += '<div class="rule"></div>';
+    html += `<div class="body">${c.b || ''}</div><div class="foot"><span>${c.foot || 'Cloud workshop'}</span><span>ChaiCart</span></div>`;
+    el.innerHTML = html;
+    wrap.appendChild(el);
+  });
+  page.appendChild(wrap);
+  return page;
+}
+
+function deckTitle(name, note) {
+  const [kicker, ...rest] = note.split(' · ');
+  return `<div class="deck-title"><div class="dt-k">${kicker}</div><div class="dt-h">${name}</div><small>${rest.join(' · ')}</small></div>`;
+}
+
+decks.forEach(d => {
+  root.appendChild(renderDeck(d));
+  const o = document.createElement('option');
+  o.value = d.id; o.textContent = d.name;
+  only.appendChild(o);
+});
+
+// Table tents: fold along the dashed line so the name reads from both sides
+(() => {
+  const regions = [['West India', 'Mumbai'], ['South India', 'Chennai'], ['Central India', 'Pune'], ['North India', 'Delhi']];
+  const page = document.createElement('div');
+  page.className = 'page';
+  page.dataset.deck = 'tents';
+  page.innerHTML = deckTitle('Table tents', 'Day 1 · 24 tents, two per page. Fold along the dashed line and place one on each table before students arrive.');
+  regions.forEach(([region, city]) => 'abcdef'.split('').forEach(z => {
+    const half = `<div class="rg">${region} region</div><div class="nm">${city}-1${z}</div><div class="tg">ChaiCart Startup Challenge</div>`;
+    page.insertAdjacentHTML('beforeend', `<div class="tent"><div class="half flip">${half}</div><div class="half">${half}</div></div>`);
+  }));
+  root.insertBefore(page, root.firstChild);
+  const o = document.createElement('option'); o.value = 'tents'; o.textContent = 'Table tents';
+  only.insertBefore(o, only.children[1]);
+})();
+
+// Order tickets for the Human Kitchen game
+(() => {
+  const page = document.createElement('div');
+  page.className = 'page';
+  page.dataset.deck = 'tickets';
+  page.innerHTML = deckTitle('Order tickets', 'Human Kitchen · Print 2–3 pages. Each station writes its time. That row is the distributed trace.');
+  const wrap = document.createElement('div');
+  wrap.className = 'cards';
+  for (let k = 0; k < 8; k++) {
+    const t = document.createElement('div');
+    t.className = 'gcard ticket';
+    t.style.setProperty('--acc', 'var(--chai)');
+    t.innerHTML = `<div class="top"><span class="deck"><i></i>Order ticket</span><span class="no">ChaiCart</span></div>
+      <table><tr><th style="width:18mm">Order ID</th><td></td><th style="width:18mm">Customer</th><td></td></tr></table>
+      <table style="margin-top:2mm"><tr><th>Span</th><th>Order</th><th>Payment</th><th>Kitchen</th><th>Delivery</th><th>Notify</th></tr>
+      <tr><th>Result</th><td style="height:8mm"></td><td></td><td></td><td></td><td></td></tr>
+      <tr><th>Time</th><td style="height:8mm"></td><td></td><td></td><td></td><td></td></tr></table>`;
+    wrap.appendChild(t);
+  }
+  page.appendChild(wrap);
+  root.appendChild(page);
+  const o = document.createElement('option'); o.value = 'tickets'; o.textContent = 'Order Tickets'; only.appendChild(o);
+})();
+
+// Cloud Bingo: caller list + randomized cards
+const bingoPool = [
+  ['Blob Storage / S3', 'I store files as objects, practically unlimited.'],
+  ['Serverless Function', 'I run your code only when an event happens.'],
+  ['Load Balancer', 'I spread traffic across many servers.'],
+  ['Kubernetes', 'I orchestrate thousands of containers.'],
+  ['Docker', 'I package an app with everything it needs into a portable image.'],
+  ['CDN', 'I cache content close to users around the world.'],
+  ['DNS', 'I turn names into IP addresses.'],
+  ['Virtual Machine', 'I am a computer inside a computer.'],
+  ['Hypervisor', 'I let many VMs share one physical server.'],
+  ['Region', 'I am a geographic area containing data centres.'],
+  ['Availability Zone', 'I am a separate data centre inside a region.'],
+  ['Autoscaling', 'I add servers when traffic rises and remove them when it falls.'],
+  ['IaaS', 'I give you raw servers, storage and networks.'],
+  ['PaaS', 'You bring code, I run it.'],
+  ['SaaS', 'Just log in and use me.'],
+  ['Hybrid Cloud', 'I mix your own data centre with public cloud.'],
+  ['Multi-Cloud', 'I use more than one public cloud provider.'],
+  ['Microservices', 'I split a big app into small independent services.'],
+  ['API', 'I am the contract that lets software talk to software.'],
+  ['Cache', 'I keep hot data in fast memory.'],
+  ['Message Queue', 'I hold messages so services can work at their own pace.'],
+  ['Firewall', 'I block unwanted network traffic.'],
+  ['Encryption', 'I scramble data so only key holders can read it.'],
+  ['MFA', 'I ask for a second proof of who you are.'],
+  ['Metrics', 'I am numbers over time, like CPU %.'],
+  ['Logs', 'I am timestamped records of events.'],
+  ['Traces', 'I follow one request across many services.'],
+  ['SLA', 'I am a reliability promise with penalties.'],
+  ['CI/CD', 'I build, test and deploy your code automatically.'],
+  ['Infrastructure as Code', 'I define servers in text files.'],
+  ['Spot VM', 'I am a cheap server that can be taken away at short notice.'],
+  ['Edge Computing', 'I process data close to where it is created.'],
+];
+
+(() => {
+  const caller = document.createElement('div');
+  caller.className = 'page';
+  caller.dataset.deck = 'bingo';
+  let rows = bingoPool.map((p, n) => `<tr><td>${n + 1}</td><td>${p[1]}</td><td><b>${p[0]}</b></td><td style="width:10mm"></td></tr>`).join('');
+  caller.innerHTML = deckTitle('Cloud Bingo: caller sheet', 'Day 1 · Read clues in random order and tick each one. The winner shouts “AUTOSCALE!”') +
+    `<table><tr><th style="width:8mm">#</th><th>Clue (read aloud)</th><th style="width:45mm">Answer</th><th style="width:10mm">✓</th></tr>${rows}</table>`;
+  root.appendChild(caller);
+
+  const cardsPage = document.createElement('div');
+  cardsPage.className = 'page';
+  cardsPage.dataset.deck = 'bingo';
+  cardsPage.innerHTML = deckTitle('Cloud Bingo: player cards', 'Day 1 · One card per team: 24 cards, randomised on every page load. Reload for a new set.');
+  const grid = document.createElement('div');
+  grid.className = 'bingo-grid';
+  for (let c = 0; c < 24; c++) {
+    const picks = [...bingoPool].sort(() => Math.random() - 0.5).slice(0, 24).map(p => p[0]);
+    picks.splice(12, 0, null);
+    let html = `<h4><span>CLOUD</span><span>Card ${c + 1}</span></h4><table>`;
+    for (let r = 0; r < 5; r++) {
+      html += '<tr>' + picks.slice(r * 5, r * 5 + 5).map(p => p === null ? '<td class="free">FREE</td>' : `<td>${p}</td>`).join('') + '</tr>';
+    }
+    const b = document.createElement('div');
+    b.className = 'bingo';
+    b.innerHTML = html + '</table>';
+    grid.appendChild(b);
+  }
+  cardsPage.appendChild(grid);
+  root.appendChild(cardsPage);
+  const o = document.createElement('option'); o.value = 'bingo'; o.textContent = 'Cloud Bingo'; only.appendChild(o);
+})();
+
+only.addEventListener('change', () => {
+  document.querySelectorAll('.page').forEach(p => {
+    p.classList.toggle('no-print', !!only.value && p.dataset.deck !== only.value);
+    p.style.opacity = !only.value || p.dataset.deck === only.value ? 1 : .35;
+  });
+});
+</script>
+</body>
+</html>

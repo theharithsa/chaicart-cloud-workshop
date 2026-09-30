@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Cloud Cheat Sheet – Take-home</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/print.css">
+<style>
+  .page { font-size: 8.4pt; }
+  .cols { columns: 2; column-gap: 6mm; }
+  .blk { break-inside: avoid; border: 1px solid #d5dbe8; border-radius: 2mm; padding: 2mm 3mm; margin-bottom: 3mm; }
+  .blk h3 { margin: 0 0 1mm; font-size: 10pt; }
+  .blk table { font-size: 7.8pt; }
+  .blk th, .blk td { padding: .8mm 1.5mm; }
+  .blk ul { margin: 0; padding-left: 4mm; }
+  .blk p { margin: .5mm 0; }
+  .head { display: flex; justify-content: space-between; align-items: end; border-bottom: 3px solid var(--chai); margin-bottom: 3mm; }
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <b>Cheat Sheet</b>
+  <button onclick="window.print()">Print (double-sided)</button>
+  <a href="index.html">← Hub</a>
+</div>
+
+<div class="page">
+  <div class="head"><h1>Cloud Computing Cheat Sheet</h1><span>ChaiCart Workshop · Page 1: Fundamentals</span></div>
+  <div class="cols">
+    <div class="blk"><h3>What is cloud? (NIST: 5 characteristics)</h3>
+      <p>On-demand self-service · Broad network access · Resource pooling · Rapid elasticity · Measured service</p>
+      <p><b>Why:</b> CapEx→OpEx, speed, elastic scale, global reach, innovation (AI/data), resilience.</p></div>
+
+    <div class="blk"><h3>Service models</h3>
+      <table><tr><th>Model</th><th>You manage</th><th>Examples</th></tr>
+      <tr><td>IaaS</td><td>OS, runtime, app, data</td><td>Azure VMs, EC2, Compute Engine</td></tr>
+      <tr><td>PaaS</td><td>App &amp; data</td><td>App Service, App Engine, Azure SQL</td></tr>
+      <tr><td>SaaS</td><td>Your data &amp; users</td><td>Gmail, M365, Salesforce, Dynatrace</td></tr>
+      <tr><td>FaaS</td><td>Just functions</td><td>Azure Functions, Lambda</td></tr></table></div>
+
+    <div class="blk"><h3>Deployment models</h3>
+      <p><b>Public</b> = hotel · <b>Private</b> = own house · <b>Hybrid</b> = house + Airbnb · <b>Multi-cloud</b> = several hotel chains</p>
+      <p>Decide on: regulation (RBI, DPDP Act), latency, cost pattern, skills, lock-in, sovereignty.</p></div>
+
+    <div class="blk"><h3>Cloud Rosetta Stone</h3>
+      <table><tr><th>Need</th><th>AWS</th><th>Azure</th><th>GCP</th></tr>
+      <tr><td>VM</td><td>EC2</td><td>Virtual Machines</td><td>Compute Engine</td></tr>
+      <tr><td>Serverless</td><td>Lambda</td><td>Functions</td><td>Cloud Run functions</td></tr>
+      <tr><td>Kubernetes</td><td>EKS</td><td>AKS</td><td>GKE</td></tr>
+      <tr><td>Object storage</td><td>S3</td><td>Blob Storage</td><td>Cloud Storage</td></tr>
+      <tr><td>SQL</td><td>RDS</td><td>Azure SQL</td><td>Cloud SQL</td></tr>
+      <tr><td>NoSQL</td><td>DynamoDB</td><td>Cosmos DB</td><td>Firestore</td></tr>
+      <tr><td>Monitoring</td><td>CloudWatch</td><td>Azure Monitor</td><td>Cloud Monitoring</td></tr>
+      <tr><td>GenAI</td><td>Bedrock</td><td>Azure OpenAI</td><td>Vertex AI</td></tr></table></div>
+
+    <div class="blk"><h3>VMs vs Containers</h3>
+      <table><tr><th></th><th>VM</th><th>Container</th></tr>
+      <tr><td>Isolation</td><td>Own OS (hypervisor)</td><td>Shared kernel</td></tr>
+      <tr><td>Size</td><td>GBs</td><td>MBs</td></tr>
+      <tr><td>Start time</td><td>Minutes</td><td>Seconds</td></tr>
+      <tr><td>Orchestrator</td><td>VM scale sets</td><td>Kubernetes</td></tr></table></div>
+
+    <div class="blk"><h3>Architecture building blocks</h3>
+      <p>DNS → CDN/WAF → Load balancer → Compute (VM / containers / functions) → Cache → Queue → SQL/NoSQL DB → Object storage. Plus Identity, Secrets vault, Observability, Regions &amp; Availability Zones.</p>
+      <p><b>Principles:</b> design for failure · scale out · loose coupling · automate · stateless apps.</p>
+      <p><b>Well-Architected pillars:</b> Reliability, Security, Cost, Operational excellence, Performance, Sustainability.</p></div>
+
+    <div class="blk"><h3>Cloud-native &amp; microservices</h3>
+      <p>Small, independently deployable services talking via APIs/events. <b>Pros:</b> independent scaling &amp; deploys, fault isolation. <b>Cons:</b> network complexity, harder debugging → needs observability.</p>
+      <p>Cloud-native = containers + microservices + APIs + CI/CD + DevOps + automation.</p></div>
+
+    <div class="blk"><h3>Key dates</h3>
+      <p>1960s time-sharing · 1969 ARPANET · 1989 WWW · 1998 VMware · 1999 Salesforce · 2006 AWS · 2008 App Engine · 2010 Azure · 2013 Docker · 2014 Kubernetes · 2016 UPI · 2022 ChatGPT</p></div>
+  </div>
+</div>
+
+<div class="page">
+  <div class="head"><h1>Operations &amp; Business Cheat Sheet</h1><span>Page 2: Operate, secure, grow</span></div>
+  <div class="cols">
+    <div class="blk"><h3>Observability</h3>
+      <p><b>Metrics</b> = vital signs (numbers over time) · <b>Logs</b> = diary (detailed events) · <b>Traces</b> = MRI (one request across services) · plus events, profiles, real-user data.</p>
+      <p><b>Monitoring</b> = <i>is</i> it broken? <b>Observability</b> = <i>why</i>? Standard: <b>OpenTelemetry</b>.</p>
+      <p><b>Golden signals:</b> Latency, Traffic, Errors, Saturation · <b>RED:</b> Rate, Errors, Duration · <b>USE:</b> Utilization, Saturation, Errors</p></div>
+
+    <div class="blk"><h3>The nines</h3>
+      <table><tr><th>SLO</th><th>Downtime/year</th><th>/month</th></tr>
+      <tr><td>99%</td><td>3.65 days</td><td>7.3 h</td></tr>
+      <tr><td>99.9%</td><td>8.76 h</td><td>43.8 min</td></tr>
+      <tr><td>99.99%</td><td>52.6 min</td><td>4.4 min</td></tr>
+      <tr><td>99.999%</td><td>5.26 min</td><td>26 s</td></tr></table></div>
+
+    <div class="blk"><h3>SRE</h3>
+      <p><b>SLI</b> what you measure → <b>SLO</b> target → <b>SLA</b> promise with penalties. <b>Error budget</b> = 100% − SLO: spend it on shipping, freeze when it's gone.</p>
+      <p>Eliminate toil · on-call with runbooks · <b>blameless postmortems</b> (ask what/how, never who).</p>
+      <p><b>Incident Q1:</b> “What changed?” Then correlate metrics (when) + logs (what) + traces (where).</p></div>
+
+    <div class="blk"><h3>Reliability patterns</h3>
+      <p>Redundancy across AZs · timeouts · retries with backoff · circuit breakers · graceful degradation · queues · chaos engineering · watch saturation (CPU, memory, <b>connection pools</b>, threads, queues).</p></div>
+
+    <div class="blk"><h3>DevOps &amp; CI/CD</h3>
+      <p>Plan → Code → Build → Test → Release → Deploy → Operate → Monitor ↺</p>
+      <p><b>DORA:</b> deployment frequency · lead time for changes · change failure rate · time to restore.</p>
+      <p><b>Safe deploys:</b> canary · blue-green · feature flags · auto-rollback on SLO breach. <b>IaC:</b> Bicep, Terraform.</p></div>
+
+    <div class="blk"><h3>Security — shared responsibility</h3>
+      <p>Provider secures <b>of</b> the cloud (hardware, data centres); you secure what's <b>in</b> it (data, identities, config, apps). Most breaches = customer misconfiguration.</p>
+      <p>MFA · least privilege · no secrets in code (Key Vault, managed identities) · encrypt in transit &amp; at rest · Zero Trust · policy-as-code · threat detection.</p></div>
+
+    <div class="blk"><h3>Scalability &amp; cost</h3>
+      <p><b>Scale up</b> (bigger box) vs <b>scale out</b> (more boxes, stateless). Autoscale · cache · queue · pre-warm before known spikes.</p>
+      <p><b>FinOps levers:</b> rightsize · reserved/savings plans · Spot VMs · schedule dev/test off · tag everything · budgets &amp; alerts at 80% · watch egress &amp; log volume · delete orphans.</p></div>
+
+    <div class="blk"><h3>Business systems</h3>
+      <table><tr><th>System</th><th>Does</th><th>Examples</th></tr>
+      <tr><td>CRM</td><td>Customers, sales, support</td><td>Salesforce, Dynamics 365</td></tr>
+      <tr><td>ERP</td><td>Finance, procurement</td><td>SAP S/4HANA, Oracle</td></tr>
+      <tr><td>SCM</td><td>Suppliers, logistics</td><td>SAP IBP, Blue Yonder</td></tr>
+      <tr><td>HCM</td><td>People, payroll</td><td>Workday, SuccessFactors</td></tr>
+      <tr><td>ITSM</td><td>Incidents, changes</td><td>ServiceNow, Jira SM</td></tr>
+      <tr><td>BI</td><td>Dashboards</td><td>Power BI, Tableau</td></tr></table>
+      <p>Integration: APIs · events · iPaaS (Logic Apps, MuleSoft).</p></div>
+
+    <div class="blk"><h3>Careers &amp; learning</h3>
+      <p><b>Roles:</b> Cloud Architect · DevOps · SRE · Platform Engineer · Cloud Security · FinOps · Observability · AI/MLOps.</p>
+      <p><b>Learn in order:</b> Linux &amp; networking → one cloud → scripting → containers/K8s → IaC → CI/CD → observability → security &amp; cost.</p>
+      <p><b>Certs:</b> AZ-900 / AWS Cloud Practitioner / Google Cloud Digital Leader → AZ-104 / AWS SA Associate / Google ACE → CKA, Terraform, AZ-400, AZ-500, FinOps, Dynatrace Associate.</p>
+      <p><b>Free:</b> Microsoft Learn · AWS Skill Builder · Google Cloud Skills Boost · Dynatrace University · CNCF / Linux Foundation intro courses · OpenTelemetry docs.</p></div>
+  </div>
+</div>
+</body>
+</html>

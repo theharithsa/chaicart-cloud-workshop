@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Recap Quiz – ChaiCart Cloud Workshop</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<style>
+  :root { --ivory:#FAF9F5; --ivory-2:#F0EEE6; --line:#DEDAD0; --ink:#141413; --ink-2:#3D3D3A; --muted:#73726C; --clay:#D97757; --clay-d:#A34E32; --clay-t:#F5E4DB; --olive:#788C5D; --olive-t:#E6EADC;
+    --serif:"Tiempos Headline","Copernicus",Georgia,serif; --sans:"Styrene A","Inter","Segoe UI",system-ui,sans-serif; }
+  html, body { margin: 0; height: 100%; background: var(--ivory); color: var(--ink); font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 4vh 4vw; display: flex; flex-direction: column; min-height: 92vh; box-sizing: border-box; }
+  header { display: flex; justify-content: space-between; align-items: center; color: var(--muted); font-size: 15px; }
+  header #title { font-family: var(--serif); font-size: 20px; color: var(--ink); }
+  header a { color: var(--clay-d); }
+  .timerbar { height: 3px; background: var(--ivory-2); border-radius: 99px; overflow: hidden; margin: 3vh 0 2vh; }
+  .timerbar div { height: 100%; background: var(--clay); width: 100%; transition: width 1s linear; }
+  h1 { font-family: var(--serif); font-weight: 500; letter-spacing: -.015em; font-size: clamp(26px, 3.4vw, 46px); line-height: 1.15; margin: 2vh 0 4vh; }
+  .opts { display: grid; grid-template-columns: 1fr 1fr; gap: 1.6vh 1.6vw; }
+  .opt { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 2.2vh 1.5vw; font-size: clamp(17px, 1.9vw, 26px); cursor: pointer; display: flex; gap: 1vw; align-items: center; transition: border-color .2s, background .2s, opacity .2s; color: var(--ink-2); }
+  .opt:hover { border-color: var(--clay); }
+  .opt b { flex: none; width: 1.8em; height: 1.8em; display: grid; place-items: center; background: var(--ivory-2); border-radius: 50%; font-size: .8em; color: var(--ink); }
+  .opt.correct { border-color: var(--olive); background: var(--olive-t); color: var(--ink); }
+  .opt.correct b { background: #56693F; color: #fff; }
+  .opt.wrong { opacity: .35; }
+  .explain { margin-top: 3vh; font-family: var(--serif); font-size: clamp(17px, 1.7vw, 23px); color: var(--ink-2); min-height: 3em; border-left: 2px solid var(--clay); padding-left: 1em; }
+  .explain:empty { border: 0; }
+  .controls { margin-top: auto; display: flex; gap: 10px; justify-content: flex-end; padding-top: 3vh; }
+  button { font-family: var(--sans); background: var(--ink); color: var(--ivory); border: 0; border-radius: 99px; padding: 11px 22px; font-weight: 600; font-size: 15px; cursor: pointer; }
+  button.ghost { background: var(--ivory-2); color: var(--ink); }
+  .done { text-align: center; margin: auto; grid-column: 1 / -1; }
+  .done h1 { margin: 1vh 0; }
+  .done p { color: var(--muted); }
+  .key { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 32px; margin: 3vh auto 0; max-width: 820px; text-align: left; }
+  .key div { display: flex; gap: 14px; align-items: baseline; border-bottom: 1px solid var(--line); padding: 8px 0; font-size: clamp(15px, 1.5vw, 20px); color: var(--ink-2); }
+  .key b { font-family: var(--serif); font-weight: 500; font-size: 1.3em; color: var(--clay-d); min-width: 3.2em; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div id="title"></div>
+    <div><a href="#day1" id="l1">Day 1</a> · <a href="#day2" id="l2">Day 2</a> · <span id="count"></span></div>
+  </header>
+  <div class="timerbar"><div id="bar"></div></div>
+  <h1 id="q"></h1>
+  <div class="opts" id="opts"></div>
+  <div class="explain" id="explain"></div>
+  <div class="controls">
+    <button class="ghost" id="prev">Back</button>
+    <button class="ghost" id="timerBtn">Start 20s timer</button>
+    <button id="reveal">Reveal answer (R)</button>
+    <button id="next">Next</button>
+  </div>
+</div>
+<script>
+const sets = {
+  day1: { title: 'Day 1 recap quiz', qs: [
+    ['Which is NOT one of NIST\'s 5 essential cloud characteristics?', ['On-demand self-service', 'Rapid elasticity', 'Free of cost', 'Measured service'], 2, 'Cloud is pay-as-you-go, not free! The five: on-demand self-service, broad network access, resource pooling, rapid elasticity, measured service.'],
+    ['You rent a VM, then install and patch the OS and your app yourself. Which model?', ['SaaS', 'PaaS', 'IaaS', 'On-premises'], 2, 'IaaS: the provider gives you infrastructure; you manage OS and above.'],
+    ['Azure App Service, where you upload code and it runs, is…', ['IaaS', 'PaaS', 'SaaS', 'FaaS only'], 1, 'PaaS: you bring code, the platform runs and scales it.'],
+    ['A hospital keeps patient records on-prem but uses public cloud AI to analyse scans. That\'s…', ['Public cloud', 'Private cloud', 'Hybrid cloud', 'Community cloud'], 2, 'Hybrid: a mix of private/on-prem and public cloud working together.'],
+    ['Containers share which part of the host with each other?', ['The hypervisor', 'The operating system kernel', 'The guest OS', 'The BIOS'], 1, 'Containers share the host kernel. That makes them light and fast compared to VMs.'],
+    ['Which tool orchestrates thousands of containers: restarts, scales, schedules?', ['Docker Hub', 'Kubernetes', 'Terraform', 'Jenkins'], 1, 'Kubernetes: the orchestra conductor of containers.'],
+    ['Which component spreads incoming traffic across multiple servers?', ['CDN', 'Load balancer', 'DNS', 'Message queue'], 1, 'The load balancer. (A CDN caches content near users, DNS resolves names.)'],
+    ['In which year did AWS launch S3 and EC2?', ['2001', '2006', '2010', '2014'], 1, '2006. Azure became generally available in 2010.'],
+    ['Diwali sale: 50× traffic for a few hours. Which is the BEST way to absorb order bursts without losing them?', ['Bigger single server', 'Message queue + autoscaling workers', 'Turn off the database', 'Email orders to the kitchen'], 1, 'Queues absorb bursts; autoscaling workers drain them.'],
+    ['In the Human Kitchen game, the order ticket with each station\'s timestamp was an example of…', ['A metric', 'A log', 'A distributed trace', 'A backup'], 2, 'A distributed trace: one request, followed across services (spans).'],
+  ]},
+  day2: { title: 'Day 2 recap quiz', qs: [
+    ['99.9% availability over a month allows roughly how much downtime?', ['4 minutes', '43 minutes', '7 hours', '3.6 days'], 1, '≈ 43.8 minutes per month (8.76 hours per year).'],
+    ['SLO stands for…', ['Service Level Objective', 'System Load Output', 'Standard Latency Option', 'Service Licence Order'], 0, 'SLI = what you measure, SLO = your target, SLA = promise with penalties.'],
+    ['Which is NOT one of Google\'s 4 golden signals?', ['Latency', 'Traffic', 'Revenue', 'Saturation'], 2, 'Latency, Traffic, Errors, Saturation.'],
+    ['In “Who Killed Checkout?”, what was the weapon?', ['Full disk', 'Slow payment gateway', 'Database connection pool exhaustion', 'Cache misses'], 2, 'Pool size cut from 50 to 5, then 3× traffic arrived and requests timed out after 30 s.'],
+    ['With IaaS, who patches the guest operating system?', ['Cloud provider', 'The customer', 'Nobody', 'The hardware vendor'], 1, 'The customer. Shared responsibility: the provider secures OF the cloud, you secure IN it.'],
+    ['Releasing a new version to 5% of users first and watching metrics is called…', ['Big bang', 'Blue-green', 'Canary', 'Waterfall'], 2, 'Canary release. It would have caught Deploy Dave!'],
+    ['Which is NOT a DORA metric?', ['Deployment frequency', 'Lines of code written', 'Change failure rate', 'Lead time for changes'], 1, 'DORA: deployment frequency, lead time, change failure rate, time to restore.'],
+    ['Cheapest compute for interruptible nightly batch jobs?', ['Reserved instances', 'Spot VMs', 'Dedicated hosts', 'Bigger VMs'], 1, 'Spot VMs: deep discounts, but they can be reclaimed at short notice.'],
+    ['Which business system manages customers, leads and loyalty?', ['ERP', 'CRM', 'HCM', 'SCM'], 1, 'CRM: Salesforce, Dynamics 365, Zoho…'],
+    ['A blameless postmortem focuses on…', ['Finding who to fire', 'Systems & processes that allowed the failure', 'Hiding the incident', 'Blaming the vendor'], 1, 'Ask “what” and “how”, never “who”.'],
+  ]},
+};
+
+let setKey = 'day1', idx = 0, revealed = false, tHandle = null;
+const $ = id => document.getElementById(id);
+
+function render() {
+  const set = sets[setKey];
+  $('title').textContent = set.title;
+  clearInterval(tHandle); tHandle = null; $('timerBtn').textContent = 'Start 20s timer'; $('bar').style.width = '100%';
+  revealed = false;
+  $('explain').textContent = '';
+  $('opts').replaceChildren();
+  if (idx >= set.qs.length) {
+    $('q').textContent = '';
+    $('count').textContent = '';
+    const d = document.createElement('div');
+    d.className = 'done';
+    d.innerHTML = '<h1>Answer key</h1><p>Swap answer sheets with the neighbouring team and mark them. 10 credits per correct answer.</p>';
+    const key = document.createElement('div');
+    key.className = 'key';
+    set.qs.forEach(([q, opts, ans], k) => {
+      const row = document.createElement('div');
+      const n = document.createElement('b'); n.textContent = `Q${k + 1}  ${'ABCD'[ans]}`;
+      const t = document.createElement('span'); t.textContent = opts[ans];
+      row.append(n, t);
+      key.appendChild(row);
+    });
+    d.appendChild(key);
+    $('opts').appendChild(d);
+    return;
+  }
+  const [q, opts] = set.qs[idx];
+  $('count').textContent = `Q ${idx + 1} / ${set.qs.length}`;
+  $('q').textContent = q;
+  opts.forEach((o, k) => {
+    const el = document.createElement('div');
+    el.className = 'opt';
+    const b = document.createElement('b'); b.textContent = 'ABCD'[k];
+    const s = document.createElement('span'); s.textContent = o;
+    el.append(b, s);
+    el.onclick = reveal;
+    $('opts').appendChild(el);
+  });
+}
+
+function reveal() {
+  const set = sets[setKey];
+  if (idx >= set.qs.length || revealed) return;
+  revealed = true;
+  const [, , ans, why] = set.qs[idx];
+  [...$('opts').children].forEach((el, k) => el.classList.add(k === ans ? 'correct' : 'wrong'));
+  $('explain').textContent = why;
+  clearInterval(tHandle); tHandle = null;
+}
+
+function startTimer() {
+  if (tHandle) return;
+  let left = 20;
+  $('bar').style.width = '100%';
+  tHandle = setInterval(() => {
+    left--;
+    $('bar').style.width = (left / 20 * 100) + '%';
+    $('timerBtn').textContent = `${left}s`;
+    if (left <= 0) { clearInterval(tHandle); tHandle = null; $('timerBtn').textContent = 'Time!'; }
+  }, 1000);
+}
+
+function loadHash() {
+  setKey = location.hash === '#day2' ? 'day2' : 'day1';
+  idx = 0;
+  render();
+}
+
+$('next').onclick = () => { idx = Math.min(idx + 1, sets[setKey].qs.length); render(); };
+$('prev').onclick = () => { idx = Math.max(idx - 1, 0); render(); };
+$('reveal').onclick = reveal;
+$('timerBtn').onclick = startTimer;
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); $('next').click(); }
+  if (e.key === 'ArrowLeft') $('prev').click();
+  if (e.key === 'r' || e.key === 'R') reveal();
+  if (e.key === 't' || e.key === 'T') startTimer();
+});
+window.addEventListener('hashchange', loadHash);
+loadHash();
+</script>
+</body>
+</html>

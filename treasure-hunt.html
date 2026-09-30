@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Observability Treasure Hunt – Worksheet</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/print.css">
+<style>
+  .q { display: grid; grid-template-columns: 9mm 1fr 16mm; gap: 2mm; align-items: start; border-bottom: 1px solid #e3e7ef; padding: 2mm 0; }
+  .q .n { background: var(--navy); color: #fff; border-radius: 50%; width: 7mm; height: 7mm; display: grid; place-items: center; font-weight: 700; font-size: 9pt; }
+  .q .pts { text-align: right; font-weight: 700; color: var(--green); font-size: 9pt; }
+  .q .ans { border-bottom: 1px dotted #888; height: 6mm; margin-top: 1mm; }
+  .hint { font-size: 8.5pt; color: var(--grey); }
+  pre.dql { background: #0f1422; color: #d8e1f5; font-size: 8pt; padding: 2mm 3mm; border-radius: 2mm; margin: 1mm 0; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <b>Observability Treasure Hunt</b>
+  <button onclick="window.print()">Print</button>
+  <span class="hint">Print 24 copies, one per team. The facilitator drives the screen and teams answer from the projector.</span>
+  <a href="index.html">← Hub</a>
+</div>
+
+<div class="page">
+  <h1>Observability Treasure Hunt</h1>
+  <p class="sub">Team: ______________________ &nbsp;&nbsp; Total points: ______ / 150</p>
+  <div class="box" style="font-size:9.5pt">
+    <b>Rules:</b> Answer as many as you can in 35 minutes. Every answer needs <b>proof</b>: a screenshot, a number, or a service name. Bonus questions are worth double. Sharing clues with other teams costs 20 points.
+  </div>
+
+  <h2 style="margin-top:4mm">Part A — Dynatrace</h2>
+  <p class="hint">Use the environment shown by the facilitator. Service names differ between environments; any sensible answer with proof counts.</p>
+
+  <div class="q"><div class="n">1</div><div><b>Top offender:</b> Open <i>Services</i>. Which service has the highest <b>failure rate</b> in the last 2 hours? What's the rate?<div class="ans"></div></div><div class="pts">10</div></div>
+  <div class="q"><div class="n">2</div><div><b>Slowest service:</b> Which service has the worst <b>response time</b>? Is it median or p95/p99 that looks bad?<div class="ans"></div></div><div class="pts">10</div></div>
+  <div class="q"><div class="n">3</div><div><b>Follow the ticket:</b> Open <i>Distributed Traces</i> and pick a <b>failed</b> request. How many spans does it have? Which span took longest?<div class="ans"></div></div><div class="pts">15</div></div>
+  <div class="q"><div class="n">4</div><div><b>Who calls whom?</b> From a service, look at its incoming and outgoing calls (service flow / Smartscape). Name 2 services it depends on.<div class="ans"></div></div><div class="pts">10</div></div>
+  <div class="q"><div class="n">5</div><div><b>Problem solver:</b> Open <i>Problems</i>. Pick one problem. What's the <b>root cause</b> entity, and how many entities were affected?<div class="ans"></div></div><div class="pts">15</div></div>
+  <div class="q"><div class="n">6</div><div><b>Error detective:</b> In <i>Logs</i> or a <i>Notebook</i>, run this. When was the error peak?
+<pre class="dql">fetch logs
+| filter loglevel == "ERROR"
+| makeTimeseries errors = count(), interval: 5m</pre><div class="ans"></div></div><div class="pts">10</div></div>
+  <div class="q"><div class="n">7</div><div><b>Saturation check:</b> Is any host above 80% CPU?
+<pre class="dql">timeseries cpu = avg(dt.host.cpu.usage), by: { dt.entity.host }</pre><div class="ans"></div></div><div class="pts">10</div></div>
+  <div class="q"><div class="n">8</div><div><b>Bonus:</b> Write your own DQL query that lists the <b>top 5 slowest services by p95</b>. Hint: <code>fetch spans</code>, <code>summarize</code>, <code>percentile(duration, 95)</code>, <code>sort</code>, <code>limit</code>.<div class="ans"></div><div class="ans"></div></div><div class="pts">20</div></div>
+</div>
+
+<div class="page">
+  <h2>Part B — Azure (free tier)</h2>
+  <p class="hint">The facilitator performs the steps in the Azure portal; teams answer from the screen and generate traffic from their phones. Everything is deleted at the end.</p>
+
+  <div class="q"><div class="n">9</div><div><b>Build it:</b> Create resource group <code>rg-chaicart-demo</code> in <i>Central India</i>, then a <b>Web App</b>. What's the public URL?<div class="ans"></div></div><div class="pts">5</div></div>
+  <div class="q"><div class="n">10</div><div><b>Crowd test:</b> Everyone opens the URL on their phone and refreshes 10 times. In <b>Application Insights → Live Metrics</b>, what's the peak <b>requests/sec</b>?<div class="ans"></div></div><div class="pts">10</div></div>
+  <div class="q"><div class="n">11</div><div><b>Metric explorer:</b> In <b>Monitor → Metrics</b>, chart “Requests” and “Response time” for the web app. What's the average response time?<div class="ans"></div></div><div class="pts">5</div></div>
+  <div class="q"><div class="n">12</div><div><b>Break it:</b> The facilitator requests a URL that doesn't exist (e.g. <code>/chai-not-found</code>) 20 times. Where do the <b>failed requests</b> show up in Application Insights? Which status code?<div class="ans"></div></div><div class="pts">10</div></div>
+  <div class="q"><div class="n">13</div><div><b>KQL taste:</b> In Application Insights → Logs, what does this return?
+<pre class="dql">requests
+| summarize count() by resultCode, bin(timestamp, 1m)
+| order by timestamp desc</pre><div class="ans"></div></div><div class="pts">10</div></div>
+  <div class="q"><div class="n">14</div><div><b>Money guard:</b> In <b>Cost Management → Budgets</b>, create a monthly budget with an alert at <b>80%</b>. Why set the alert before 100%?<div class="ans"></div></div><div class="pts">5</div></div>
+  <div class="q"><div class="n">15</div><div><b>Clean up:</b> Delete the resource group. Why is this the most important step of any cloud demo?<div class="ans"></div></div><div class="pts">5</div></div>
+
+  <h3>Reflection (no points, but the best answer gets +20)</h3>
+  <p>Dynatrace uses <b>DQL</b>, Azure uses <b>KQL</b>. What's one thing you could find faster with a query than by clicking through screens?</p>
+  <div class="line"></div><div class="line"></div>
+
+  <div class="secret" style="margin-top:6mm;font-size:8.5pt">Facilitator checklist: sign in to Dynatrace and Azure before the session · pre-create the web app the day before · with 120 phones, run the app on the Basic B1 plan for the day (the Free F1 plan has a daily CPU quota and can stop mid-session) · show a QR code for the web app URL · delete <code>rg-chaicart-demo</code> afterwards.</div>
+</div>
+</body>
+</html>

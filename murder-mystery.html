@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Murder Mystery Pack – Who Killed Checkout?</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/print.css">
+<style>
+  .stamp { display: inline-block; border: 1px solid var(--clay-d); color: var(--clay-d); border-radius: 99px; padding: 1mm 4mm; font-weight: 600; font-size: 8pt; letter-spacing: .14em; }
+  .charts { display: grid; grid-template-columns: 1fr 1fr; gap: 3mm; }
+  .chart { border: 1px solid var(--line); background: #fff; border-radius: 2.5mm; padding: 2.5mm; }
+  .chart h4 { margin: 0 0 1mm; font-size: 8.8pt; font-weight: 600; color: var(--ink); }
+  .chart svg { width: 100%; height: auto; display: block; }
+  pre.logs { font-family: var(--mono); font-size: 7.4pt; line-height: 1.55; background: #262624; color: #EDE9DE; padding: 3.5mm; border-radius: 2.5mm; white-space: pre-wrap; }
+  pre.logs .e { color: #F0A08A; } pre.logs .w { color: #E6C58F; } pre.logs .i { color: #A7A398; }
+  .trace { border: 1px solid var(--line); background: #fff; border-radius: 2.5mm; padding: 2.5mm 3.5mm; margin-bottom: 3mm; }
+  .trace h4 { margin: 0 0 1.5mm; font-size: 9.3pt; font-weight: 600; }
+  .span { display: grid; grid-template-columns: 58mm 1fr 20mm; align-items: center; font-size: 7.8pt; margin: .9mm 0; }
+  .span .bar-wrap { position: relative; height: 3.6mm; background: var(--ivory-2); border-radius: 1mm; }
+  .span .bar { position: absolute; top: 0; bottom: 0; background: #6A9BCC; border-radius: 1mm; }
+  .span .bar.err { background: #B0413E; }
+  .span .bar.wait { background: repeating-linear-gradient(45deg, #D97757, #D97757 1.5mm, #F5E4DB 1.5mm, #F5E4DB 3mm); }
+  .span .dur { text-align: right; font-family: var(--mono); }
+  .suspects { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3mm; }
+  .suspect { border: 1px solid var(--line); background: #fff; border-radius: 2.5mm; padding: 3.5mm; }
+  .suspect .face { display: none; }
+  .suspect b { font-family: var(--serif); font-weight: 500; font-size: 12pt; }
+  .suspect small { color: var(--muted); }
+  .suspect p { font-family: var(--serif); font-style: italic; }
+  .witness { border-left: 2px solid var(--clay); padding: 1.5mm 4mm; margin: 2.5mm 0; background: #fff; }
+  .form td { height: 16mm; }
+  .solution { outline: 1px solid var(--clay); }
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <b>Murder Mystery Pack</b>
+  <button onclick="window.print()">Print</button>
+  <label><input type="checkbox" id="sol"> Include facilitator solution page</label>
+  <span class="hint">Print 24 sets without the solution, one per team, and seal each in an envelope. Print the solution page 5 times: one for you and one per region captain.</span>
+  <a href="index.html">← Hub</a>
+</div>
+
+<!-- Case brief -->
+<div class="page">
+  <span class="stamp">CONFIDENTIAL · TEAM EVIDENCE PACK</span>
+  <h1 style="margin-top:5mm">Who Killed Checkout?</h1>
+  <p class="sub">ChaiCart Incident INC-0001 · Launch Day</p>
+  <div class="box">
+    <p><b>09:00</b> — ChaiCart launched in 5 cities. A push notification went to 2.1 million users.</p>
+    <p><b>09:03</b> — Checkout success rate crashed from <b>99%</b> to <b>38%</b>. Customers see “Payment stuck on spinner…” for 30 seconds, then an error.</p>
+    <p><b>09:10</b> — The CEO is drafting an angry tweet. You have <b>25 minutes</b> to find the killer before it's posted.</p>
+  </div>
+  <h3>Your evidence</h3>
+  <table>
+    <tr><th>Exhibit</th><th>Contents</th></tr>
+    <tr><td>A</td><td>Metrics dashboard (08:45 – 09:15)</td></tr>
+    <tr><td>B</td><td>Logs from all services</td></tr>
+    <tr><td>C</td><td>Three distributed traces</td></tr>
+    <tr><td>D</td><td>Change log &amp; tickets</td></tr>
+    <tr><td>E</td><td>Witness statements</td></tr>
+    <tr><td>F</td><td>Bonus: a code snippet (for the brave)</td></tr>
+    <tr><td>—</td><td>Accusation Form (hand this in!)</td></tr>
+  </table>
+  <h3>ChaiCart's checkout path</h3>
+  <p class="mono" style="font-size:9pt">app → checkout-service → cart-service<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↳ payment-service → orders-db (PostgreSQL) + PayFast gateway (external)<br>
+  Also running: redis cache (menus &amp; carts), log-server (collects logs)</p>
+
+  <h3>The suspects</h3>
+  <div class="suspects">
+    <div class="suspect"><div class="face">🗄️</div><b>Postgres Pete</b><br><small>orders database</small><p><i>“I was just sitting there. Nobody even talked to me.”</i></p></div>
+    <div class="suspect"><div class="face">🚀</div><b>Deploy Dave</b><br><small>payment-service v2.3.1</small><p><i>“Tiny config tweak. FinOps approved it!”</i></p></div>
+    <div class="suspect"><div class="face">💳</div><b>PayFast Priya</b><br><small>external payment gateway</small><p><i>“My status page is green.”</i></p></div>
+    <div class="suspect"><div class="face">💾</div><b>Disk-Full Dinesh</b><br><small>log-server disk at 97%</small><p><i>“I've been this full for two days. Nobody cares.”</i></p></div>
+    <div class="suspect"><div class="face">⚡</div><b>Redis Rani</b><br><small>cache</small><p><i>“Hit ratio 94%, same as always.”</i></p></div>
+    <div class="suspect"><div class="face">📈</div><b>Traffic Tara</b><br><small>launch surge, 3×</small><p><i>“You planned for 5×. Don't blame me.”</i></p></div>
+  </div>
+</div>
+
+<!-- Exhibit A -->
+<div class="page">
+  <h1>Exhibit A — Metrics Dashboard</h1>
+  <p class="sub">All charts: 08:45 → 09:15, one point per minute. Dashed line = 09:00 launch push notification.</p>
+  <div class="charts" id="charts"></div>
+</div>
+
+<!-- Exhibit B -->
+<div class="page">
+  <h1>Exhibit B — Logs</h1>
+  <p class="sub">Collected from all services. Sorted by time. Not everything here is relevant!</p>
+<pre class="logs"><span class="i">[2 days ago]
+18:02:11 INFO  [payment-service] Starting payment-service v2.3.0 (build 51d0e2c)
+18:02:12 INFO  [payment-service] HikariPool-1 - configuration: maximumPoolSize=50 connectionTimeout=30000
+18:40:03 WARN  [log-server] Disk usage at 96% on /var/log (threshold 95%)</span>
+
+<span class="i">[Launch day]</span>
+08:45:00 INFO  [redis] Keyspace hits=94.2% evicted_keys=0
+08:50:14 INFO  [checkout-service] POST /api/checkout 200 (312 ms) trace=a1f3…
+08:55:40 WARN  [log-server] Disk usage at 97% on /var/log (threshold 95%)
+08:58:02 INFO  [payment-service] Starting payment-service v2.3.1 (build 7f3c9a1)
+08:58:03 INFO  [payment-service] HikariPool-1 - configuration: maximumPoolSize=5 connectionTimeout=30000
+08:58:05 INFO  [payment-service] HikariPool-1 - Start completed.
+08:58:30 INFO  [orders-db] connection closed: user=payment_svc (x45)
+09:00:00 INFO  [notification-service] Campaign LAUNCH sent to 2,104,332 devices
+09:00:41 INFO  [checkout-service] POST /api/checkout 200 (298 ms)
+09:01:52 WARN  [payment-service] HikariPool-1 - Pool stats (total=5, active=5, idle=0, waiting=31)
+09:02:13 WARN  [payment-service] HikariPool-1 - Pool stats (total=5, active=5, idle=0, waiting=87)
+<span class="e">09:02:43 ERROR [payment-service] HikariPool-1 - Connection is not available, request timed out after 30000ms.</span>
+<span class="e">09:02:43 ERROR [checkout-service] POST /api/checkout failed: 504 Gateway Timeout from payment-service (30012 ms)</span>
+09:02:44 INFO  [redis] Keyspace hits=94.1% evicted_keys=0
+09:02:55 WARN  [log-server] Disk usage at 97% on /var/log (threshold 95%)
+09:03:10 INFO  [orders-db] checkpoint complete: wrote 312 buffers (0.4%); active connections=5
+<span class="e">09:03:12 ERROR [payment-service] HikariPool-1 - Connection is not available, request timed out after 30000ms.</span>
+09:03:14 INFO  [payfast-client] Gateway health check OK (latency 204 ms)
+<span class="w">09:03:30 WARN  [frontend] Client error rate spike: "Payment stuck on spinner" x 1,284</span>
+09:03:41 INFO  [checkout-service] POST /api/checkout 200 (18,902 ms)
+<span class="e">09:04:02 ERROR [payment-service] HikariPool-1 - Connection is not available, request timed out after 30000ms.</span>
+09:04:05 INFO  [orders-db] LOG: duration: 11.8 ms  statement: INSERT INTO payments …
+09:04:20 INFO  [cart-service] GET /api/cart 200 (17 ms)
+<span class="w">09:05:00 WARN  [payment-service] HikariPool-1 - Pool stats (total=5, active=5, idle=0, waiting=214)</span></pre>
+</div>
+
+<!-- Exhibit C -->
+<div class="page">
+  <h1>Exhibit C — Distributed Traces</h1>
+  <p class="sub">Each bar is a span. Bar length is proportional to duration within that trace. Striped = waiting.</p>
+  <div id="traces"></div>
+</div>
+
+<!-- Exhibit D + E -->
+<div class="page">
+  <h1>Exhibit D — Change Log &amp; Tickets</h1>
+  <table>
+    <tr><th>When</th><th>What</th><th>Details</th></tr>
+    <tr><td>2 days ago 18:40</td><td>Alert</td><td>OPS-311 “log-server disk &gt; 95%” — acknowledged, “clean old logs after launch”.</td></tr>
+    <tr><td>Yesterday 18:00</td><td>Deploy</td><td>frontend v5.0 — new launch banner &amp; animations. Load tested: yes.</td></tr>
+    <tr><td>Today 08:30</td><td>Config</td><td>redis — no change, health check only.</td></tr>
+    <tr><td><b>Today 08:58</b></td><td><b>Deploy</b></td><td><b>payment-service v2.3.1</b> — FINOPS-482 “Right-size DB tier: reduce connection pool to lower DB cost”. Reviewer: cost-bot (approved). Load test: <i>skipped — launch day rush</i>. Rollout: 100% at once.</td></tr>
+    <tr><td>Today 09:00</td><td>Marketing</td><td>Launch push notification to 2.1M users. Expected traffic: up to 5× normal.</td></tr>
+  </table>
+
+  <h1 style="margin-top:8mm">Exhibit E — Witness Statements</h1>
+  <div class="witness"><b>Meera, Support Lead:</b> “From about 09:03 we got hundreds of tickets: ‘Payment stuck on spinner, then fails.’ Nobody complained about menus or carts being slow.”</div>
+  <div class="witness"><b>Arjun, DBA:</b> “The database is bored! CPU under 30%. Actually I saw <i>fewer</i> connections than usual this morning — I thought it was a quiet day.”</div>
+  <div class="witness"><b>Kabir, On-call SRE:</b> “My pager went off for disk on the log server… but that alert has been firing for two days, so I muted it.”</div>
+  <div class="witness"><b>Tanya, Head of Marketing:</b> “We sent the push at 09:00 sharp. We told engineering to expect 5×. We only got 3×! This is not on us.”</div>
+  <div class="witness"><b>Rohan, FinOps Analyst:</b> “Great news — we're on track to save 22% on the database bill this month. Engineering made some tuning changes for us.”</div>
+  <div class="witness"><b>PayFast Account Manager:</b> “Our latency is completely normal. Honestly, we expected many more transactions from your launch.”</div>
+</div>
+
+<!-- Exhibit F + Accusation form -->
+<div class="page">
+  <h1>Exhibit F — Bonus: Code Snippet</h1>
+  <p class="sub">From payment-service. For teams who want the extra credit (+25): what makes the problem worse?</p>
+<pre class="logs">@Transactional   // opens a DB connection for the whole method
+public PaymentResult pay(Order order) {
+    paymentsRepo.insertPending(order);            // ~12 ms on the DB
+    GatewayResponse r = payFast.charge(order);    // ~205 ms external HTTP call
+    paymentsRepo.markResult(order, r.status());   // ~5 ms on the DB
+    return PaymentResult.from(r);
+}</pre>
+
+  <h1 style="margin-top:8mm">Accusation Form</h1>
+  <p>Team name: ______________________ &nbsp; Time handed in: ________</p>
+  <table class="form">
+    <tr><th style="width:45mm">The killer (who)</th><td></td></tr>
+    <tr><th>The weapon (how exactly?)</th><td></td></tr>
+    <tr><th>Accomplice (if any)</th><td></td></tr>
+    <tr><th>Evidence – a metric</th><td></td></tr>
+    <tr><th>Evidence – a log line</th><td></td></tr>
+    <tr><th>Evidence – a trace</th><td></td></tr>
+    <tr><th>Why the others are innocent</th><td></td></tr>
+    <tr><th>Immediate fix</th><td></td></tr>
+    <tr><th>How to prevent it next time</th><td></td></tr>
+  </table>
+</div>
+
+<!-- Solution -->
+<div class="page solution no-print" id="solution" style="display:none">
+  <div class="secret">FACILITATOR ONLY — DO NOT PUT IN ENVELOPES</div>
+  <h1 style="margin-top:4mm">Solution: Who Killed Checkout?</h1>
+  <table>
+    <tr><th style="width:40mm">Killer</th><td><b>Deploy Dave</b> — payment-service v2.3.1 (08:58) reduced <code>maximumPoolSize</code> from 50 to 5 (FINOPS-482). No load test and 100% rollout.</td></tr>
+    <tr><th>Weapon</th><td><b>DB connection pool exhaustion.</b> With 3× traffic, only 5 connections exist. Each payment holds a connection for ~220 ms (including the PayFast call, see Exhibit F), so requests queue. After 30 s, <code>Connection is not available, request timed out after 30000ms</code> → checkout 504.</td></tr>
+    <tr><th>Accomplice</th><td><b>Traffic Tara</b> — the 09:00 surge was the trigger. With pre-launch traffic, 5 connections were barely enough, so nothing failed between 08:58 and 09:01.</td></tr>
+    <tr><th>Key evidence</th><td>
+      <b>Metric:</b> DB active connections drop 42 → 5 at 08:59; DB CPU flat ~28%; payment p95 jumps to 30,000 ms; PayFast calls cap at ~450/min while traffic is ~1,200/min (throughput ceiling = saturation).<br>
+      <b>Logs:</b> <code>maximumPoolSize=5</code> (was 50 two days ago); <code>Pool stats … idle=0, waiting=87</code>; the timeout error.<br>
+      <b>Traces:</b> failed trace — 30,000 ms in <code>HikariPool.getConnection</code>, no DB or PayFast span; slow success — 18.4 s waiting, then normal DB &amp; PayFast times.</td></tr>
+    <tr><th>Innocent</th><td>
+      <b>Postgres Pete:</b> low CPU, fast queries (11.8 ms) — starved, not overloaded.<br>
+      <b>PayFast Priya:</b> latency flat ~205 ms; failed traces never reach her.<br>
+      <b>Redis Rani:</b> hit ratio flat 94%, carts fast (17 ms).<br>
+      <b>Disk-Full Dinesh:</b> 97% for two days — a real issue, but an unrelated red herring (alert fatigue!).</td></tr>
+    <tr><th>Fix</th><td>Roll back to v2.3.0 (or set pool back to 50) — recovery within minutes.</td></tr>
+    <tr><th>Prevention</th><td>Load/performance test in CI · canary rollout with automatic rollback on SLO breach · alert on pool saturation (waiting &gt; 0) · deployment events on dashboards · cost changes need reliability review · don't hold DB transactions across external calls · fix noisy alerts to avoid alert fatigue.</td></tr>
+    <tr><th>Scoring</th><td>Killer +200 · Weapon +100 · Accomplice +50 · Fix + prevention +50 · Exhibit F insight +25 · First correct team +100 · Wrong killer −50</td></tr>
+  </table>
+</div>
+
+<script>
+// Deterministic noise so printed copies are identical
+let seed = 42;
+const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+const N = 31; // 08:45 .. 09:15
+const label = k => { const m = 45 + k; return m < 60 ? `08:${String(m).padStart(2, '0')}` : `09:${String(m - 60).padStart(2, '0')}`; };
+const noise = (v, pct) => v * (1 + (rnd() - .5) * pct);
+const series = (fn) => Array.from({ length: N }, (_, k) => fn(k));
+// k=13 → 08:58 deploy, k=15 → 09:00 launch, k=17 → 09:02 failures
+const charts = [
+  { t: 'Checkout success rate (%)', c: '#d63447', d: series(k => k < 17 ? noise(99.2, .01) : k === 17 ? 71 : noise(39, .12)), min: 0, max: 100 },
+  { t: 'Checkout requests / min', c: '#1f7fd6', d: series(k => k < 15 ? noise(400, .08) : noise(1200, .06)), min: 0, max: 1500 },
+  { t: 'payment-service response time p95 (ms)', c: '#e8821f', d: series(k => k < 16 ? noise(185, .1) : k === 16 ? 2400 : noise(30000, .01)), min: 0, max: 32000 },
+  { t: 'orders-db CPU (%)', c: '#1e9e57', d: series(() => noise(28, .2)), min: 0, max: 100 },
+  { t: 'orders-db active connections', c: '#7d3cc9', d: series(k => k < 14 ? Math.round(noise(42, .1)) : 5), min: 0, max: 60 },
+  { t: 'PayFast gateway calls / min', c: '#5b6478', d: series(k => k < 15 ? noise(395, .08) : k === 15 ? 470 : noise(452, .03)), min: 0, max: 1500 },
+  { t: 'PayFast gateway latency (ms)', c: '#d64f84', d: series(() => noise(205, .06)), min: 0, max: 1000 },
+  { t: 'redis cache hit ratio (%)', c: '#e0b400', d: series(() => noise(94, .01)), min: 0, max: 100 },
+  { t: 'log-server disk used (%)', c: '#333', d: series(() => noise(97, .005)), min: 0, max: 100 },
+  { t: 'cart-service response time p95 (ms)', c: '#1f7fd6', d: series(() => noise(19, .2)), min: 0, max: 200 },
+];
+
+const W = 320, H = 120, L = 34, B = 16;
+const holder = document.getElementById('charts');
+charts.forEach(ch => {
+  const x = k => L + (k / (N - 1)) * (W - L - 6);
+  const y = v => (H - B) - ((v - ch.min) / (ch.max - ch.min)) * (H - B - 6);
+  const pts = ch.d.map((v, k) => `${x(k).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
+  const ticks = [0, 5, 10, 15, 20, 25, 30].map(k => `<text x="${x(k)}" y="${H - 3}" font-size="7.5" text-anchor="middle" fill="#73726C">${label(k)}</text>`).join('');
+  const grid = [0, .5, 1].map(f => {
+    const v = ch.min + f * (ch.max - ch.min);
+    return `<line x1="${L}" x2="${W - 6}" y1="${y(v)}" y2="${y(v)}" stroke="#E8E4D8"/><text x="${L - 3}" y="${y(v) + 3}" font-size="7.5" text-anchor="end" fill="#73726C">${Math.round(v).toLocaleString()}</text>`;
+  }).join('');
+  const area = `${x(0)},${H - B} ${pts} ${x(N - 1)},${H - B}`;
+  const div = document.createElement('div');
+  div.className = 'chart';
+  div.innerHTML = `<h4>${ch.t}</h4><svg viewBox="0 0 ${W} ${H}">${grid}
+    <line x1="${x(15)}" x2="${x(15)}" y1="4" y2="${H - B}" stroke="#141413" stroke-opacity=".35" stroke-dasharray="2,3"/>
+    <text x="${x(15) + 3}" y="10" font-size="7" fill="#73726C">launch</text>
+    <polygon fill="#D97757" fill-opacity=".1" points="${area}"/>
+    <polyline fill="none" stroke="#D97757" stroke-width="1.6" stroke-linejoin="round" points="${pts}"/>${ticks}</svg>`;
+  holder.appendChild(div);
+});
+
+const traces = [
+  { h: 'Trace a1f3… · 08:50:14 · POST /api/checkout · 200 OK · 312 ms', total: 312, spans: [
+    ['checkout-service  POST /api/checkout', 0, 312], ['  cart-service  GET /api/cart', 4, 18], ['  payment-service  POST /pay', 26, 280],
+    ['    HikariPool.getConnection', 27, 1], ['    orders-db  INSERT payments', 29, 12], ['    PayFast  POST /charge', 42, 205], ['    orders-db  UPDATE payments', 250, 5] ] },
+  { h: 'Trace 7c20… · 09:03:41 · POST /api/checkout · 200 OK (slow) · 18,902 ms', total: 18902, spans: [
+    ['checkout-service  POST /api/checkout', 0, 18902], ['  cart-service  GET /api/cart', 3, 19], ['  payment-service  POST /pay', 25, 18870],
+    ['    HikariPool.getConnection', 26, 18410, 'wait'], ['    orders-db  INSERT payments', 18440, 12], ['    PayFast  POST /charge', 18455, 204], ['    orders-db  UPDATE payments', 18665, 5] ] },
+  { h: 'Trace e91b… · 09:03:12 · POST /api/checkout · 504 Gateway Timeout · 30,020 ms', total: 30020, spans: [
+    ['checkout-service  POST /api/checkout', 0, 30020, 'err'], ['  cart-service  GET /api/cart', 3, 19], ['  payment-service  POST /pay', 24, 30005, 'err'],
+    ['    HikariPool.getConnection  ⚠ SQLTransientConnectionException', 25, 30000, 'wait'] ] },
+];
+const th = document.getElementById('traces');
+traces.forEach(tr => {
+  const d = document.createElement('div');
+  d.className = 'trace';
+  d.innerHTML = `<h4>${tr.h}</h4>` + tr.spans.map(([n, s, dur, kind]) => {
+    const left = (s / tr.total) * 100, width = Math.max(.6, (dur / tr.total) * 100);
+    return `<div class="span"><span class="mono" style="white-space:pre">${n}</span><div class="bar-wrap"><div class="bar ${kind || ''}" style="left:${left}%;width:${width}%"></div></div><span class="dur">${dur.toLocaleString()} ms</span></div>`;
+  }).join('');
+  th.appendChild(d);
+});
+th.insertAdjacentHTML('beforeend', '<p class="sub">Tip: compare which spans exist in each trace — and which are missing.</p>');
+
+document.getElementById('sol').addEventListener('change', e => {
+  const s = document.getElementById('solution');
+  s.style.display = e.target.checked ? '' : 'none';
+  s.classList.toggle('no-print', !e.target.checked);
+});
+</script>
+</body>
+</html>

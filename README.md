@@ -1,0 +1,101 @@
+# ChaiCart Cloud Workshop
+
+A two-day, game-based workshop on **cloud computing and business systems** for engineering students. Participants become the founders of *ChaiCart*, a 10-minute chai delivery startup. On Day 1 they build it in the cloud; on Day 2 they keep it alive through outages, bill shocks and a murder mystery.
+
+**Live site:** https://theharithsa.github.io/chaicart-cloud-workshop/
+
+Everything is plain HTML, CSS and JavaScript. No build step, no dependencies, and every page works offline.
+
+---
+
+## At a glance
+
+| | |
+|---|---|
+| **Audience** | Engineering students (designed for 120 students from 5th and 7th semester) |
+| **Format** | 24 teams of 5, grouped into 4 regions of 6 teams |
+| **Duration** | 2 days, 09:30–17:00 |
+| **Style** | Games, role-play and live demos rather than lectures |
+| **Tools shown live** | Microsoft Azure (free tier and Basic plan) and Dynatrace |
+
+## What's inside
+
+### Present
+
+| File | Purpose |
+|---|---|
+| [`index.html`](index.html) | Hub page linking every resource, with run-of-show and supplies |
+| [`facilitator-guide.html`](facilitator-guide.html) | Printable guide: setup, printing quantities, region captains, scoring, and a step-by-step script for every stage |
+| [`day1-slides.html`](day1-slides.html) | Day 1 deck (44 slides): *Build ChaiCart* |
+| [`day2-slides.html`](day2-slides.html) | Day 2 deck (49 slides): *Keep ChaiCart Alive* |
+| [`leaderboard.html`](leaderboard.html) | Live Cloud Credits scoring for 24 teams in 4 regions, with batch round entry and presentation mode |
+| [`quiz.html`](quiz.html) | Recap quizzes for both days with timer, reveal and answer key |
+
+### Print
+
+| File | Purpose |
+|---|---|
+| [`cards.html`](cards.html) | Table tents and all card decks: timeline, service models, scenarios, Shark Tank, architecture, kitchen, bingo, error budget, bill shock, business systems, career tarot |
+| [`murder-mystery.html`](murder-mystery.html) | *Who Killed Checkout?* evidence pack: metrics, logs, traces, change log, witnesses, accusation form and solution |
+| [`treasure-hunt.html`](treasure-hunt.html) | Hands-on observability worksheet for Dynatrace and Azure |
+| [`gallery-posters.html`](gallery-posters.html) | Six industry case-study posters |
+| [`team-sheet-and-surveys.html`](team-sheet-and-surveys.html) | Team sheet, postmortem template, quiz answer sheets, 90-day plan, pre- and post-surveys |
+| [`cheat-sheet.html`](cheat-sheet.html) | Two-page take-home summary |
+| [`certificate.html`](certificate.html) | Participation and award certificates with bulk name entry |
+
+## Agenda
+
+**Day 1 — Cloud Computing Fundamentals and Industry Practices**
+Introduction and evolution · IaaS, PaaS, SaaS · public, private, hybrid and multi-cloud · major platforms · virtualization and containers · cloud architecture · cloud-native and microservices · industry use cases · introduction to observability
+
+**Day 2 — Cloud Operations, Observability and Business Systems**
+Performance and reliability · monitoring, observability and APM · logs, metrics and traces · SRE · DevOps and CI/CD · security, scalability and cost · business systems in the cloud · the role of cloud in digital business · trends, careers and skills · case studies and Q&A
+
+## Using the materials
+
+### Presenting
+
+Open `index.html` (or the live site) in Chrome, Edge or Firefox.
+
+| Key | Action |
+|---|---|
+| `→` / `Space` | Next item or slide |
+| `←` | Back |
+| `F` | Full screen |
+| `Home` / `End` | First / last slide |
+| `P` | Presentation mode (leaderboard) |
+| `R` / `T` | Reveal answer / start timer (quiz) |
+
+Add `#N` to a deck's address to jump to slide N, for example `day2-slides.html#11`.
+
+The leaderboard stores scores in the browser's local storage. Run it from the same laptop and browser for both days, and use **Export CSV** as a backup.
+
+### Printing
+
+Print from Chrome or Edge on **A4, 100% scale, with "Background graphics" enabled**. Each card deck states exactly how many copies to print for 24 teams; the facilitator guide has the full printing table.
+
+### Running locally
+
+No server is required: open `index.html` directly. To serve it locally instead:
+
+```bash
+python -m http.server 8000
+# then open http://localhost:8000
+```
+
+## Customising
+
+| To change | Edit |
+|---|---|
+| Team and region names | `REGIONS` in `leaderboard.html` and the `regions` list in the table-tent block of `cards.html` |
+| Card content | The `decks` array in `cards.html` |
+| Quiz questions | The `sets` object in `quiz.html` |
+| Colours and typography | `assets/deck.css` (slides) and `assets/print.css` (printables) |
+
+## Deployment
+
+The site deploys to GitHub Pages automatically on every push to `main` through [`.github/workflows/pages.yml`](.github/workflows/pages.yml). In the repository settings, **Pages → Build and deployment → Source** must be set to **GitHub Actions**.
+
+## License
+
+Released under the [MIT License](LICENSE).

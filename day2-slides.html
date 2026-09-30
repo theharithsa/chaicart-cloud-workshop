@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Day 2 – Keep ChaiCart Alive | Cloud Operations, Observability &amp; Business Systems</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/deck.css">
+</head>
+<body>
+<main class="deck">
+
+<!-- 1 -->
+<section class="slide title">
+  <div class="kicker">Cloud Computing &amp; Business Systems Workshop · Day 2</div>
+  <h1 style="font-size:3.4em">Keep <span class="accent">ChaiCart</span> Alive 🔥☕</h1>
+  <p style="font-size:1.3em" class="muted">Cloud Operations, Observability &amp; Business Systems</p>
+</section>
+
+<!-- 2 -->
+<section class="slide">
+  <div class="kicker">Warm-up · 3 min</div>
+  <h2>Yesterday in one word</h2>
+  <p>One team from each region shouts <b>one word</b> that sums up Day 1. Then, the standings.</p>
+  <p style="margin-top:1em"><a href="leaderboard.html" target="_blank">Open leaderboard</a></p>
+  <div class="card c-chai frag" style="margin-top:1em">
+    <h3>Today's roles matter</h3>
+    <p><b>SRE</b> owns the error budget · <b>CFO</b> owns the cloud bill · <b>CTO</b> defends the architecture · <b>COO</b> keeps time and hands in forms · <b>CEO</b> pitches at Demo Day</p>
+  </div>
+</section>
+
+<!-- 3 -->
+<section class="slide section">
+  <div class="breaking">● BREAKING NEWS · 09:00 AM</div>
+  <h1 style="margin-top:.4em">ChaiCart is <span class="green">LIVE</span> in 5 cities! 🎉</h1>
+  <p class="frag" style="font-size:1.3em">Push notification sent to 2.1 million users…</p>
+  <p class="frag red" style="font-size:1.6em"><b>09:04 — “Payment stuck on spinner” 😡😡😡</b></p>
+</section>
+
+<!-- 4 -->
+<section class="slide section">
+  <div class="num">CHAPTER 1</div>
+  <h1>Performance &amp;<br><span class="accent">Reliability</span></h1>
+  <p class="muted">Users don't care about your CPU. They care: “Is it fast? Does it work?”</p>
+</section>
+
+<!-- 5 -->
+<section class="slide">
+  <div class="kicker">What users actually feel</div>
+  <h2>Four things that decide if they come back</h2>
+  <div class="grid-4 grow" style="align-content:center">
+    <div class="card c-chai"><div class="emoji">🐢</div><h3>Latency</h3><p>How long did it take? (Look at p95/p99, not just average.)</p></div>
+    <div class="card c-green"><div class="emoji">✅</div><h3>Availability</h3><p>Could they use it at all?</p></div>
+    <div class="card c-red"><div class="emoji">💥</div><h3>Errors</h3><p>Did the action fail?</p></div>
+    <div class="card"><div class="emoji">🚦</div><h3>Throughput</h3><p>How many orders per minute can we handle?</p></div>
+  </div>
+  <p class="frag"><b>Why p95, not average?</b> If 95 people wait 0.2s and 5 people wait 30s, the average looks “fine” — those 5 are tweeting about you. 🐦</p>
+</section>
+
+<!-- 6 -->
+<section class="slide">
+  <span class="tag">GAME · Guess the Downtime ⏳ · closest team +20 each round</span>
+  <h2>How much downtime per year is allowed?</h2>
+  <table class="t" style="font-size:1em">
+    <tr><th>Availability</th><th>Nickname</th><th>Allowed downtime / year</th><th>per month</th></tr>
+    <tr><td>99%</td><td>“two nines”</td><td class="frag accent">3.65 days</td><td class="frag">~7.3 hours</td></tr>
+    <tr><td>99.9%</td><td>“three nines”</td><td class="frag accent">8.76 hours</td><td class="frag">~43.8 minutes</td></tr>
+    <tr><td>99.99%</td><td>“four nines”</td><td class="frag accent">52.6 minutes</td><td class="frag">~4.4 minutes</td></tr>
+    <tr><td>99.999%</td><td>“five nines”</td><td class="frag accent">5.26 minutes</td><td class="frag">~26 seconds</td></tr>
+  </table>
+  <p class="frag">Each extra nine costs <b>roughly 10× more</b> effort &amp; money. Does a chai app need five nines? Does UPI?</p>
+</section>
+
+<!-- 7 -->
+<section class="slide">
+  <div class="kicker">Reliability patterns</div>
+  <h2>How reliable systems are built</h2>
+  <div class="grid-3">
+    <div class="card c-green"><h3>🧬 Redundancy</h3><p>No single point of failure. Multiple instances across availability zones.</p></div>
+    <div class="card"><h3>⏱️ Timeouts</h3><p>Never wait forever. Fail fast, free the resources.</p></div>
+    <div class="card c-chai"><h3>🔁 Retries with backoff</h3><p>Try again — but slower each time, so you don't DDoS yourself.</p></div>
+    <div class="card c-red"><h3>🔌 Circuit breaker</h3><p>If payment gateway is down, stop calling it for a while.</p></div>
+    <div class="card c-purple"><h3>🪂 Graceful degradation</h3><p>Recommendations broken? Still sell chai — just hide the “You may also like”.</p></div>
+    <div class="card c-yellow"><h3>🧪 Chaos engineering</h3><p>Break things on purpose (Netflix's Chaos Monkey) before they break on their own.</p></div>
+  </div>
+</section>
+
+<!-- 8 -->
+<section class="slide section">
+  <div class="num">CHAPTER 2</div>
+  <h1>Monitoring, Observability<br><span class="accent">&amp; APM</span></h1>
+</section>
+
+<!-- 9 -->
+<section class="slide">
+  <div class="kicker">Not the same thing</div>
+  <h2>Monitoring vs Observability</h2>
+  <table class="t" style="font-size:.95em">
+    <tr><th></th><th>Monitoring</th><th>Observability</th></tr>
+    <tr><td>Question</td><td>“Is it broken?”</td><td>“<b>Why</b> is it broken?”</td></tr>
+    <tr><td>Handles</td><td>Known problems (known unknowns)</td><td>Surprises (unknown unknowns)</td></tr>
+    <tr><td>Approach</td><td>Predefined dashboards &amp; thresholds</td><td>Explore rich, connected telemetry</td></tr>
+    <tr><td>Analogy</td><td>Smoke alarm 🚨</td><td>Fire investigator 🕵️</td></tr>
+  </table>
+  <div class="card c-chai frag" style="margin-top:.6em">
+    <h3>APM — Application Performance Management/Monitoring</h3>
+    <p class="small">Service maps · response time &amp; failure rate per endpoint · code-level hotspots · database calls · Real User Monitoring (RUM) · synthetic checks · AI-assisted root cause. Tools: Dynatrace, Azure Application Insights, Datadog, New Relic, Grafana stack, Elastic…</p>
+  </div>
+</section>
+
+<!-- 10 -->
+<section class="slide">
+  <div class="kicker">What to watch</div>
+  <h2>The 4 Golden Signals (Google SRE)</h2>
+  <div class="grid-4">
+    <div class="card c-chai"><div class="emoji">⏱️</div><h3>Latency</h3><p>Time to serve a request</p></div>
+    <div class="card"><div class="emoji">🚗</div><h3>Traffic</h3><p>Demand: requests/sec, orders/min</p></div>
+    <div class="card c-red"><div class="emoji">❌</div><h3>Errors</h3><p>Rate of failed requests</p></div>
+    <div class="card c-yellow"><div class="emoji">🪣</div><h3>Saturation</h3><p>How “full” is it? CPU, memory, connection pools, queues</p></div>
+  </div>
+  <div class="grid-2 frag" style="margin-top:.6em">
+    <div class="card c-green"><h3>RED method — for services</h3><p><b>R</b>ate · <b>E</b>rrors · <b>D</b>uration</p></div>
+    <div class="card c-purple"><h3>USE method — for resources</h3><p><b>U</b>tilization · <b>S</b>aturation · <b>E</b>rrors</p></div>
+  </div>
+  <p class="frag accent center">💡 Remember “saturation” and “connection pools”… you'll need it in 2 minutes.</p>
+</section>
+
+<!-- 11 -->
+<section class="slide section">
+  <div class="kicker">🔪 Murder Mystery</div>
+  <h1 style="font-size:4em">Who Killed <span class="red">Checkout</span>?</h1>
+  <p style="font-size:1.3em" class="frag"><b>Open your envelopes. Now.</b> ✉️</p>
+</section>
+
+<!-- 12 -->
+<section class="slide">
+  <div class="kicker">The suspects</div>
+  <h2>Six suspects. One killer. Maybe an accomplice.</h2>
+  <div class="grid-3">
+    <div class="card c-green"><h3>🗄️ Postgres Pete</h3><p class="small">The orders database. <i>“I was just sitting there. Nobody even talked to me.”</i></p></div>
+    <div class="card c-chai"><h3>🚀 Deploy Dave</h3><p class="small">payment-service v2.3.1, deployed 08:58. <i>“Tiny config tweak. FinOps approved it!”</i></p></div>
+    <div class="card"><h3>💳 PayFast Priya</h3><p class="small">External payment gateway. <i>“My status page is green.”</i></p></div>
+    <div class="card c-yellow"><h3>💾 Disk-Full Dinesh</h3><p class="small">Log server at 97% disk. <i>“I've been this full for two days. Nobody cares.”</i></p></div>
+    <div class="card c-red"><h3>⚡ Redis Rani</h3><p class="small">The cache. <i>“Hit ratio 94%, same as always.”</i></p></div>
+    <div class="card c-purple"><h3>📈 Traffic Tara</h3><p class="small">Launch traffic surge, 3×. <i>“You planned for 5×. Don't blame me.”</i></p></div>
+  </div>
+</section>
+
+<!-- 13 -->
+<section class="slide">
+  <span class="tag red">INVESTIGATION · 25 min</span>
+  <h2>Rules of the investigation 🕵️</h2>
+  <div class="grid-2 grow">
+    <div>
+      <ul>
+        <li>Your envelope: <b>Exhibit A</b> Metrics · <b>B</b> Logs · <b>C</b> Traces · <b>D</b> Change log · <b>E</b> Witnesses</li>
+        <li>Fill the <b>Accusation Form</b>: killer, weapon, accomplice, evidence, fix</li>
+        <li>Evidence must cite at least <b>one metric, one log line and one trace</b></li>
+        <li>The COO hands the form to your <b>region captain</b>, who writes the time on it. Speed counts</li>
+      </ul>
+      <div class="timer" data-timer="1500"></div>
+    </div>
+    <div class="card c-yellow">
+      <h3>Scoring 💰</h3>
+      <ul class="small">
+        <li>Correct killer: <b class="green">+200</b></li>
+        <li>Correct weapon (mechanism): <b class="green">+100</b></li>
+        <li>Correct accomplice: <b class="green">+50</b></li>
+        <li>Good fix + prevention: <b class="green">+50</b></li>
+        <li>First correct team in the room: <b class="green">+100</b></li>
+        <li>Wrong killer accused: <b class="red">−50</b></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 14 -->
+<section class="slide">
+  <div class="kicker">The reveal 🎭</div>
+  <h2>Let's walk the evidence chain</h2>
+  <ol style="line-height:1.6">
+    <li class="frag">🟢 <b>Postgres Pete — innocent.</b> DB CPU flat at ~28%. His active connections <u>dropped</u> from ~42 to 5 at 08:59. He wasn't overloaded — he was <i>starved</i>.</li>
+    <li class="frag">🟢 <b>PayFast Priya — innocent.</b> Latency flat ~205 ms. Failed traces never even reach her. Calls to her <u>dropped</u>.</li>
+    <li class="frag">🟢 <b>Redis Rani &amp; Disk-Full Dinesh — innocent.</b> Flat for days. Classic red herrings (real issues, wrong incident).</li>
+    <li class="frag">🔴 <b>Deploy Dave — THE KILLER.</b> 08:58 deploy set <code>maximumPoolSize=5</code> (was 50) — ticket FINOPS-482 “reduce DB cost”, load test skipped.</li>
+    <li class="frag">🟠 <b>Traffic Tara — THE ACCOMPLICE.</b> 3× traffic at 09:00 exhausted 5 connections → requests wait 30 s → <code>Connection is not available</code> → checkout 504s.</li>
+  </ol>
+</section>
+
+<!-- 15 -->
+<section class="slide">
+  <div class="kicker">Lessons from the crime scene</div>
+  <h2>What real SREs take away</h2>
+  <div class="grid-2">
+    <div class="card c-chai frag"><h3>🕐 “What changed?” is question #1</h3><p class="small">Most incidents follow a change. Put deployment events on your dashboards.</p></div>
+    <div class="card frag"><h3>🔗 Correlate signals</h3><p class="small">Metric told us <i>when</i>, logs told us <i>what</i>, trace told us <i>where</i>. Alone, each was ambiguous.</p></div>
+    <div class="card c-red frag"><h3>🪣 Saturation hides in odd places</h3><p class="small">Not CPU, not memory — a <b>connection pool</b>. Watch pools, queues, threads.</p></div>
+    <div class="card c-green frag"><h3>💰 Cost vs reliability is a trade-off</h3><p class="small">A “FinOps win” caused the outage. Cost changes need load tests &amp; canaries too.</p></div>
+  </div>
+  <p class="frag center">Fix: <b>roll back</b> now. Prevent: <b>load test in CI, canary deploys, SLO alerts on payment latency, pool-saturation alerts</b>.</p>
+</section>
+
+<!-- 16 -->
+<section class="slide section">
+  <div class="num">CHAPTER 3</div>
+  <h1>Logs, Metrics &amp;<br><span class="accent">Distributed Tracing</span></h1>
+</section>
+
+<!-- 17 -->
+<section class="slide">
+  <div class="kicker">The three pillars (and friends)</div>
+  <h2>What each signal looks like</h2>
+  <div class="grid-3">
+    <div class="card c-chai">
+      <h3>📈 Metric</h3>
+<pre>checkout.success_rate
+08:59  99.1%
+09:01  97.8%
+09:03  38.2%</pre>
+      <p class="small">Cheap, aggregated, great for alerts &amp; trends.</p>
+    </div>
+    <div class="card">
+      <h3>📓 Log</h3>
+<pre>09:02:43 ERROR [payment]
+HikariPool-1 - Connection
+is not available, request
+timed out after 30000ms</pre>
+      <p class="small">Rich detail about one event.</p>
+    </div>
+    <div class="card c-green">
+      <h3>🧵 Trace</h3>
+<pre>checkout   ███████████ 30.0s
+ ├ cart    ▏ 19ms
+ └ payment ██████████ 30.0s
+    └ getConnection ███ 30.0s</pre>
+      <p class="small">One request's journey across services.</p>
+    </div>
+  </div>
+  <p class="frag">Plus: <b>events</b> (deployments, config changes), <b>profiles</b> (code hotspots), <b>real-user data</b>. Standard for collecting them all: <b class="accent">OpenTelemetry</b> (CNCF).</p>
+</section>
+
+<!-- 18 -->
+<section class="slide">
+  <div class="kicker">How tracing works</div>
+  <h2>Remember the kitchen order ticket? 🎫</h2>
+  <div class="grid-2 grow">
+    <div>
+      <ul>
+        <li><b>Trace ID</b> = order ticket number, created at the front door</li>
+        <li><b>Span</b> = one station's work (start time, duration, status)</li>
+        <li><b>Context propagation</b> = passing the ticket number in each HTTP header (<code>traceparent</code>)</li>
+        <li>The tool stitches spans into a <b>waterfall</b></li>
+      </ul>
+    </div>
+    <div class="arch" style="flex-direction:column;align-items:stretch">
+      <div class="box">📱 App — trace <b>4bf92f…</b></div>
+      <div class="box" style="margin-left:1.5em">checkout-service · span 1</div>
+      <div class="box" style="margin-left:3em">cart-service · span 2</div>
+      <div class="box" style="margin-left:3em">payment-service · span 3</div>
+      <div class="box" style="margin-left:4.5em">orders-db · span 4</div>
+      <div class="box" style="margin-left:4.5em">PayFast API · span 5</div>
+    </div>
+  </div>
+</section>
+
+<!-- 19 -->
+<section class="slide">
+  <span class="tag blue">HANDS-ON · Observability Treasure Hunt 🗺️ · 35 min</span>
+  <h2>Hunt for clues in a real environment</h2>
+  <div class="grid-2 grow">
+    <div class="card">
+      <h3>Part A — Dynatrace</h3>
+      <ul class="small">
+        <li>Find the service with the highest failure rate</li>
+        <li>Open a failed trace — which span is slowest?</li>
+        <li>Open a Problem — what's the root cause?</li>
+        <li>Query ERROR logs with DQL</li>
+      </ul>
+    </div>
+    <div class="card c-chai">
+      <h3>Part B — Azure</h3>
+      <ul class="small">
+        <li>Deploy a free-tier web app</li>
+        <li>Turn on Application Insights</li>
+        <li>Watch Live Metrics while everyone hits the URL</li>
+        <li>Set a cost budget alert</li>
+      </ul>
+    </div>
+  </div>
+  <p>Worksheet: <a href="treasure-hunt.html" target="_blank">treasure-hunt.html</a> · <b>+10 per correct answer</b></p>
+</section>
+
+<!-- 20 -->
+<section class="slide">
+  <span class="tag blue">LIVE DEMO · DQL</span>
+  <h2>Asking questions of your telemetry</h2>
+<pre>// How many errors, and when did they spike?
+fetch logs
+| filter loglevel == "ERROR"
+| makeTimeseries errors = count(), interval: 5m
+
+// Which services are the slowest (p95)?
+fetch spans
+| summarize p95 = percentile(duration, 95), by: { service.name }
+| sort p95 desc
+| limit 10
+
+// Is any host saturated?
+timeseries cpu = avg(dt.host.cpu.usage), by: { dt.entity.host }</pre>
+  <p class="small muted">Observability = being able to ask <i>new</i> questions without shipping new code.</p>
+</section>
+
+<!-- 21 -->
+<section class="slide section">
+  <div class="num">CHAPTER 4</div>
+  <h1>Site Reliability<br><span class="accent">Engineering (SRE)</span></h1>
+</section>
+
+<!-- 22 -->
+<section class="slide">
+  <div class="kicker">What is SRE?</div>
+  <blockquote>“SRE is what happens when you ask a software engineer to design an operations team.”<br><span class="small muted">— Ben Treynor Sloss, Google</span></blockquote>
+  <div class="grid-4" style="margin-top:.6em">
+    <div class="card c-chai"><h3>🎯 SLOs &amp; error budgets</h3><p class="small">Reliability as a number, not a feeling</p></div>
+    <div class="card"><h3>🤖 Eliminate toil</h3><p class="small">Automate repetitive manual work</p></div>
+    <div class="card c-red"><h3>🚒 On-call &amp; incidents</h3><p class="small">Clear roles, runbooks, calm response</p></div>
+    <div class="card c-green"><h3>📝 Blameless postmortems</h3><p class="small">Learn from failure, don't punish it</p></div>
+  </div>
+</section>
+
+<!-- 23 -->
+<section class="slide">
+  <div class="kicker">The SLI → SLO → SLA ladder</div>
+  <h2>Making reliability measurable</h2>
+  <table class="t" style="font-size:.95em">
+    <tr><th></th><th>Meaning</th><th>ChaiCart example</th></tr>
+    <tr><td><b class="accent">SLI</b> Indicator</td><td>What you measure</td><td>% of checkout requests that succeed in &lt; 2 s</td></tr>
+    <tr><td><b class="accent">SLO</b> Objective</td><td>Your internal target</td><td>99.9% over 30 days</td></tr>
+    <tr><td><b class="accent">SLA</b> Agreement</td><td>Promise to customers, with penalties</td><td>99.5% or we refund delivery fees</td></tr>
+  </table>
+  <div class="card c-yellow frag" style="margin-top:.8em">
+    <h3>💸 Error budget = 100% − SLO</h3>
+    <p>99.9% per 30 days ⇒ <b>~43 minutes</b> of “allowed badness”. Budget left? <b class="green">Ship features fast.</b> Budget gone? <b class="red">Freeze &amp; fix reliability.</b></p>
+  </div>
+</section>
+
+<!-- 24 -->
+<section class="slide">
+  <span class="tag">GAME · Error Budget Poker 🃏 · 20 min</span>
+  <h2>Spend your 43 minutes wisely</h2>
+  <div class="grid-2 grow">
+    <div>
+      <ul>
+        <li>Your <b>SRE</b> holds the budget: <b>43 minutes</b></li>
+        <li>I reveal an <b>event card</b> — each team chooses A or B in 60 seconds</li>
+        <li>Some choices need a <b>dice roll</b> 🎲</li>
+        <li>Track minutes on your team sheet</li>
+      </ul>
+      <div class="timer" data-timer="60"></div>
+    </div>
+    <div class="card c-yellow">
+      <h3>End of the month</h3>
+      <ul class="small">
+        <li>Budget left: <b class="green">+3 credits per minute</b></li>
+        <li>Budget exhausted: <b class="red">−100 credits</b> &amp; feature freeze (no more “ship” choices)</li>
+        <li>Features shipped: credits as printed on the card</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 25 -->
+<section class="slide">
+  <span class="tag green">ROLE-PLAY · Blameless Postmortem · 12 min · Region best +40 · Overall best +75</span>
+  <h2>Write the postmortem for “Who Killed Checkout?”</h2>
+  <div class="grid-2 grow">
+    <div class="card">
+      <h3>Template</h3>
+      <ol class="small">
+        <li>Summary (2 lines)</li>
+        <li>Impact — users, money, minutes</li>
+        <li>Timeline (08:58 → recovery)</li>
+        <li>Root cause &amp; contributing factors</li>
+        <li>What went well 👍</li>
+        <li>Action items — owner + date</li>
+      </ol>
+    </div>
+    <div class="card c-red">
+      <h3>🚫 Blameless rules</h3>
+      <p class="small">Ask <b>“what”</b> and <b>“how”</b>, never <b>“who”</b>.</p>
+      <p class="small"><b class="red">Blame:</b> “Dave broke prod.”</p>
+      <p class="small"><b class="green">Blameless:</b> “Our pipeline allowed a config change to production without a load test.”</p>
+      <p class="small">People aren't the root cause — <b>systems that let mistakes reach production are</b>.</p>
+    </div>
+  </div>
+  <div class="timer" data-timer="720"></div>
+</section>
+
+<!-- 26 -->
+<section class="slide section">
+  <div class="num">CHAPTER 5</div>
+  <h1>DevOps, CI/CD &amp;<br><span class="accent">Cloud-Native Development</span></h1>
+</section>
+
+<!-- 27 -->
+<section class="slide">
+  <div class="kicker">The infinite loop ♾️</div>
+  <h2>DevOps = culture + automation + measurement</h2>
+  <div class="arch" style="margin:.6em 0">
+    <div class="box">📝 Plan</div><span class="arrow">➜</span><div class="box">💻 Code</div><span class="arrow">➜</span>
+    <div class="box">🔨 Build</div><span class="arrow">➜</span><div class="box">🧪 Test</div><span class="arrow">➜</span>
+    <div class="box">📦 Release</div><span class="arrow">➜</span><div class="box">🚀 Deploy</div><span class="arrow">➜</span>
+    <div class="box">⚙️ Operate</div><span class="arrow">➜</span><div class="box">🔭 Monitor</div><span class="arrow">↺</span>
+  </div>
+  <div class="grid-3">
+    <div class="card c-chai"><h3>CI — Continuous Integration</h3><p class="small">Every commit is built &amp; tested automatically.</p></div>
+    <div class="card"><h3>CD — Continuous Delivery/Deployment</h3><p class="small">Every green build can go (or goes) to production.</p></div>
+    <div class="card c-green"><h3>IaC — Infrastructure as Code</h3><p class="small">Servers defined in files (Bicep, Terraform) — versioned &amp; reviewed.</p></div>
+  </div>
+</section>
+
+<!-- 28 -->
+<section class="slide">
+  <span class="tag">GAME · Paper Plane Factory · 20 min · Most flying planes in each region +50</span>
+  <h2>Batch vs flow</h2>
+  <p class="small">Four stations: <b>fold → wings → decorate → QA test-flight</b>. The COO times and counts. Each team gets <b>15 half-sheets</b> per round.</p>
+  <div class="grid-2 grow">
+    <div>
+      <div class="card c-red frag"><h3>Round 1 — Waterfall (4 min)</h3><p class="small">Each station must finish a <b>batch of 3</b> before passing any on. QA flies them only at the end.</p></div>
+      <div class="card c-green frag" style="margin-top:.5em"><h3>Round 2 — Continuous flow (4 min)</h3><p class="small">Pass <b>one plane at a time</b>. Each station checks its own work. QA gives instant feedback.</p></div>
+    </div>
+    <div class="card c-yellow frag">
+      <h3>Measure</h3>
+      <ul class="small">
+        <li>Planes that fly 3+ metres (along your aisle)</li>
+        <li>Time until the <b>first</b> plane flew</li>
+        <li>Planes scrapped</li>
+        <li>Unfinished planes left on the table (work in progress)</li>
+      </ul>
+      <p class="small">Write the numbers on your team sheet.</p>
+    </div>
+  </div>
+  <div class="timer" data-timer="240"></div>
+</section>
+
+<!-- 29 -->
+<section class="slide">
+  <div class="kicker">Measuring DevOps</div>
+  <h2>The DORA metrics</h2>
+  <div class="grid-4">
+    <div class="card c-chai"><h3>🚀 Deployment frequency</h3><p class="small">How often you ship</p></div>
+    <div class="card"><h3>⏳ Lead time for changes</h3><p class="small">Commit → production</p></div>
+    <div class="card c-red"><h3>💥 Change failure rate</h3><p class="small">% of deploys causing incidents</p></div>
+    <div class="card c-green"><h3>🩹 Time to restore</h3><p class="small">How fast you recover</p></div>
+  </div>
+  <div class="card c-purple frag" style="margin-top:.8em">
+    <h3>Safer ways to deploy</h3>
+    <p class="small"><b>Blue-green</b>: two identical environments, flip traffic · <b>Canary</b>: 5% of users first, watch metrics, then 100% · <b>Feature flags</b>: ship code dark, turn on later · <b>Automatic rollback</b> when SLOs break</p>
+  </div>
+  <p class="frag accent">Deploy Dave would have been caught by a canary + an SLO alert. 😉</p>
+</section>
+
+<!-- 30 -->
+<section class="slide">
+  <span class="tag blue">LIVE DEMO · CI/CD to Azure</span>
+  <h2>From commit to cloud in minutes</h2>
+<pre># .github/workflows/deploy.yml  (GitHub Actions → Azure App Service)
+on: { push: { branches: [ main ] } }
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: npm ci &amp;&amp; npm test          # ← CI: fail fast
+      - uses: azure/webapps-deploy@v3     # ← CD: ship it
+        with:
+          app-name: chaicart-demo
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}</pre>
+  <p class="small">Show: push a change to the page title → pipeline turns green → refresh the site. Then push a failing test → pipeline blocks the deploy. 🛑</p>
+</section>
+
+<!-- 31 -->
+<section class="slide section">
+  <div class="num">CHAPTER 6</div>
+  <h1>Security, Scalability<br><span class="accent">&amp; Cost</span></h1>
+</section>
+
+<!-- 32 -->
+<section class="slide">
+  <div class="kicker">Shared responsibility model</div>
+  <h2>Provider secures <u>the</u> cloud. You secure what's <u>in</u> the cloud.</h2>
+  <table class="resp">
+    <tr><th></th><th>IaaS</th><th>PaaS</th><th>SaaS</th></tr>
+    <tr><td class="layer">Data &amp; access (who can see what)</td><td class="you">You</td><td class="you">You</td><td class="you">You</td></tr>
+    <tr><td class="layer">Identities &amp; accounts</td><td class="you">You</td><td class="you">You</td><td class="you">You</td></tr>
+    <tr><td class="layer">Application</td><td class="you">You</td><td class="you">You</td><td class="them">Provider</td></tr>
+    <tr><td class="layer">Network controls</td><td class="you">You</td><td class="you">Shared</td><td class="them">Provider</td></tr>
+    <tr><td class="layer">Operating system patches</td><td class="you">You</td><td class="them">Provider</td><td class="them">Provider</td></tr>
+    <tr><td class="layer">Physical hosts, network, data centre</td><td class="them">Provider</td><td class="them">Provider</td><td class="them">Provider</td></tr>
+  </table>
+  <p class="frag small">⚠️ Most cloud breaches are <b>customer misconfigurations</b> — public storage, leaked keys, over-privileged accounts, no MFA.</p>
+</section>
+
+<!-- 33 -->
+<section class="slide">
+  <div class="kicker">Security essentials</div>
+  <h2>The cloud security starter pack 🔐</h2>
+  <div class="grid-3">
+    <div class="card c-red"><h3>🪪 Identity is the new perimeter</h3><p class="small">MFA everywhere, least privilege, no shared admin accounts.</p></div>
+    <div class="card"><h3>🔑 No secrets in code</h3><p class="small">Use a vault (Azure Key Vault) and managed identities.</p></div>
+    <div class="card c-green"><h3>🔒 Encrypt everything</h3><p class="small">In transit (TLS) and at rest.</p></div>
+    <div class="card c-chai"><h3>🧱 Zero Trust</h3><p class="small">Never trust, always verify — even inside the network.</p></div>
+    <div class="card c-purple"><h3>📜 Policy as code</h3><p class="small">Block public storage accounts automatically.</p></div>
+    <div class="card c-yellow"><h3>👀 Detect &amp; respond</h3><p class="small">Security logs, threat detection, vulnerability scanning.</p></div>
+  </div>
+</section>
+
+<!-- 34 -->
+<section class="slide">
+  <div class="kicker">Scalability</div>
+  <h2>Growing without breaking</h2>
+  <div class="grid-2">
+    <div class="card"><h3>⬆️ Vertical scaling (scale up)</h3><p class="small">Bigger machine. Simple, but has a ceiling &amp; often needs a restart.</p></div>
+    <div class="card c-green"><h3>↔️ Horizontal scaling (scale out)</h3><p class="small">More machines. Needs <b>stateless</b> apps. Practically limitless.</p></div>
+  </div>
+  <div class="grid-4" style="margin-top:.6em">
+    <div class="card c-chai"><h3>🤖 Autoscaling</h3><p class="small">Add/remove instances on CPU, queue length, schedule</p></div>
+    <div class="card c-purple"><h3>⚡ Caching</h3><p class="small">Don't hit the DB for the same menu 1M times</p></div>
+    <div class="card c-yellow"><h3>📬 Queues</h3><p class="small">Absorb spikes, process steadily</p></div>
+    <div class="card c-red"><h3>🔥 Pre-warming</h3><p class="small">Scale <i>before</i> the IPL toss — autoscaling can be too slow for sudden spikes</p></div>
+  </div>
+</section>
+
+<!-- 35 -->
+<section class="slide">
+  <div class="kicker">Cost &amp; FinOps</div>
+  <h2>The cloud is cheap… until the bill arrives 🧾</h2>
+  <div class="grid-3">
+    <div class="card c-green"><h3>📏 Rightsize</h3><p class="small">That VM averaging 8% CPU? Make it smaller.</p></div>
+    <div class="card"><h3>📅 Commit</h3><p class="small">Reserved instances / savings plans for steady workloads.</p></div>
+    <div class="card c-chai"><h3>🎲 Spot VMs</h3><p class="small">Big discounts for interruptible batch jobs.</p></div>
+    <div class="card c-purple"><h3>🌙 Schedule</h3><p class="small">Shut dev/test down at night &amp; weekends.</p></div>
+    <div class="card c-yellow"><h3>🏷️ Tag &amp; show back</h3><p class="small">Every resource tagged with team &amp; app.</p></div>
+    <div class="card c-red"><h3>🚨 Budgets &amp; alerts</h3><p class="small">Alert at 80% of budget, not after 300%.</p></div>
+  </div>
+  <p class="frag small"><b>FinOps</b> = engineering + finance + business sharing responsibility for cloud spend. Also watch data <b>egress</b> and <b>log/telemetry volume</b> — silent bill killers.</p>
+</section>
+
+<!-- 36 -->
+<section class="slide">
+  <span class="tag">GAME · Cloud Bill Shock 💸 · 15 min</span>
+  <h2>The month-end bill arrives…</h2>
+  <div class="grid-2 grow">
+    <div>
+      <ul>
+        <li>Each team's <b>CFO</b> draws <b>3 Bill Shock cards</b></li>
+        <li>Some cards depend on your <b>Day 1 architecture</b> — CTO must prove it with the chart paper!</li>
+        <li>Apply the credit change to the leaderboard</li>
+        <li>For every negative card: name the <b>control that would have prevented it</b> → get <b class="green">half the loss back</b></li>
+      </ul>
+    </div>
+    <div class="card c-red">
+      <h3>Sample shocks</h3>
+      <p class="small">🎮 Intern left a GPU VM running all weekend<br>🪣 Storage bucket set to public — data leaked<br>🔑 API keys pushed to public GitHub<br>📜 Debug logs kept forever</p>
+    </div>
+  </div>
+</section>
+
+<!-- 37 -->
+<section class="slide section">
+  <div class="num">CHAPTER 7</div>
+  <h1>Business Systems<br><span class="accent">in the Cloud</span></h1>
+  <p class="muted">The software that actually runs a company</p>
+</section>
+
+<!-- 38 -->
+<section class="slide">
+  <div class="kicker">The business systems map</div>
+  <h2>What runs behind every “Order placed” message</h2>
+  <div class="grid-4">
+    <div class="card c-chai"><h3>🤝 CRM</h3><p class="small">Customers, leads, loyalty, support<br><span class="muted">Salesforce, Dynamics 365, Zoho CRM</span></p></div>
+    <div class="card"><h3>🏭 ERP</h3><p class="small">Finance, procurement, inventory, accounting<br><span class="muted">SAP S/4HANA, Oracle Fusion, Dynamics 365</span></p></div>
+    <div class="card c-green"><h3>🚚 SCM</h3><p class="small">Suppliers, warehouses, logistics<br><span class="muted">SAP IBP, Oracle SCM, Blue Yonder</span></p></div>
+    <div class="card c-purple"><h3>👥 HCM</h3><p class="small">Hiring, payroll, attendance<br><span class="muted">Workday, SAP SuccessFactors, Darwinbox</span></p></div>
+    <div class="card c-red"><h3>🛠️ ITSM</h3><p class="small">Incidents, changes, requests<br><span class="muted">ServiceNow, Jira Service Management</span></p></div>
+    <div class="card c-yellow"><h3>📊 BI &amp; analytics</h3><p class="small">Dashboards &amp; decisions<br><span class="muted">Power BI, Tableau, Looker</span></p></div>
+    <div class="card c-pink"><h3>🛒 Commerce</h3><p class="small">Storefront, catalogue, orders<br><span class="muted">Shopify, custom apps</span></p></div>
+    <div class="card"><h3>💬 Collaboration</h3><p class="small">Email, chat, docs<br><span class="muted">Microsoft 365, Google Workspace, Slack</span></p></div>
+  </div>
+  <p class="frag small">Almost all of these are now delivered as <b>SaaS</b> — that's cloud computing's biggest business impact.</p>
+</section>
+
+<!-- 39 -->
+<section class="slide">
+  <span class="tag">ACTIVITY · Follow the Order 📦 · 15 min</span>
+  <h2>One chai order, seven business systems</h2>
+  <div class="grid-2 grow">
+    <div>
+      <ul>
+        <li>7 volunteers each hold a <b>business system card</b></li>
+        <li>The <b>Order Token</b> travels from person to person</li>
+        <li>Each system <b>stamps</b> the token and says what it did out loud</li>
+        <li>Then chaos: <b>ERP is down for maintenance</b> — what still works? What queues up?</li>
+      </ul>
+    </div>
+    <div class="arch" style="flex-direction:column;align-items:stretch">
+      <div class="box">🛒 Commerce — order placed</div>
+      <div class="box">🤝 CRM — loyalty points</div>
+      <div class="box">🏭 ERP — invoice &amp; GST</div>
+      <div class="box">🚚 SCM — reduce stock, reorder milk</div>
+      <div class="box">👥 HCM — rider incentive</div>
+      <div class="box">📊 BI — dashboard updated</div>
+      <div class="box">🛠️ ITSM — (only if something breaks!)</div>
+    </div>
+  </div>
+</section>
+
+<!-- 40 -->
+<section class="slide">
+  <div class="kicker">Connecting the systems</div>
+  <h2>Integration is where the real work is</h2>
+  <div class="grid-3">
+    <div class="card"><h3>🔌 APIs</h3><p class="small">Systems talk via REST/GraphQL APIs.</p></div>
+    <div class="card c-chai"><h3>📣 Events</h3><p class="small">“OrderPlaced” published once, consumed by many (Service Bus, Event Hubs, Kafka).</p></div>
+    <div class="card c-green"><h3>🧩 iPaaS</h3><p class="small">Integration platforms: Logic Apps, MuleSoft, Boomi.</p></div>
+  </div>
+  <div class="grid-2" style="margin-top:.6em">
+    <div class="card c-green frag"><h3>✅ Why SaaS business systems win</h3><p class="small">No upgrades to run · mobile-ready · built-in AI · pay per user · fast rollout</p></div>
+    <div class="card c-red frag"><h3>⚠️ Watch out for</h3><p class="small">Vendor lock-in · data residency · integration sprawl · end-to-end visibility across SaaS + custom apps</p></div>
+  </div>
+</section>
+
+<!-- 41 -->
+<section class="slide">
+  <div class="kicker">The role of cloud in digital business</div>
+  <h2>“Every company is becoming a software company”</h2>
+  <div class="grid-3">
+    <div class="card c-chai frag"><div class="emoji">⚡</div><h3>Speed to market</h3><p class="small">Launch in a new city next week, not next year.</p></div>
+    <div class="card frag"><div class="emoji">🔗</div><h3>Platform &amp; API economy</h3><p class="small">UPI, ONDC, maps, payments — businesses built by combining APIs.</p></div>
+    <div class="card c-green frag"><div class="emoji">📊</div><h3>Data-driven decisions</h3><p class="small">Which city orders ginger chai at 4 PM? Cloud analytics knows.</p></div>
+    <div class="card c-purple frag"><div class="emoji">🤖</div><h3>AI everywhere</h3><p class="small">Chatbots, demand forecasting, fraud detection — rented, not built.</p></div>
+    <div class="card c-yellow frag"><div class="emoji">🌍</div><h3>Scale for small players</h3><p class="small">A 5-person startup gets the same infrastructure as a giant.</p></div>
+    <div class="card c-red frag"><div class="emoji">🔁</div><h3>Resilience = revenue</h3><p class="small">Downtime is now lost sales, not just an IT problem.</p></div>
+  </div>
+</section>
+
+<!-- 42 -->
+<section class="slide section">
+  <div class="num">CHAPTER 8</div>
+  <h1>Trends, Careers<br><span class="accent">&amp; Skills</span></h1>
+</section>
+
+<!-- 43 -->
+<section class="slide">
+  <div class="kicker">Where the industry is heading</div>
+  <h2>Top trends to watch 🔮</h2>
+  <div class="grid-5">
+    <div class="card c-purple"><h3>🤖 GenAI &amp; AI agents</h3><p class="small">GPU clouds, copilots, agentic ops</p></div>
+    <div class="card"><h3>🏗️ Platform engineering</h3><p class="small">Internal developer platforms (e.g. Backstage)</p></div>
+    <div class="card c-yellow"><h3>💰 FinOps</h3><p class="small">Cost as an engineering metric</p></div>
+    <div class="card c-red"><h3>🏛️ Sovereign cloud</h3><p class="small">Data stays in-country</p></div>
+    <div class="card c-green"><h3>🔭 AIOps &amp; OpenTelemetry</h3><p class="small">AI-assisted operations, open telemetry standards</p></div>
+    <div class="card c-chai"><h3>⚡ Serverless</h3><p class="small">No servers to manage</p></div>
+    <div class="card"><h3>📡 Edge &amp; 5G</h3><p class="small">Compute close to devices</p></div>
+    <div class="card c-red"><h3>🛡️ Zero Trust &amp; DevSecOps</h3><p class="small">Security built into pipelines</p></div>
+    <div class="card c-green"><h3>🌱 Green cloud</h3><p class="small">Carbon-aware computing</p></div>
+    <div class="card c-purple"><h3>☁️☁️ Multi-cloud</h3><p class="small">Portability via Kubernetes</p></div>
+  </div>
+</section>
+
+<!-- 44 -->
+<section class="slide">
+  <span class="tag">ACTIVITY · Career Tarot 🔮 · 15 min</span>
+  <h2>Draw your cloud destiny</h2>
+  <div class="grid-4">
+    <div class="card c-chai"><h3>🏛️ Cloud Architect</h3></div>
+    <div class="card"><h3>🔁 DevOps Engineer</h3></div>
+    <div class="card c-green"><h3>🚒 Site Reliability Engineer</h3></div>
+    <div class="card c-purple"><h3>🏗️ Platform Engineer</h3></div>
+    <div class="card c-red"><h3>🛡️ Cloud Security Engineer</h3></div>
+    <div class="card c-yellow"><h3>💰 FinOps Analyst</h3></div>
+    <div class="card"><h3>🔭 Observability Engineer</h3></div>
+    <div class="card c-pink"><h3>🤖 AI / MLOps Engineer</h3></div>
+  </div>
+  <p>Each member draws one card from the deck your two tables share. Read your “destiny”. Accept it, or swap once with a teammate. Then fill in your row of the <b>90-day plan</b> on the team sheet.</p>
+  <div class="timer" data-timer="600"></div>
+</section>
+
+<!-- 45 -->
+<section class="slide">
+  <div class="kicker">The skills stack</div>
+  <h2>What to learn — in order</h2>
+  <div class="grid-2">
+    <div>
+      <ol class="small">
+        <li><b>Foundations:</b> Linux, networking (DNS, HTTP, TCP/IP), Git</li>
+        <li><b>One cloud, properly:</b> compute, storage, networking, identity</li>
+        <li><b>Scripting:</b> Python or Bash/PowerShell</li>
+        <li><b>Containers &amp; Kubernetes</b></li>
+        <li><b>Infrastructure as Code:</b> Terraform / Bicep</li>
+        <li><b>CI/CD:</b> GitHub Actions / Azure DevOps</li>
+        <li><b>Observability:</b> metrics, logs, traces, SLOs</li>
+        <li><b>Security basics</b> &amp; <b>cost awareness</b></li>
+        <li><b>One portfolio project on GitHub</b>: deploy it, monitor it, write it up. It matters more than grades in interviews</li>
+        <li><b>Communication</b>, the underrated superpower</li>
+      </ol>
+    </div>
+    <div class="card c-yellow">
+      <h3>Starter certifications</h3>
+      <p class="small"><b>Now (5th–7th semester):</b> Azure AZ-900 · AWS Cloud Practitioner · Google Cloud Digital Leader. Student offers such as Azure for Students give free credits to practise.</p>
+      <p class="small"><b>Next step:</b> AZ-104 · AWS Solutions Architect Associate · Google Associate Cloud Engineer</p>
+      <p class="small"><b>Specialise:</b> CKA/CKAD · Terraform Associate · AZ-400 · AZ-500 · FinOps Certified Practitioner · Dynatrace Associate</p>
+      <p class="small muted">Free learning: Microsoft Learn · AWS Skill Builder · Google Cloud Skills Boost · Dynatrace University</p>
+    </div>
+  </div>
+</section>
+
+<!-- 46 -->
+<section class="slide">
+  <div class="kicker">Interactive discussion</div>
+  <h2>Hot-seat questions 🔥</h2>
+  <div class="grid-2">
+    <div class="card c-chai frag"><p>“If AI can write Terraform and read dashboards, what will a cloud engineer do in 5 years?”</p></div>
+    <div class="card frag"><p>“Should an Indian bank ever run core banking on public cloud?”</p></div>
+    <div class="card c-green frag"><p>“Is multi-cloud a smart strategy or an expensive fashion?”</p></div>
+    <div class="card c-red frag"><p>“Who should get paged at 3 AM — the developer who wrote the code or the ops team?”</p></div>
+    <div class="card c-purple frag"><p>“What's the most expensive cloud mistake you can imagine at ChaiCart?”</p></div>
+    <div class="card c-yellow frag"><p>“Open floor — ask me anything about working in the industry.”</p></div>
+  </div>
+</section>
+
+<!-- 47 -->
+<section class="slide">
+  <span class="tag green">QUIZ · Day 2 recap · +10 per correct answer</span>
+  <h2>Final quiz</h2>
+  <p>Same rules as yesterday: the COO writes answers on the quiz answer sheet, then swap with the neighbouring team to mark.</p>
+  <p><a href="quiz.html#day2" target="_blank">Launch Day 2 quiz</a></p>
+</section>
+
+<!-- 48 -->
+<section class="slide">
+  <span class="tag">FINALE · ChaiCart Demo Day · Region round 15 min · Grand final 15 min</span>
+  <h2>Demo Day</h2>
+  <div class="grid-2 grow">
+    <div>
+      <p class="small"><b>Region round:</b> each team pitches for <b>90 seconds</b> to its region. The region votes for its finalist.<br><b>Grand final:</b> the 4 region finalists pitch for <b>3 minutes</b> on stage.</p>
+      <ol class="small">
+        <li>Your cloud and architecture (show the chart paper)</li>
+        <li>What broke, and your postmortem action items</li>
+        <li>Your SLO and remaining error budget</li>
+        <li>Your final Cloud Credits balance</li>
+        <li>One thing you'll do differently</li>
+      </ol>
+      <div class="timer" data-timer="180"></div>
+    </div>
+    <div class="card c-yellow">
+      <h3>Awards</h3>
+      <ul class="small">
+        <li>Richest Startup (overall leaderboard)</li>
+        <li>Region Champions (top of each region)</li>
+        <li>Sherlock Award (murder mystery)</li>
+        <li>Best Architecture</li>
+        <li>Best Blameless Postmortem</li>
+        <li>Most Creative Pitch (grand final)</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 49 -->
+<section class="slide title">
+  <div class="kicker">Thank you</div>
+  <h1 style="font-size:3em">You built it. You broke it.<br><span class="accent">You kept it alive.</span> ☕☁️</h1>
+  <p class="muted" style="font-size:1.1em;margin-top:1em">Please fill in the feedback form · Take your cheat sheet · Keep learning</p>
+</section>
+
+</main>
+<script src="assets/deck.js"></script>
+</body>
+</html>

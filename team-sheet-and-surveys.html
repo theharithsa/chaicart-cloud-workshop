@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Team Sheet &amp; Pre/Post Surveys</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/print.css">
+<style>
+  .scale td, .scale th { text-align: center; }
+  .scale td:first-child, .scale th:first-child { text-align: left; }
+  .nps { display: flex; gap: 2mm; margin: 2mm 0; }
+  .nps span { border: .25mm solid var(--ink-2); border-radius: 1mm; width: 9mm; height: 8mm; display: grid; place-items: center; font-size: 9pt; }
+  .page { font-size: 10pt; }
+  .qs td, .qs th { text-align: center; }
+  .qs td { height: 9mm; }
+  .qs th:first-child, .qs td:first-child { text-align: left; }
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <b>Team Sheet &amp; Surveys</b>
+  <button onclick="window.print()">Print</button>
+  <span class="hint">Pages 1–3: team sheet, 24 copies (pages 1–2 double-sided). Page 4: pre-survey, page 5: post-survey, 120 copies each.</span>
+  <a href="index.html">← Hub</a>
+</div>
+
+<!-- Team sheet front -->
+<div class="page">
+  <h1>ChaiCart Startup — Team Sheet</h1>
+  <table>
+    <tr><th style="width:40mm">Team name</th><td style="height:10mm"></td></tr>
+    <tr><th>Region</th><td>☐ West India &nbsp; ☐ South India &nbsp; ☐ Central India &nbsp; ☐ North India</td></tr>
+    <tr><th>CEO</th><td></td></tr>
+    <tr><th>CTO</th><td></td></tr>
+    <tr><th>SRE</th><td></td></tr>
+    <tr><th>CFO</th><td></td></tr>
+    <tr><th>COO</th><td></td></tr>
+    <tr><th>Our cloud (Shark Tank)</th><td></td></tr>
+    <tr><th>Our checkout SLO</th><td></td></tr>
+  </table>
+
+  <h3>Error Budget Tracker (start: 43 minutes)</h3>
+  <table>
+    <tr><th>Card</th><th>Choice (A/B)</th><th>Die roll</th><th>Minutes lost</th><th>Budget left</th><th>Credits ±</th></tr>
+    <tr><td>1</td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>2</td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>3</td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>4</td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>5</td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>6</td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>7</td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>8</td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>9</td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>End</td><td colspan="3">Minutes left × 3 =</td><td></td><td></td></tr>
+  </table>
+
+  <h3>Cloud Bill Shock</h3>
+  <table>
+    <tr><th>Card</th><th>Credits</th><th>Control that would have prevented it</th></tr>
+    <tr><td style="height:9mm"></td><td></td><td></td></tr>
+    <tr><td style="height:9mm"></td><td></td><td></td></tr>
+    <tr><td style="height:9mm"></td><td></td><td></td></tr>
+  </table>
+</div>
+
+<!-- Team sheet back -->
+<div class="page">
+  <h1>Blameless Postmortem — INC-0001 “Who Killed Checkout?”</h1>
+  <table>
+    <tr><th style="width:40mm">Summary</th><td style="height:18mm"></td></tr>
+    <tr><th>Impact</th><td style="height:14mm"></td></tr>
+    <tr><th>Timeline</th><td style="height:30mm"></td></tr>
+    <tr><th>Root cause &amp; contributing factors</th><td style="height:22mm"></td></tr>
+    <tr><th>What went well</th><td style="height:14mm"></td></tr>
+  </table>
+  <h3>Action items</h3>
+  <table>
+    <tr><th>Action</th><th style="width:35mm">Owner (role)</th><th style="width:30mm">By when</th></tr>
+    <tr><td style="height:8mm"></td><td></td><td></td></tr>
+    <tr><td style="height:8mm"></td><td></td><td></td></tr>
+    <tr><td style="height:8mm"></td><td></td><td></td></tr>
+  </table>
+
+  <h1 style="margin-top:6mm">My 90-Day Cloud Plan</h1>
+  <p class="sub">Each member fills in one row after the Career Tarot.</p>
+  <table>
+    <tr><th>Name</th><th>Target role</th><th>Days 1–30</th><th>Days 31–60</th><th>Days 61–90 (cert / project)</th></tr>
+    <tr><td style="height:10mm"></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td style="height:10mm"></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td style="height:10mm"></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td style="height:10mm"></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td style="height:10mm"></td><td></td><td></td><td></td><td></td></tr>
+  </table>
+</div>
+
+<!-- Team sheet: scores -->
+<div class="page">
+  <h1>Quiz Answer Sheets &amp; Game Scores</h1>
+  <p class="sub">Team: ______________________ &nbsp;&nbsp; Region: ______________________</p>
+  <h3>Day 1 quiz</h3>
+  <p class="sub" style="margin-top:0">The COO writes A, B, C or D. After the quiz, swap with the neighbouring team, who ticks correct answers.</p>
+  <table class="qs">
+    <tr><th>Question</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th><th>Correct</th></tr>
+    <tr><td>Answer</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td rowspan="2"></td></tr>
+    <tr><td>✓</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+  </table>
+  <p style="font-size:9pt">Marked by team: ______________________ &nbsp; Credits = correct × 10</p>
+
+  <h3>Day 2 quiz</h3>
+  <table class="qs">
+    <tr><th>Question</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th><th>Correct</th></tr>
+    <tr><td>Answer</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td rowspan="2"></td></tr>
+    <tr><td>✓</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+  </table>
+  <p style="font-size:9pt">Marked by team: ______________________ &nbsp; Credits = correct × 10</p>
+
+  <h3>Paper Plane Factory</h3>
+  <table class="qs">
+    <tr><th>Round</th><th>Planes flying 3+ m</th><th>Time to first flight</th><th>Planes scrapped</th><th>Unfinished planes</th></tr>
+    <tr><td>1 — Waterfall</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>2 — Flow</td><td></td><td></td><td></td><td></td></tr>
+  </table>
+
+  <h3>Credits log</h3>
+  <p class="sub" style="margin-top:0">The CFO keeps a running record. The leaderboard is the official score; use this to check it.</p>
+  <table>
+    <tr><th style="width:60%">Activity</th><th>Credits ±</th><th>Running total</th></tr>
+    <tr><td>Start</td><td></td><td>1,000</td></tr>
+    <tr><td style="height:7mm"></td><td></td><td></td></tr>
+    <tr><td style="height:7mm"></td><td></td><td></td></tr>
+    <tr><td style="height:7mm"></td><td></td><td></td></tr>
+    <tr><td style="height:7mm"></td><td></td><td></td></tr>
+    <tr><td style="height:7mm"></td><td></td><td></td></tr>
+    <tr><td style="height:7mm"></td><td></td><td></td></tr>
+    <tr><td style="height:7mm"></td><td></td><td></td></tr>
+    <tr><td style="height:7mm"></td><td></td><td></td></tr>
+    <tr><td style="height:7mm"></td><td></td><td></td></tr>
+  </table>
+</div>
+
+<!-- Pre survey -->
+<div class="page">
+  <h1>Before We Start — Pre-Workshop Survey</h1>
+  <p class="sub">Anonymous. Takes 3 minutes. Helps us tune the next two days for you.</p>
+  <p>Semester: ☐ 5th &nbsp; ☐ 7th &nbsp;&nbsp;&nbsp; Branch: ______________________</p>
+  <p>Have you used any cloud platform hands-on? ☐ Never &nbsp; ☐ A little &nbsp; ☐ Regularly</p>
+  <h3>Rate your current confidence (1 = no idea, 5 = could teach it)</h3>
+  <table class="scale">
+    <tr><th>Topic</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr>
+    <tr><td>IaaS / PaaS / SaaS</td><td>☐</td><td>☐</td><td>☐</td><td>☐</td><td>☐</td></tr>
+    <tr><td>Public / private / hybrid / multi-cloud</td><td>☐</td><td>☐</td><td>☐</td><td>☐</td><td>☐</td></tr>
+    <tr><td>VMs &amp; containers</td><td>☐</td><td>☐</td><td>☐</td><td>☐</td><td>☐</td></tr>
+    <tr><td>Cloud architecture &amp; microservices</td><td>☐</td><td>☐</td><td>☐</td><td>☐</td><td>☐</td></tr>
+    <tr><td>Monitoring &amp; observability (logs, metrics, traces)</td><td>☐</td><td>☐</td><td>☐</td><td>☐</td><td>☐</td></tr>
+    <tr><td>SRE (SLOs, error budgets)</td><td>☐</td><td>☐</td><td>☐</td><td>☐</td><td>☐</td></tr>
+    <tr><td>DevOps &amp; CI/CD</td><td>☐</td><td>☐</td><td>☐</td><td>☐</td><td>☐</td></tr>
+    <tr><td>Cloud security &amp; cost</td><td>☐</td><td>☐</td><td>☐</td><td>☐</td><td>☐</td></tr>
+    <tr><td>Business systems (ERP, CRM…)</td><td>☐</td><td>☐</td><td>☐</td><td>☐</td><td>☐</td></tr>
+    <tr><td>Cloud career paths</td><td>☐</td><td>☐</td><td>☐</td><td>☐</td><td>☐</td></tr>
+  </table>
+  <h3>What's the ONE thing you want to walk away with?</h3>
+  <div class="line"></div><div class="line"></div>
+  <h3>One word that comes to mind when you hear “cloud”:</h3>
+  <div class="line"></div>
+</div>
+
+<!-- Post survey -->
+<div class="page">
+  <h1>Post-Workshop Feedback</h1>
+  <p class="sub">Anonymous. Be brutally honest — it's a blameless postmortem for the workshop 😉</p>
+  <h3>Rate your confidence NOW (1–5)</h3>
+  <table class="scale">
+    <tr><th>Topic</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr>
+    <tr><td>IaaS / PaaS / SaaS</td><td>☐</td><td>☐</td><td>☐</td><td>☐</td><td>☐</td></tr>
+    <tr><td>Deployment models</td><td>☐</td><td>☐</td><td>☐</td><td>☐</td><td>☐</td></tr>
+    <tr><td>VMs &amp; containers</td><td>☐</td><td>☐</td><td>☐</td><td>☐</td><td>☐</td></tr>
+    <tr><td>Cloud architecture &amp; microservices</td><td>☐</td><td>☐</td><td>☐</td><td>☐</td><td>☐</td></tr>
+    <tr><td>Observability (logs, metrics, traces)</td><td>☐</td><td>☐</td><td>☐</td><td>☐</td><td>☐</td></tr>
+    <tr><td>SRE (SLOs, error budgets)</td><td>☐</td><td>☐</td><td>☐</td><td>☐</td><td>☐</td></tr>
+    <tr><td>DevOps &amp; CI/CD</td><td>☐</td><td>☐</td><td>☐</td><td>☐</td><td>☐</td></tr>
+    <tr><td>Cloud security &amp; cost</td><td>☐</td><td>☐</td><td>☐</td><td>☐</td><td>☐</td></tr>
+    <tr><td>Business systems</td><td>☐</td><td>☐</td><td>☐</td><td>☐</td><td>☐</td></tr>
+    <tr><td>Cloud career paths</td><td>☐</td><td>☐</td><td>☐</td><td>☐</td><td>☐</td></tr>
+  </table>
+  <h3>Most fun activity (tick up to 2)</h3>
+  <p>☐ Human Timeline ☐ Biryani sort ☐ Shark Tank ☐ Cloud Bingo ☐ Architecture Lego ☐ Human Kitchen ☐ Gallery Walk ☐ Murder Mystery ☐ Treasure Hunt ☐ Error Budget Poker ☐ Paper Planes ☐ Bill Shock ☐ Follow the Order ☐ Career Tarot ☐ Demo Day</p>
+  <h3>How likely are you to recommend this workshop to a friend? (0–10)</h3>
+  <div class="nps"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span></div>
+  <h3>The most useful thing I learned:</h3>
+  <div class="line"></div><div class="line"></div>
+  <h3>One thing to improve:</h3>
+  <div class="line"></div><div class="line"></div>
+  <h3>What will you do in the next 7 days because of this workshop?</h3>
+  <div class="line"></div>
+</div>
+</body>
+</html>

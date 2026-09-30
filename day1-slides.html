@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Day 1 – Build ChaiCart | Cloud Computing Fundamentals</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/deck.css">
+</head>
+<body>
+<main class="deck">
+
+<!-- 1 -->
+<section class="slide title">
+  <div class="kicker">Cloud Computing &amp; Business Systems Workshop · Day 1</div>
+  <h1 style="font-size:3.4em">Build <span class="accent">ChaiCart</span> ☕☁️</h1>
+  <p style="font-size:1.3em" class="muted">Cloud Computing Fundamentals &amp; Industry Practices</p>
+  <p class="frag" style="margin-top:1.5em;font-size:1.1em">Today you are not students. <b class="accent">You are founders.</b></p>
+</section>
+
+<!-- 2 -->
+<section class="slide">
+  <div class="kicker">The mission</div>
+  <h2>Your startup: <span class="accent">ChaiCart</span> — hot chai &amp; samosa delivered in 10 minutes</h2>
+  <div class="grid-3 grow" style="align-items:start">
+    <div class="card c-chai frag"><div class="emoji">🏗️</div><h3>Day 1 – BUILD</h3><p>Choose your cloud, your model, your architecture. Design ChaiCart to survive India's appetite.</p></div>
+    <div class="card frag"><div class="emoji">🔥</div><h3>Day 2 – SURVIVE</h3><p>Launch day. Things will break. Outages, bill shocks, a murder mystery. Keep ChaiCart alive.</p></div>
+    <div class="card c-green frag"><div class="emoji">🦈</div><h3>Finale – PITCH</h3><p>3-minute Demo Day pitch. The richest, smartest startup wins.</p></div>
+  </div>
+  <p class="frag center" style="font-size:1.2em">Every team starts with <b class="yellow">1,000 Cloud Credits 💰</b></p>
+</section>
+
+<!-- 3 -->
+<section class="slide">
+  <div class="kicker">How we play</div>
+  <h2>120 founders. 24 startups. 4 regions.</h2>
+  <div class="grid-2">
+    <div>
+      <ul>
+        <li>Every team of 5 is an <b>Availability Zone</b>, e.g. <i>Mumbai-1a</i></li>
+        <li>Six teams form a <b>Region</b>: West India, South India, Central India, North India</li>
+        <li>Many games run <b>inside your region first</b>; region winners go to the main stage</li>
+        <li>Win activities → <b class="green">earn credits</b>. Outages, leaks, bad calls → <b class="red">lose credits</b></li>
+        <li>Phones allowed for research, not reels</li>
+      </ul>
+    </div>
+    <div class="card c-yellow">
+      <h3>Awards at Demo Day</h3>
+      <ul class="small">
+        <li>Richest Startup (overall leaderboard)</li>
+        <li>Region Champions (top team in each region)</li>
+        <li>Sherlock Award (murder mystery)</li>
+        <li>Best Architecture</li>
+        <li>Best Blameless Postmortem</li>
+        <li>Most Creative Pitch</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 4 -->
+<section class="slide">
+  <span class="tag">ACTIVITY · 5 min</span>
+  <h2>Find your table, pick your roles</h2>
+  <div class="grid-5">
+    <div class="card c-chai"><h3>CEO</h3><p>Final decisions. Presents pitches and Demo Day.</p></div>
+    <div class="card"><h3>CTO</h3><p>Owns the architecture and tech choices.</p></div>
+    <div class="card c-green"><h3>SRE</h3><p>Keeps things running. Owns the error budget on Day 2.</p></div>
+    <div class="card c-yellow"><h3>CFO</h3><p>Guards the Cloud Credits. Owns the cloud bill.</p></div>
+    <div class="card c-purple"><h3>COO</h3><p>Keeps time, collects and returns cards, hands in forms.</p></div>
+  </div>
+  <p>Your <b>table card</b> shows your team name and region. Write each member's role on the team sheet.</p>
+  <div class="timer" data-timer="300"></div>
+</section>
+
+<!-- 5 -->
+<section class="slide">
+  <span class="tag">ICEBREAKER · Stand up = Cloud · Sit = Not cloud</span>
+  <h2>Cloud or Not? 🤔</h2>
+  <div class="grid-4 grow" style="align-content:center">
+    <div class="card frag"><div class="emoji">📧</div><h3>Gmail</h3></div>
+    <div class="card frag"><div class="emoji">💾</div><h3>Pen drive</h3></div>
+    <div class="card frag"><div class="emoji">🎬</div><h3>Netflix</h3></div>
+    <div class="card frag"><div class="emoji">📲</div><h3>UPI payment</h3></div>
+    <div class="card frag"><div class="emoji">📊</div><h3>Excel on your laptop</h3></div>
+    <div class="card frag"><div class="emoji">🤖</div><h3>ChatGPT</h3></div>
+    <div class="card frag"><div class="emoji">🧮</div><h3>Phone calculator</h3></div>
+    <div class="card frag"><div class="emoji">📸</div><h3>Google Photos backup</h3></div>
+  </div>
+</section>
+
+<!-- 6 -->
+<section class="slide">
+  <div class="kicker">Answers (with twists)</div>
+  <h2>Cloud or Not? — the reveal</h2>
+  <table class="t">
+    <tr><th>Item</th><th>Verdict</th><th>Twist</th></tr>
+    <tr class="frag"><td>Gmail, Netflix, ChatGPT, Google Photos</td><td class="green">☁️ Cloud</td><td>You own nothing but a browser/app. Everything runs in someone else's data centre.</td></tr>
+    <tr class="frag"><td>UPI payment</td><td class="yellow">☁️ Cloud-like</td><td>Runs on NPCI's own data centres — a <b>private</b> cloud-style platform connecting hundreds of banks and apps via APIs.</td></tr>
+    <tr class="frag"><td>Excel on your laptop</td><td class="yellow">🤷 It depends</td><td>Local file = not cloud. AutoSave to OneDrive / co-editing = cloud (SaaS).</td></tr>
+    <tr class="frag"><td>Pen drive, calculator</td><td class="red">❌ Not cloud</td><td>Local hardware, no network, no shared pool.</td></tr>
+  </table>
+  <p class="frag center accent" style="font-size:1.1em;margin-top:.6em">Lesson: “cloud” is not a place. It's a <b>way of delivering computing</b>.</p>
+</section>
+
+<!-- 7 -->
+<section class="slide">
+  <div class="kicker">What is cloud computing?</div>
+  <h2>Computing like electricity ⚡ — you don't build a power plant to switch on a fan</h2>
+  <p class="muted small">NIST's definition: 5 essential characteristics</p>
+  <div class="grid-5 grow" style="align-content:center">
+    <div class="card c-chai frag"><div class="emoji">🛒</div><h3>On-demand self-service</h3><p>Click → server in minutes. No ticket, no waiting.</p></div>
+    <div class="card frag"><div class="emoji">🌐</div><h3>Broad network access</h3><p>Anywhere, any device, over the internet.</p></div>
+    <div class="card c-green frag"><div class="emoji">🏊</div><h3>Resource pooling</h3><p>Many customers share a giant pool of hardware.</p></div>
+    <div class="card c-purple frag"><div class="emoji">🎈</div><h3>Rapid elasticity</h3><p>Grow for Diwali, shrink after. Automatically.</p></div>
+    <div class="card c-yellow frag"><div class="emoji">🧾</div><h3>Measured service</h3><p>Pay per second / GB / request — like a meter.</p></div>
+  </div>
+</section>
+
+<!-- 8 -->
+<section class="slide">
+  <span class="tag">ACTIVITY · 7 min · +50 credits to the fastest correct team</span>
+  <h2>The Human Timeline 🧍‍♀️🧍🧍‍♂️</h2>
+  <div class="grid-2 grow">
+    <div>
+      <ul>
+        <li>Each team gets <b>12 event cards</b> with no years on them</li>
+        <li>Stand beside your table. Each member holds 2–3 cards and the team <b>lines up in chronological order</b></li>
+        <li>Twist: <b>no talking</b> for the first 2 minutes. Gestures only</li>
+        <li>Done? Raise your hands and shout <b>“DEPLOYED!”</b>. Your region captain checks the order</li>
+      </ul>
+    </div>
+    <div class="card c-chai">
+      <h3>Sample cards</h3>
+      <p class="small">“Docker makes containers easy” · “Amazon launches S3 and EC2” · “India launches UPI” · “ARPANET sends its first message” · “ChatGPT launches”...</p>
+    </div>
+  </div>
+  <div class="timer" data-timer="420"></div>
+</section>
+
+<!-- 9 -->
+<section class="slide">
+  <div class="kicker">Evolution of cloud</div>
+  <h2>60 years in one line</h2>
+  <div class="timeline">
+    <div class="ev frag"><b>1960s</b>Mainframe time-sharing</div>
+    <div class="ev frag"><b>1969</b>ARPANET</div>
+    <div class="ev frag"><b>1989</b>World Wide Web</div>
+    <div class="ev frag"><b>1998</b>VMware – x86 virtualization</div>
+    <div class="ev frag"><b>1999</b>Salesforce – “No Software”</div>
+    <div class="ev frag"><b>2006</b>AWS S3 + EC2</div>
+    <div class="ev frag"><b>2008</b>Google App Engine</div>
+    <div class="ev frag"><b>2010</b>Microsoft Azure GA</div>
+    <div class="ev frag"><b>2013</b>Docker</div>
+    <div class="ev frag"><b>2014</b>Kubernetes</div>
+    <div class="ev frag"><b>2016</b>UPI launches</div>
+    <div class="ev frag"><b>2022</b>ChatGPT / GenAI boom</div>
+  </div>
+  <div class="grid-3 frag" style="margin-top:2.2em">
+    <div class="card"><h3>Era 1: Shared big iron</h3><p>One mainframe, many terminals.</p></div>
+    <div class="card c-chai"><h3>Era 2: Own your servers</h3><p>Every company runs its own data centre.</p></div>
+    <div class="card c-green"><h3>Era 3: Rent everything</h3><p>Utility computing, APIs, AI on tap.</p></div>
+  </div>
+</section>
+
+<!-- 10 -->
+<section class="slide">
+  <div class="kicker">Why businesses move to cloud</div>
+  <h2>Before cloud: <span class="red">6 weeks</span> to get a server. Now: <span class="green">60 seconds</span>.</h2>
+  <div class="grid-3 grow" style="align-content:center">
+    <div class="card c-chai frag"><div class="emoji">💸</div><h3>CapEx → OpEx</h3><p>No big upfront hardware purchase. Pay as you go.</p></div>
+    <div class="card frag"><div class="emoji">🚀</div><h3>Speed</h3><p>Experiment today, launch tomorrow, kill it next week.</p></div>
+    <div class="card c-green frag"><div class="emoji">📈</div><h3>Elastic scale</h3><p>IPL final traffic without buying servers for the other 364 days.</p></div>
+    <div class="card c-purple frag"><div class="emoji">🌏</div><h3>Global reach</h3><p>Regions on every continent — go global in a click.</p></div>
+    <div class="card c-yellow frag"><div class="emoji">🧠</div><h3>Innovation on tap</h3><p>AI, analytics, IoT as ready-made services.</p></div>
+    <div class="card c-red frag"><div class="emoji">🛡️</div><h3>Resilience</h3><p>Multiple data centres &amp; backups by design.</p></div>
+  </div>
+</section>
+
+<!-- 11 -->
+<section class="slide section">
+  <div class="num">CHAPTER 1</div>
+  <h1>Service Models<br><span class="accent">IaaS · PaaS · SaaS</span></h1>
+  <p class="muted">aka “How much do you want to cook yourself?”</p>
+</section>
+
+<!-- 12 -->
+<section class="slide">
+  <div class="kicker">The analogy</div>
+  <h2>Biryani-as-a-Service 🍛</h2>
+  <div class="grid-4 grow" style="align-content:center">
+    <div class="card c-red frag"><div class="emoji">🏠</div><h3>On-premises</h3><p><b>Cook at home.</b> You buy the stove, gas, rice, masala, cook, serve and wash up.</p></div>
+    <div class="card c-chai frag"><div class="emoji">🔪</div><h3>IaaS</h3><p><b>Rent a fully equipped kitchen.</b> Stove &amp; gas provided — you bring ingredients and cook.</p></div>
+    <div class="card frag"><div class="emoji">🛵</div><h3>PaaS</h3><p><b>Order from Swiggy.</b> Cooked for you — you provide the table, plates and the party.</p></div>
+    <div class="card c-green frag"><div class="emoji">🍽️</div><h3>SaaS</h3><p><b>Dine at the restaurant.</b> Just show up, eat and pay.</p></div>
+  </div>
+  <p class="frag center">The further right you go: <b class="green">less control, less effort</b>.</p>
+</section>
+
+<!-- 13 -->
+<section class="slide">
+  <div class="kicker">The real stack</div>
+  <h2>Who manages what?</h2>
+  <table class="resp">
+    <tr><th></th><th>On-Prem</th><th>IaaS</th><th>PaaS</th><th>SaaS</th></tr>
+    <tr><td class="layer">Applications</td><td class="you">You</td><td class="you">You</td><td class="you">You</td><td class="them">Provider</td></tr>
+    <tr><td class="layer">Data</td><td class="you">You</td><td class="you">You</td><td class="you">You</td><td class="them">Provider*</td></tr>
+    <tr><td class="layer">Runtime</td><td class="you">You</td><td class="you">You</td><td class="them">Provider</td><td class="them">Provider</td></tr>
+    <tr><td class="layer">Middleware</td><td class="you">You</td><td class="you">You</td><td class="them">Provider</td><td class="them">Provider</td></tr>
+    <tr><td class="layer">Operating system</td><td class="you">You</td><td class="you">You</td><td class="them">Provider</td><td class="them">Provider</td></tr>
+    <tr><td class="layer">Virtualization</td><td class="you">You</td><td class="them">Provider</td><td class="them">Provider</td><td class="them">Provider</td></tr>
+    <tr><td class="layer">Servers</td><td class="you">You</td><td class="them">Provider</td><td class="them">Provider</td><td class="them">Provider</td></tr>
+    <tr><td class="layer">Storage</td><td class="you">You</td><td class="them">Provider</td><td class="them">Provider</td><td class="them">Provider</td></tr>
+    <tr><td class="layer">Networking</td><td class="you">You</td><td class="them">Provider</td><td class="them">Provider</td><td class="them">Provider</td></tr>
+  </table>
+  <p class="tiny muted">* In SaaS you still own your data, users and access decisions — the provider runs the platform.</p>
+</section>
+
+<!-- 14 -->
+<section class="slide">
+  <span class="tag">ACTIVITY · Sorting Race · 6 min · +50 for most correct</span>
+  <h2>Sort the 20 product cards into IaaS / PaaS / SaaS</h2>
+  <div class="grid-3 grow">
+    <div class="card c-chai"><h3 class="accent">IaaS</h3><p>“We give you raw infrastructure”</p></div>
+    <div class="card"><h3 class="blue">PaaS</h3><p>“You bring code, we run it”</p></div>
+    <div class="card c-green"><h3 class="green">SaaS</h3><p>“Just log in and use it”</p></div>
+  </div>
+  <p>Lay the cards in three columns on your table. When done, the CFO raises a hand. <b>1 point per correct card.</b></p>
+  <div class="timer" data-timer="360"></div>
+</section>
+
+<!-- 15 -->
+<section class="slide">
+  <div class="kicker">Answer key</div>
+  <h2>How did you do?</h2>
+  <div class="grid-3">
+    <div class="card c-chai frag"><h3 class="accent">IaaS</h3><p>Azure Virtual Machines · AWS EC2 · Google Compute Engine · Azure Blob Storage · DigitalOcean Droplets · Azure Virtual Network</p></div>
+    <div class="card frag"><h3 class="blue">PaaS</h3><p>Azure App Service · Google App Engine · Heroku · Azure SQL Database · Azure Functions (serverless) · Firebase</p></div>
+    <div class="card c-green frag"><h3 class="green">SaaS</h3><p>Gmail · Microsoft 365 · Salesforce · Zoom · Canva · ServiceNow · Workday · Dynatrace</p></div>
+  </div>
+  <div class="card c-purple frag" style="margin-top:.6em">
+    <h3>Beyond the big three 🧩</h3>
+    <p><b>FaaS / Serverless</b> (Azure Functions, AWS Lambda) · <b>CaaS</b> (AKS, EKS, GKE) · <b>DBaaS</b> (Azure SQL, Cosmos DB) · <b>AI-as-a-Service</b> (Azure OpenAI, Bedrock, Vertex AI)</p>
+  </div>
+</section>
+
+<!-- 16 -->
+<section class="slide section">
+  <div class="num">CHAPTER 2</div>
+  <h1>Deployment Models<br><span class="accent">Public · Private · Hybrid · Multi-Cloud</span></h1>
+  <p class="muted">aka “Where should your app live?”</p>
+</section>
+
+<!-- 17 -->
+<section class="slide">
+  <div class="kicker">The analogy</div>
+  <h2>Where should your app live? 🏘️</h2>
+  <div class="grid-4 grow" style="align-content:center">
+    <div class="card c-chai frag"><div class="emoji">🏨</div><h3>Public cloud = Hotel</h3><p>Shared building, check in instantly, pay per night. AWS, Azure, GCP.</p></div>
+    <div class="card frag"><div class="emoji">🏡</div><h3>Private cloud = Own house</h3><p>Only you live there. Full control, full cost. On-prem OpenStack, VMware, Azure Stack.</p></div>
+    <div class="card c-green frag"><div class="emoji">🏡+🏨</div><h3>Hybrid = House + Airbnb</h3><p>Family stays home; guests go to the Airbnb during the wedding season.</p></div>
+    <div class="card c-purple frag"><div class="emoji">🏨🏨🏨</div><h3>Multi-cloud = Many hotel chains</h3><p>Taj for business, OYO for budget trips. Best-of-breed or avoid lock-in.</p></div>
+  </div>
+</section>
+
+<!-- 18 -->
+<section class="slide">
+  <span class="tag">ACTIVITY · Debate · 15 min · +30 per convincing defence</span>
+  <h2>“Where should they live?” — scenario cards</h2>
+  <div class="grid-2 grow">
+    <div>
+      <ul>
+        <li>Each team draws <b>one scenario card</b>. Three teams share each scenario</li>
+        <li>3 minutes to decide: Public / Private / Hybrid / Multi-cloud</li>
+        <li>For each scenario, one team is picked at random for a <b>60-second defence</b></li>
+        <li>The other two teams with that scenario may <b>challenge</b> with one question</li>
+        <li>Consider: <b>compliance, latency, cost, scale, skills, lock-in</b></li>
+      </ul>
+    </div>
+    <div class="card c-chai">
+      <h3>Scenarios in the deck</h3>
+      <p class="small">🏦 Large bank · 🏏 OTT cricket startup · 🏥 Hospital chain · 🏛️ State government portal · 🌍 Global e-commerce · 🛡️ Defence lab · 🎉 College fest website · 🚗 Smart car factory</p>
+    </div>
+  </div>
+  <div class="timer" data-timer="180"></div>
+</section>
+
+<!-- 19 -->
+<section class="slide">
+  <div class="kicker">Debrief</div>
+  <h2>There's no single right answer — only trade-offs</h2>
+  <div class="grid-3">
+    <div class="card c-red"><h3>⚖️ Regulation</h3><p>RBI payment-data localisation (2018), India's DPDP Act (2023), sector rules like healthcare &amp; defence.</p></div>
+    <div class="card"><h3>⚡ Latency</h3><p>Factory robots and trading need milliseconds → edge / on-prem.</p></div>
+    <div class="card c-green"><h3>💰 Cost pattern</h3><p>Spiky → public cloud wins. Flat &amp; predictable → private can be cheaper.</p></div>
+    <div class="card c-purple"><h3>🔒 Lock-in</h3><p>Multi-cloud reduces dependency but multiplies complexity.</p></div>
+    <div class="card c-yellow"><h3>🧑‍💻 Skills</h3><p>Do you have people to run a private cloud 24×7?</p></div>
+    <div class="card c-chai"><h3>🏛️ Sovereignty</h3><p>Government workloads: India's GI Cloud (MeghRaj) &amp; empanelled providers.</p></div>
+  </div>
+</section>
+
+<!-- 20 -->
+<section class="slide section">
+  <div class="num">CHAPTER 3</div>
+  <h1>Major Cloud Platforms<br><span class="accent">&amp; who uses them</span></h1>
+</section>
+
+<!-- 21 -->
+<section class="slide">
+  <div class="kicker">The landscape</div>
+  <h2>The big players</h2>
+  <div class="grid-4">
+    <div class="card c-chai"><h3>AWS</h3><p class="small">Pioneer (2006). Largest market share (~30%). Broadest catalogue.</p><p class="tiny muted">Netflix · Airbnb · Swiggy</p></div>
+    <div class="card"><h3>Microsoft Azure</h3><p class="small">#2 (~20%+). Enterprise &amp; hybrid strength, M365 / Entra ID, Azure OpenAI.</p><p class="tiny muted">Many banks, manufacturers, government</p></div>
+    <div class="card c-green"><h3>Google Cloud</h3><p class="small">#3 (~12%). Data, analytics, Kubernetes birthplace, Vertex AI &amp; TPUs.</p><p class="tiny muted">Spotify · retail &amp; media</p></div>
+    <div class="card c-red"><h3>Oracle Cloud (OCI)</h3><p class="small">Oracle Database powerhouse, price-performance, multicloud DB partnerships.</p><p class="tiny muted">ERP-heavy enterprises</p></div>
+  </div>
+  <p class="small muted">Also: IBM Cloud, Alibaba Cloud, DigitalOcean, and Indian providers/data-centre players. Market shares are approximate industry estimates.</p>
+  <p class="frag">🇮🇳 All four big players run <b>regions in India</b> (e.g. Mumbai, Pune, Chennai, Hyderabad, Delhi) — important for data residency.</p>
+</section>
+
+<!-- 22 -->
+<section class="slide">
+  <div class="kicker">Cloud Rosetta Stone</div>
+  <h2>Same idea, different names</h2>
+  <table class="t">
+    <tr><th>Need</th><th>AWS</th><th>Azure</th><th>Google Cloud</th></tr>
+    <tr><td>Virtual machine</td><td>EC2</td><td>Virtual Machines</td><td>Compute Engine</td></tr>
+    <tr><td>Serverless functions</td><td>Lambda</td><td>Azure Functions</td><td>Cloud Run functions</td></tr>
+    <tr><td>Managed Kubernetes</td><td>EKS</td><td>AKS</td><td>GKE</td></tr>
+    <tr><td>Object storage</td><td>S3</td><td>Blob Storage</td><td>Cloud Storage</td></tr>
+    <tr><td>Relational DB</td><td>RDS / Aurora</td><td>Azure SQL / PostgreSQL</td><td>Cloud SQL / AlloyDB</td></tr>
+    <tr><td>NoSQL DB</td><td>DynamoDB</td><td>Cosmos DB</td><td>Firestore / Bigtable</td></tr>
+    <tr><td>Monitoring</td><td>CloudWatch</td><td>Azure Monitor</td><td>Cloud Monitoring</td></tr>
+    <tr><td>GenAI platform</td><td>Bedrock</td><td>Azure OpenAI / AI Foundry</td><td>Vertex AI</td></tr>
+  </table>
+</section>
+
+<!-- 23 -->
+<section class="slide">
+  <span class="tag">ACTIVITY · Cloud Shark Tank · 30 min · Region winners +50 · Grand winner +100</span>
+  <h2>Win ChaiCart's cloud contract</h2>
+  <div class="grid-2 grow">
+    <div>
+      <ul>
+        <li>Each team gets a <b>platform card</b> (AWS, Azure, Google Cloud or OCI) and the <b>client brief</b></li>
+        <li><b>8 min</b> to prepare a pitch</li>
+        <li><b>Region round:</b> each team pitches for <b>1 minute</b> to its region. Teams vote for the best pitch (not their own)</li>
+        <li><b>Grand final:</b> the 4 region winners pitch for 2 minutes on stage, then take one tough question</li>
+      </ul>
+      <div class="timer" data-timer="480"></div>
+    </div>
+    <div class="card c-yellow">
+      <h3>Judge on</h3>
+      <ul class="small">
+        <li>Fit to the brief: India regions, AI, spikes, budget</li>
+        <li>Honesty about weaknesses</li>
+        <li>Confidence and creativity</li>
+        <li>Best closing line</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 24 -->
+<section class="slide">
+  <span class="tag green">ENERGIZER · Cloud Bingo · 8 min · First 3 teams +30</span>
+  <h2>Cloud Bingo</h2>
+  <p>One card per team. I read a clue; if the answer is on your card, mark it. Five in a row → the whole team shouts <b class="accent">“AUTOSCALE!”</b></p>
+  <div class="grid-3" style="margin-top:.5em">
+    <div class="card"><p>“I store files as objects, practically unlimited.”</p><p class="accent frag">→ Blob Storage / S3</p></div>
+    <div class="card"><p>“I run your code only when an event happens.”</p><p class="accent frag">→ Serverless function</p></div>
+    <div class="card"><p>“I spread traffic across servers.”</p><p class="accent frag">→ Load balancer</p></div>
+  </div>
+  <p class="small muted">Full caller list is in the printable Cards pack.</p>
+</section>
+
+<!-- 25 -->
+<section class="slide section">
+  <div class="num">CHAPTER 4</div>
+  <h1>Virtualization &amp;<br><span class="accent">Containerization</span></h1>
+  <p class="muted">Houses, apartments and tiffin boxes</p>
+</section>
+
+<!-- 25 -->
+<section class="slide">
+  <div class="kicker">The analogy</div>
+  <h2>🏠 → 🏢 → 🍱</h2>
+  <div class="grid-3 grow" style="align-content:center">
+    <div class="card c-red frag"><div class="emoji">🏠</div><h3>Bare metal = Independent house</h3><p>One family (app) per plot. Lots of wasted space. Slow to build.</p></div>
+    <div class="card frag"><div class="emoji">🏢</div><h3>Virtual Machine = Apartment</h3><p>One building (server), many flats. Each flat has its <b>own kitchen</b> (own OS). The builder's structure = <b>hypervisor</b>.</p></div>
+    <div class="card c-green frag"><div class="emoji">🍱</div><h3>Container = Tiffin box</h3><p>Everyone shares <b>one big kitchen</b> (host OS kernel), but each meal is sealed and portable. Light, fast, identical everywhere.</p></div>
+  </div>
+</section>
+
+<!-- 26 -->
+<section class="slide">
+  <div class="kicker">Under the hood</div>
+  <h2>VMs vs Containers</h2>
+  <div class="grid-2 grow">
+    <div>
+      <h3 class="blue">Virtual Machines</h3>
+      <div class="stack">
+        <div class="row2"><div class="app">App A</div><div class="app">App B</div><div class="app">App C</div></div>
+        <div class="row2"><div class="os">Guest OS</div><div class="os">Guest OS</div><div class="os">Guest OS</div></div>
+        <div class="hv">Hypervisor (Hyper-V, KVM, VMware ESXi)</div>
+        <div class="hw">Physical server</div>
+      </div>
+      <p class="small">Strong isolation · GBs in size · boots in minutes</p>
+    </div>
+    <div>
+      <h3 class="green">Containers</h3>
+      <div class="stack">
+        <div class="row2"><div class="app">App A</div><div class="app">App B</div><div class="app">App C</div></div>
+        <div class="row2"><div class="lib">libs</div><div class="lib">libs</div><div class="lib">libs</div></div>
+        <div class="rt">Container runtime (containerd / Docker)</div>
+        <div class="os">Host OS (shared kernel)</div>
+        <div class="hw">Server or VM</div>
+      </div>
+      <p class="small">Lightweight · MBs in size · starts in seconds</p>
+    </div>
+  </div>
+  <p class="frag center">🎼 <b>Kubernetes</b> = the orchestra conductor: runs thousands of containers, restarts failures, scales up/down.</p>
+</section>
+
+<!-- 27 -->
+<section class="slide">
+  <span class="tag blue">LIVE DEMO · Azure</span>
+  <h2>Race: Container vs VM 🏁</h2>
+  <div class="grid-2 grow">
+    <div>
+      <h3>🍱 Container (Azure Cloud Shell)</h3>
+<pre>az group create -n rg-chaicart-demo -l centralindia
+
+az container create -g rg-chaicart-demo -n chaicart-hello \
+  --image mcr.microsoft.com/azuredocs/aci-helloworld \
+  --os-type Linux --cpu 1 --memory 1 \
+  --ports 80 --ip-address Public
+
+az container show -g rg-chaicart-demo -n chaicart-hello \
+  --query ipAddress.ip -o tsv</pre>
+    </div>
+    <div>
+      <h3>🏢 Virtual machine (Portal)</h3>
+      <p class="small">Portal → Create a resource → Virtual Machine → Ubuntu, B1s → Review + create.</p>
+      <p class="small">Start both at the same time. Audience guesses which one serves a web page first.</p>
+      <div class="card c-red small" style="margin-top:.6em">🧹 Clean up afterwards:<br><code>az group delete -n rg-chaicart-demo --yes</code></div>
+    </div>
+  </div>
+</section>
+
+<!-- 29 -->
+<section class="slide section">
+  <div class="num">CHAPTER 5</div>
+  <h1>Cloud Architecture<br><span class="accent">&amp; essential components</span></h1>
+</section>
+
+<!-- 30 -->
+<section class="slide">
+  <div class="kicker">The Lego bricks</div>
+  <h2>Essential building blocks</h2>
+  <div class="grid-5">
+    <div class="card"><h3>🌐 DNS</h3><p class="small">Name → address</p></div>
+    <div class="card"><h3>🚚 CDN</h3><p class="small">Content cached near users</p></div>
+    <div class="card"><h3>⚖️ Load balancer</h3><p class="small">Spreads traffic</p></div>
+    <div class="card"><h3>🛡️ WAF / Firewall</h3><p class="small">Blocks bad traffic</p></div>
+    <div class="card"><h3>🚪 API gateway</h3><p class="small">Front door for APIs</p></div>
+    <div class="card c-chai"><h3>🖥️ Compute</h3><p class="small">VMs, containers, functions</p></div>
+    <div class="card c-chai"><h3>⚡ Cache</h3><p class="small">Redis — fast memory</p></div>
+    <div class="card c-chai"><h3>📬 Queue</h3><p class="small">Absorbs bursts, decouples</p></div>
+    <div class="card c-green"><h3>🗄️ SQL DB</h3><p class="small">Orders, payments</p></div>
+    <div class="card c-green"><h3>📦 NoSQL DB</h3><p class="small">Menus, sessions</p></div>
+    <div class="card c-green"><h3>🪣 Object storage</h3><p class="small">Images, backups</p></div>
+    <div class="card c-purple"><h3>🪪 Identity</h3><p class="small">Who can do what</p></div>
+    <div class="card c-purple"><h3>🔑 Secrets vault</h3><p class="small">Keys &amp; passwords</p></div>
+    <div class="card c-yellow"><h3>🔭 Observability</h3><p class="small">Metrics, logs, traces</p></div>
+    <div class="card c-yellow"><h3>🗺️ Regions &amp; AZs</h3><p class="small">Where it all runs</p></div>
+  </div>
+</section>
+
+<!-- 31 -->
+<section class="slide">
+  <div class="kicker">A classic web architecture</div>
+  <h2>How a request travels</h2>
+  <div class="arch" style="margin-top:1em">
+    <div class="box">📱 User</div><span class="arrow">➜</span>
+    <div class="box">🌐 DNS</div><span class="arrow">➜</span>
+    <div class="box">🚚 CDN + WAF</div><span class="arrow">➜</span>
+    <div class="box">⚖️ Load balancer</div><span class="arrow">➜</span>
+    <div class="box hl">🖥️ App servers<br><span class="tiny muted">AZ-1 · AZ-2 · AZ-3</span></div>
+  </div>
+  <div class="arch" style="margin-top:1em">
+    <div class="box">⚡ Cache</div>
+    <div class="box">🗄️ SQL DB<br><span class="tiny muted">primary + replica</span></div>
+    <div class="box">📬 Queue ➜ worker</div>
+    <div class="box">🪣 Object storage</div>
+    <div class="box">🔭 Monitoring (everything)</div>
+  </div>
+  <div class="grid-3 frag" style="margin-top:1.2em">
+    <div class="card c-green"><h3>Design for failure</h3><p class="small">Everything fails eventually. Spread across zones.</p></div>
+    <div class="card"><h3>Scale out, not up</h3><p class="small">Add more small servers rather than one giant one.</p></div>
+    <div class="card c-chai"><h3>Loose coupling</h3><p class="small">Queues &amp; APIs so one failure doesn't cascade.</p></div>
+  </div>
+</section>
+
+<!-- 32 -->
+<section class="slide">
+  <span class="tag">ACTIVITY · Architecture Lego · 25 min · Region best +50 · Overall best +100</span>
+  <h2>Design ChaiCart's architecture</h2>
+  <div class="grid-2 grow">
+    <div>
+      <ul>
+        <li>Use the <b>component cards</b>, chart paper and markers</li>
+        <li>Draw the path of an order: app → … → rider</li>
+        <li>Label your <b>cloud provider</b> and <b>region</b></li>
+        <li>Write your team name on the sheet and keep it. You'll need it on Day 2</li>
+      </ul>
+      <div class="timer" data-timer="900"></div>
+    </div>
+    <div class="frag">
+      <div class="breaking">⚠ PLOT TWIST</div>
+      <div class="card c-red" style="margin-top:.5em">
+        <h3 style="font-size:1.4em">🪔 DIWALI MEGA SALE!</h3>
+        <p>Marketing just promised <b>50× normal traffic</b> tomorrow evening. Your CFO says “no extra budget.”</p>
+        <p class="accent"><b>You have 7 minutes to redesign.</b></p>
+      </div>
+      <div class="timer" data-timer="420"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 33 -->
+<section class="slide">
+  <div class="kicker">Checklist for judging</div>
+  <h2>Well-Architected in 6 questions</h2>
+  <div class="grid-3">
+    <div class="card c-green"><h3>🛡️ Reliability</h3><p>What happens if one zone dies?</p></div>
+    <div class="card c-red"><h3>🔒 Security</h3><p>Where are secrets? Who can access the DB?</p></div>
+    <div class="card c-yellow"><h3>💰 Cost</h3><p>Does it shrink at 3 AM?</p></div>
+    <div class="card"><h3>⚙️ Operational excellence</h3><p>How do you deploy &amp; know it's healthy?</p></div>
+    <div class="card c-chai"><h3>🚀 Performance</h3><p>Cache? CDN? Queue for bursts?</p></div>
+    <div class="card c-purple"><h3>🌱 Sustainability</h3><p>Are you running idle servers?</p></div>
+  </div>
+  <p class="small muted">Based on the Well-Architected frameworks published by AWS, Azure and Google Cloud.</p>
+</section>
+
+<!-- 34 -->
+<section class="slide section">
+  <div class="num">CHAPTER 6</div>
+  <h1>Cloud-Native &amp;<br><span class="accent">Microservices</span></h1>
+  <p class="muted">One chef or a whole kitchen?</p>
+</section>
+
+<!-- 35 -->
+<section class="slide">
+  <div class="kicker">Monolith vs microservices</div>
+  <h2>👨‍🍳 One super-chef vs 🧑‍🍳🧑‍🍳🧑‍🍳 a station kitchen</h2>
+  <div class="grid-2 grow">
+    <div class="card c-red">
+      <h3>Monolith</h3>
+      <ul class="small">
+        <li>One big app, one codebase, one deployment</li>
+        <li>Simple to start ✅</li>
+        <li>Chef falls sick → restaurant closes ❌</li>
+        <li>Want more dosas? Clone the whole chef ❌</li>
+      </ul>
+    </div>
+    <div class="card c-green">
+      <h3>Microservices</h3>
+      <ul class="small">
+        <li>Small services: order, payment, kitchen, delivery, notification</li>
+        <li>Each team deploys independently ✅</li>
+        <li>Scale only the busy station ✅</li>
+        <li>But: many network calls → harder to debug ⚠️</li>
+      </ul>
+    </div>
+  </div>
+  <p class="frag center">☁️ <b>Cloud-native</b> = containers + microservices + APIs + CI/CD + DevOps + automation, built to run on elastic cloud.</p>
+</section>
+
+<!-- 36 -->
+<section class="slide">
+  <span class="tag">ACTIVITY · The Human Kitchen · 20 min · Volunteers' teams +20</span>
+  <h2>Become microservices</h2>
+  <p class="small">Six volunteers from six different teams come to the front. Everyone else counts, times and cheers.</p>
+  <div class="grid-3 grow">
+    <div class="card c-red frag"><h3>Round 1 — Monolith (3 min)</h3><p class="small">ONE volunteer processes every order ticket alone: take order, stamp PAID, draw chai, assign rider, write SMS. The room counts orders done.</p></div>
+    <div class="card c-green frag"><h3>Round 2 — Microservices (3 min)</h3><p class="small">FIVE volunteers, one station card each. Tickets flow along the line. Each station writes its <b>time</b> on the ticket.</p></div>
+    <div class="card c-chai frag"><h3>Round 3 — Chaos (3 min)</h3><p class="small">Mid-round, I tap the <b>Payment</b> person and they freeze. What happens to orders? Who notices? How fast?</p></div>
+  </div>
+  <div class="timer" data-timer="180"></div>
+</section>
+
+<!-- 37 -->
+<section class="slide">
+  <div class="kicker">Debrief</div>
+  <h2>What did the kitchen teach us?</h2>
+  <div class="grid-2">
+    <ul>
+      <li class="frag">Throughput went up — <b>parallelism &amp; independent scaling</b></li>
+      <li class="frag">One frozen station blocked everything → need <b>timeouts, retries, fallbacks</b></li>
+      <li class="frag">Nobody knew <i>where</i> the order was stuck… until we read the <b>timestamps on the ticket</b></li>
+    </ul>
+    <div class="card c-yellow frag">
+      <h3>🔍 That ticket was a <u>distributed trace</u>!</h3>
+      <p class="small">Each station = a <b>span</b>. The ticket number = a <b>trace ID</b>. Hold that thought for the end of today.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 38 -->
+<section class="slide section">
+  <div class="num">CHAPTER 7</div>
+  <h1>Industry Use Cases<br><span class="accent">&amp; real-world adoption</span></h1>
+</section>
+
+<!-- 39 -->
+<section class="slide">
+  <span class="tag">ACTIVITY · Gallery Walk · 20 min · Best insights +50</span>
+  <h2>Case study gallery walk</h2>
+  <div class="grid-3">
+    <div class="card c-red"><h3>Netflix</h3><p class="small">From DVD-shipping outage to chaos engineering on AWS</p></div>
+    <div class="card"><h3>Disney+ Hotstar</h3><p class="small">Record-breaking live cricket streams</p></div>
+    <div class="card c-green"><h3>UPI / NPCI</h3><p class="small">Billions of payments a month</p></div>
+    <div class="card c-chai"><h3>IRCTC Tatkal</h3><p class="small">The 10 AM stampede</p></div>
+    <div class="card c-purple"><h3>Capital One</h3><p class="small">A bank goes all-in on public cloud</p></div>
+    <div class="card c-yellow"><h3>Spotify</h3><p class="small">From own data centres to Google Cloud</p></div>
+  </div>
+  <p>12 poster stations, 2 teams per station. Rotate clockwise every 3 minutes. Stick notes answering <b class="accent">“Which cloud concept saved them?”</b> and <b class="accent">“What would ChaiCart copy?”</b></p>
+  <div class="timer" data-timer="180"></div>
+</section>
+
+<!-- 40 -->
+<section class="slide section">
+  <div class="num">CHAPTER 8</div>
+  <h1>Cloud Observability<br><span class="accent">&amp; Monitoring</span> — a first look</h1>
+</section>
+
+<!-- 41 -->
+<section class="slide">
+  <div class="kicker">The doctor analogy 🩺</div>
+  <h2>How do you know your app is healthy?</h2>
+  <div class="grid-3 grow" style="align-content:center">
+    <div class="card c-chai frag"><div class="emoji">📈</div><h3>Metrics = Vital signs</h3><p>Pulse, BP, temperature → CPU, response time, error rate, orders/min. Numbers over time.</p></div>
+    <div class="card frag"><div class="emoji">📓</div><h3>Logs = Patient's diary</h3><p>“09:02 felt dizzy after lunch” → <code>09:02 ERROR payment timeout</code>. Detailed events.</p></div>
+    <div class="card c-green frag"><div class="emoji">🩻</div><h3>Traces = MRI scan</h3><p>Follows one request through every organ (service) and shows exactly where it got stuck.</p></div>
+  </div>
+  <blockquote class="frag"><b>Monitoring</b> tells you <u>that</u> something is wrong. <b>Observability</b> lets you ask <u>why</u> — even for problems you never predicted.</blockquote>
+</section>
+
+<!-- 42 -->
+<section class="slide">
+  <span class="tag blue">LIVE DEMO · Dynatrace</span>
+  <h2>A 5-minute peek into a real observability platform</h2>
+  <div class="grid-2 grow">
+    <ul>
+      <li>🗺️ <b>Service map</b> — see how microservices talk to each other</li>
+      <li>📈 <b>Metrics</b> — response time &amp; failure rate of a service</li>
+      <li>🧵 <b>A distributed trace</b> — the “order ticket” of a real request</li>
+      <li>🚨 <b>Problems</b> — AI grouping alerts into one root cause</li>
+    </ul>
+    <div class="card c-yellow">
+      <h3>Ask the audience</h3>
+      <p class="small">“If ChaiCart's payments were failing right now, which of these screens would you open first — and why?”</p>
+    </div>
+  </div>
+</section>
+
+<!-- 43 -->
+<section class="slide">
+  <span class="tag green">QUIZ · 10 questions · +10 per correct answer</span>
+  <h2>Day 1 recap quiz</h2>
+  <ul>
+    <li>The COO writes the team's answer (A–D) for each question on the <b>quiz answer sheet</b></li>
+    <li>20 seconds per question. No changing answers after the reveal</li>
+    <li>At the end, swap sheets with the neighbouring team and mark them against the answer key</li>
+  </ul>
+  <p><a href="quiz.html#day1" target="_blank">Launch Day 1 quiz</a> &nbsp;·&nbsp; <a href="leaderboard.html" target="_blank">Leaderboard</a></p>
+</section>
+
+<!-- 44 -->
+<section class="slide section">
+  <div class="kicker">Before you leave…</div>
+  <h1 style="font-size:2.6em">ChaiCart launches <span class="accent">tomorrow at 9:00 AM.</span></h1>
+  <p style="font-size:1.4em" class="red"><b>Something WILL break.</b></p>
+  <div class="envelope frag" style="margin-top:1em"><span>DO NOT OPEN</span></div>
+  <p class="frag center muted">Each team gets a sealed envelope. Guard it. Open it only when told to on Day 2. 🕵️</p>
+</section>
+
+</main>
+<script src="assets/deck.js"></script>
+</body>
+</html>

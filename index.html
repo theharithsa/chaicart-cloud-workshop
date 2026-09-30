@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ChaiCart Cloud Workshop</title>
+<meta name="description" content="A two-day, game-based workshop on cloud computing, observability, SRE, DevOps and business systems for engineering students. Slides, card games, a murder mystery and a facilitator guide.">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<style>
+  :root { --ivory:#FAF9F5; --ivory-2:#F0EEE6; --line:#DEDAD0; --ink:#141413; --ink-2:#3D3D3A; --muted:#73726C; --clay:#D97757; --clay-d:#A34E32; --clay-t:#F5E4DB; --slate:#262624;
+    --serif:"Tiempos Headline","Copernicus",Georgia,serif; --sans:"Styrene A","Inter","Segoe UI",system-ui,sans-serif; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--ivory); color: var(--ink); font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 64px 32px 80px; }
+  .star { width: 28px; height: 28px; background: var(--clay); clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%); margin-bottom: 20px; }
+  .kicker { font-size: 12px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--clay-d); }
+  h1 { font-family: var(--serif); font-weight: 500; letter-spacing: -.02em; font-size: 56px; line-height: 1.05; margin: 10px 0 16px; }
+  .lede { font-family: var(--serif); font-size: 21px; line-height: 1.5; color: var(--ink-2); max-width: 720px; margin: 0; }
+  h2 { font-family: var(--serif); font-weight: 500; font-size: 26px; margin: 56px 0 6px; }
+  .sec-sub { color: var(--muted); margin: 0 0 18px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 14px; }
+  a.tile { display: flex; flex-direction: column; gap: 6px; background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 20px; color: var(--ink); text-decoration: none; transition: border-color .15s, transform .15s; min-height: 132px; }
+  a.tile:hover { border-color: var(--clay); transform: translateY(-2px); }
+  a.tile .n { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  a.tile b { font-family: var(--serif); font-weight: 500; font-size: 20px; }
+  a.tile small { color: var(--muted); font-size: 13.5px; line-height: 1.45; }
+  a.tile.feature { background: var(--slate); border-color: var(--slate); color: var(--ivory); }
+  a.tile.feature small { color: #C9C5B8; }
+  a.tile.feature .n { color: var(--clay); }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; background: #fff; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  th, td { border-bottom: 1px solid var(--line); padding: 9px 12px; text-align: left; vertical-align: top; color: var(--ink-2); }
+  th { background: var(--ivory-2); color: var(--ink); font-weight: 600; }
+  tr:last-child td { border-bottom: 0; }
+  td:first-child { white-space: nowrap; color: var(--clay-d); font-family: Consolas, monospace; font-size: 13px; }
+  tr.brk td { color: var(--muted); font-style: italic; }
+  h3 { font-family: var(--serif); font-weight: 500; font-size: 19px; margin: 0 0 10px; }
+  ul.checklist { list-style: none; padding: 0; margin: 0; }
+  ul.checklist li { padding: 9px 0; border-bottom: 1px solid var(--line); color: var(--ink-2); line-height: 1.5; font-size: 14.5px; }
+  ul.checklist li::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--clay); margin: 0 10px 2px 0; }
+  footer { margin-top: 64px; padding-top: 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+  @media (max-width: 800px) { .two { grid-template-columns: 1fr; } h1 { font-size: 40px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="star"></div>
+  <div class="kicker">Cloud Computing &amp; Business Systems · Two-day workshop</div>
+  <h1>The ChaiCart Cloud Workshop</h1>
+  <p class="lede">120 engineering students become founders of 24 startups in four regions. On Day 1 they build a startup in the cloud. On Day 2 they keep it alive through outages, bill shocks and a murder mystery.</p>
+
+  <h2>Start here</h2>
+  <p class="sec-sub">Read the guide once before anything else. It covers room setup, region captains, printing quantities and every stage minute by minute.</p>
+  <div class="grid">
+    <a class="tile feature" href="facilitator-guide.html"><span class="n">Facilitator</span><b>Facilitator guide</b><small>Preparation, scoring and a step-by-step script for every stage of both days.</small></a>
+  </div>
+
+  <h2>Present</h2>
+  <p class="sec-sub">Arrow keys or space to move · F for full screen · activity slides include timers.</p>
+  <div class="grid">
+    <a class="tile" href="day1-slides.html"><span class="n">Day 1 · 44 slides</span><b>Build ChaiCart</b><small>Cloud fundamentals, service and deployment models, platforms, containers, architecture, microservices, observability intro.</small></a>
+    <a class="tile" href="day2-slides.html"><span class="n">Day 2 · 49 slides</span><b>Keep ChaiCart Alive</b><small>Reliability, observability, SRE, DevOps, security, cost, business systems, careers.</small></a>
+    <a class="tile" href="leaderboard.html"><span class="n">Live scoring</span><b>Cloud Credits leaderboard</b><small>24 teams in four regions. Batch entry for whole rounds. Press P for presentation mode.</small></a>
+    <a class="tile" href="quiz.html#day1"><span class="n">Recap</span><b>Quizzes</b><small>Ten questions per day, 20-second timer, explanations on reveal.</small></a>
+  </div>
+
+  <h2>Print</h2>
+  <p class="sec-sub">A4, 100% scale, “Background graphics” on.</p>
+  <div class="grid">
+    <a class="tile" href="cards.html"><span class="n">Games</span><b>Card decks</b><small>Table tents, timeline, service sort, scenarios, Shark Tank, architecture, kitchen, bingo, error budget, bill shock, business systems, career tarot.</small></a>
+    <a class="tile" href="murder-mystery.html"><span class="n">Day 2 centrepiece</span><b>Murder mystery pack</b><small>“Who Killed Checkout?” Evidence, accusation form and a separate solution.</small></a>
+    <a class="tile" href="treasure-hunt.html"><span class="n">Hands-on</span><b>Treasure hunt</b><small>Dynatrace and Azure free-tier worksheet, 150 points.</small></a>
+    <a class="tile" href="gallery-posters.html"><span class="n">Day 1 walls</span><b>Gallery posters</b><small>Netflix, Hotstar, UPI, IRCTC, Capital One, Spotify.</small></a>
+    <a class="tile" href="team-sheet-and-surveys.html"><span class="n">Per team / person</span><b>Team sheet &amp; surveys</b><small>Roles, trackers, postmortem, quiz answer sheets, 90-day plan, pre- and post-surveys.</small></a>
+    <a class="tile" href="cheat-sheet.html"><span class="n">Take-home</span><b>Cheat sheet</b><small>Both days on two pages.</small></a>
+    <a class="tile" href="certificate.html"><span class="n">Closing</span><b>Certificates</b><small>Participation and five awards, bulk names.</small></a>
+  </div>
+
+  <h2>Run of show</h2>
+  <p class="sec-sub">Slide numbers match the counter in each deck. Full detail is in the facilitator guide.</p>
+  <div class="two">
+    <div>
+      <h3>Day 1 — Build ChaiCart</h3>
+      <table>
+        <tr><th>Time</th><th>Block</th><th>Slides</th></tr>
+        <tr><td>09:30</td><td>Opening, roles, Cloud or Not?</td><td>1–6</td></tr>
+        <tr><td>09:55</td><td>What is cloud, Human Timeline</td><td>7–10</td></tr>
+        <tr><td>10:30</td><td>IaaS / PaaS / SaaS, Sorting Race</td><td>11–15</td></tr>
+        <tr class="brk"><td>11:00</td><td>Break</td><td></td></tr>
+        <tr><td>11:15</td><td>Deployment models debate</td><td>16–19</td></tr>
+        <tr><td>11:40</td><td>Platforms, Cloud Shark Tank</td><td>20–23</td></tr>
+        <tr class="brk"><td>12:25</td><td>Lunch</td><td></td></tr>
+        <tr><td>13:15</td><td>Bingo, VMs &amp; containers, Azure demo</td><td>24–28</td></tr>
+        <tr><td>13:55</td><td>Architecture Lego + Diwali twist</td><td>29–33</td></tr>
+        <tr class="brk"><td>14:45</td><td>Break</td><td></td></tr>
+        <tr><td>15:00</td><td>Microservices, Human Kitchen</td><td>34–37</td></tr>
+        <tr><td>15:30</td><td>Gallery Walk</td><td>38–39</td></tr>
+        <tr><td>15:55</td><td>Observability intro, quiz, cliffhanger</td><td>40–44</td></tr>
+      </table>
+    </div>
+    <div>
+      <h3>Day 2 — Keep ChaiCart Alive</h3>
+      <table>
+        <tr><th>Time</th><th>Block</th><th>Slides</th></tr>
+        <tr><td>09:30</td><td>Warm-up, breaking news, reliability</td><td>1–7</td></tr>
+        <tr><td>09:55</td><td>Monitoring vs observability, APM</td><td>8–10</td></tr>
+        <tr><td>10:10</td><td>Murder mystery</td><td>11–15</td></tr>
+        <tr class="brk"><td>11:00</td><td>Break</td><td></td></tr>
+        <tr><td>11:15</td><td>Signals, Treasure Hunt</td><td>16–20</td></tr>
+        <tr><td>12:00</td><td>SRE, Error Budget Poker</td><td>21–24</td></tr>
+        <tr class="brk"><td>12:40</td><td>Lunch</td><td></td></tr>
+        <tr><td>13:25</td><td>Blameless postmortem</td><td>25</td></tr>
+        <tr><td>13:40</td><td>DevOps, Paper Planes, CI/CD demo</td><td>26–30</td></tr>
+        <tr><td>14:25</td><td>Security, scale, cost, Bill Shock</td><td>31–36</td></tr>
+        <tr class="brk"><td>15:00</td><td>Break</td><td></td></tr>
+        <tr><td>15:10</td><td>Business systems, Follow the Order</td><td>37–41</td></tr>
+        <tr><td>15:45</td><td>Trends, Career Tarot, Q&amp;A</td><td>42–46</td></tr>
+        <tr><td>16:15</td><td>Quiz, Demo Day, awards</td><td>47–49</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <h2>Supplies for 120 students</h2>
+  <div class="two">
+    <ul class="checklist">
+      <li>24 chart papers and about 50 markers</li>
+      <li>12 sticky-note pads for the Gallery Walk</li>
+      <li>About 200 sheets of scrap A4, cut in half for Paper Planes</li>
+      <li>24 dice for Error Budget Poker</li>
+      <li>24 envelopes for the murder mystery</li>
+    </ul>
+    <ul class="checklist">
+      <li>Two microphones, one handheld for volunteers and pitches</li>
+      <li>A stamp or coloured pens for Follow the Order</li>
+      <li>Scissors or a paper cutter for the card decks</li>
+      <li>Prizes for 9 awards (including 4 Region Champions)</li>
+      <li>4 region captains and 1 scorekeeper</li>
+    </ul>
+  </div>
+
+  <footer>All files work offline. Open them directly from this folder in any modern browser. · <a href="https://github.com/theharithsa/chaicart-cloud-workshop" style="color:var(--clay-d)">Source on GitHub</a> · MIT License</footer>
+</div>
+</body>
+</html>

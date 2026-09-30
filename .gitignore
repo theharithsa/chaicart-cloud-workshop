@@ -1,0 +1,13 @@
+# OS and editor files
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# Local exports and scratch files
+*.csv
+*.pdf
+*.new.html
+*.tmp
+_site/

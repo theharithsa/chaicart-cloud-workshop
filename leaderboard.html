@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cloud Credits Leaderboard</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<style>
+  :root { --ivory:#FAF9F5; --ivory-2:#F0EEE6; --line:#DEDAD0; --ink:#141413; --ink-2:#3D3D3A; --muted:#73726C; --clay:#D97757; --clay-d:#A34E32; --clay-t:#F5E4DB; --olive-d:#56693F; --olive-t:#E6EADC; --red:#B0413E; --slate:#262624;
+    --serif:"Tiempos Headline","Copernicus",Georgia,serif; --sans:"Styrene A","Inter","Segoe UI",system-ui,sans-serif; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--ivory); color: var(--ink); font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 1400px; margin: 0 auto; padding: 32px 28px 48px; }
+  .head { display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; flex-wrap: wrap; margin-bottom: 22px; }
+  .kicker { font-size: 12px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--clay-d); }
+  h1 { margin: 6px 0 0; font-family: var(--serif); font-weight: 500; letter-spacing: -.015em; font-size: 40px; }
+  .sub { color: var(--muted); font-size: 14px; margin-top: 6px; }
+  a { color: var(--clay-d); }
+
+  button { font-family: var(--sans); border: 0; border-radius: 99px; padding: 8px 14px; font-weight: 600; cursor: pointer; font-size: 13px; }
+  .primary { background: var(--ink); color: var(--ivory); }
+  .ghost { background: var(--ivory-2); color: var(--ink); }
+  .danger { background: var(--clay-t); color: var(--clay-d); }
+  .plus { background: var(--olive-t); color: var(--olive-d); padding: 5px 9px; }
+  .minus { background: var(--clay-t); color: var(--clay-d); padding: 5px 9px; }
+  .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  .podium { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 18px; }
+  .pod { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 16px 20px; display: flex; justify-content: space-between; align-items: baseline; }
+  .pod:first-child { background: var(--slate); border-color: var(--slate); color: var(--ivory); }
+  .pod .pl { font-size: 11px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+  .pod:first-child .pl { color: var(--clay); }
+  .pod .nm { font-family: var(--serif); font-size: 24px; margin-top: 2px; }
+  .pod .rg { font-size: 12px; color: var(--muted); }
+  .pod:first-child .rg { color: #C9C5B8; }
+  .pod .sc { font-family: var(--serif); font-size: 34px; font-variant-numeric: tabular-nums; }
+
+  .regions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .region { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px 10px; }
+  .rhead { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 4px; }
+  .rhead b { font-family: var(--serif); font-weight: 500; font-size: 19px; }
+  .rhead span { font-size: 12px; color: var(--muted); }
+  .team { display: grid; grid-template-columns: 22px 1fr auto; gap: 8px; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--ivory-2); }
+  .team:last-child { border-bottom: 0; }
+  .team.flash { animation: fl 1s; }
+  @keyframes fl { 30% { background: var(--clay-t); } }
+  .rank { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .team.top .rank { color: var(--clay-d); font-weight: 700; }
+  .nmwrap { min-width: 0; }
+  .name { font-family: var(--serif); font-size: 16px; background: transparent; border: 0; color: var(--ink); width: 100%; padding: 0; }
+  .name:focus { outline: 1px dashed var(--line); }
+  .bar { height: 4px; background: var(--ivory-2); border-radius: 99px; margin-top: 4px; overflow: hidden; }
+  .bar i { display: block; height: 100%; background: var(--clay); border-radius: 99px; transition: width .6s; }
+  .score { font-family: var(--serif); font-size: 20px; text-align: right; font-variant-numeric: tabular-nums; }
+  .score.neg { color: var(--red); }
+  .btns { grid-column: 2 / -1; display: flex; gap: 4px; flex-wrap: wrap; margin-top: 2px; }
+  .custom { width: 58px; padding: 4px 8px; border-radius: 99px; border: 1px solid var(--line); font-family: var(--sans); font-size: 12px; }
+
+  .log { margin-top: 18px; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px; max-height: 200px; overflow: auto; font-family: Consolas, monospace; font-size: 12.5px; color: var(--muted); }
+
+  .modal { position: fixed; inset: 0; background: rgba(20,20,19,.45); display: none; align-items: flex-start; justify-content: center; padding: 40px 20px; overflow: auto; z-index: 20; }
+  .modal.open { display: flex; }
+  .sheet { background: var(--ivory); border-radius: 16px; padding: 24px 28px; width: min(1100px, 100%); }
+  .sheet h2 { font-family: var(--serif); font-weight: 500; margin: 0 0 4px; font-size: 26px; }
+  .sheet .row { display: flex; gap: 10px; align-items: center; margin: 14px 0; flex-wrap: wrap; }
+  .sheet input[type=text] { padding: 8px 12px; border-radius: 99px; border: 1px solid var(--line); font-family: var(--sans); min-width: 280px; }
+  .rgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .rgrid .col { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; }
+  .rgrid .col b { font-family: var(--serif); font-weight: 500; display: block; margin-bottom: 6px; }
+  .rgrid label { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; font-size: 14px; color: var(--ink-2); }
+  .rgrid input { width: 70px; padding: 5px 8px; border-radius: 8px; border: 1px solid var(--line); text-align: right; font-family: var(--sans); }
+
+  .presenting .btns, .presenting .toolbar, .presenting .log, .presenting .actions { display: none; }
+  .presenting .wrap { max-width: none; padding: 28px 40px; }
+  .presenting .name { font-size: 20px; pointer-events: none; }
+  .presenting .score { font-size: 26px; }
+  .presenting .team { padding: 10px 0; }
+  @media (max-width: 1000px) { .regions, .rgrid { grid-template-columns: 1fr 1fr; } }
+</style>
+</head>
+<body>
+<div id="app">
+<div class="wrap">
+  <div class="head">
+    <div>
+      <div class="kicker">ChaiCart Startup Challenge</div>
+      <h1>Cloud Credits leaderboard</h1>
+      <div class="sub">24 startups · 4 regions · saved automatically in this browser · <a href="index.html">Back to hub</a></div>
+    </div>
+    <div class="actions">
+      <button class="primary" id="round">Enter round scores</button>
+      <button class="ghost" id="undo">Undo last</button>
+      <button class="ghost" id="present">Presentation mode (P)</button>
+      <button class="ghost" id="export">Export CSV</button>
+      <button class="danger" id="reset">Reset</button>
+    </div>
+  </div>
+  <div class="podium" id="podium"></div>
+  <div class="regions" id="regions"></div>
+  <div class="log" id="log"></div>
+</div>
+</div>
+
+<div class="modal" id="modal">
+  <div class="sheet">
+    <h2>Enter round scores</h2>
+    <div class="sub">Type the credits each team earned (use a minus sign for losses). Leave blank for no change. Tab moves down the list.</div>
+    <div class="row">
+      <input type="text" id="reason" placeholder="Round name, e.g. Day 1 quiz">
+      <button class="primary" id="apply">Apply to all teams</button>
+      <button class="ghost" id="cancel">Cancel</button>
+    </div>
+    <div class="rgrid" id="rgrid"></div>
+  </div>
+</div>
+
+<script>
+const KEY = 'chaicart-leaderboard-v2';
+const REGIONS = [
+  { id: 'west', name: 'West India', city: 'Mumbai' },
+  { id: 'south', name: 'South India', city: 'Chennai' },
+  { id: 'central', name: 'Central India', city: 'Pune' },
+  { id: 'north', name: 'North India', city: 'Delhi' },
+];
+const defaults = () => ({
+  teams: REGIONS.flatMap(r => 'abcdef'.split('').map(z => ({ name: `${r.city}-1${z}`, region: r.id, score: 1000 }))),
+  history: [],
+});
+let state = JSON.parse(localStorage.getItem(KEY) || 'null') || defaults();
+const save = () => localStorage.setItem(KEY, JSON.stringify(state));
+const $ = id => document.getElementById(id);
+const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; };
+
+function applyBatch(changes, reason) {
+  if (!changes.length) return;
+  const batch = Date.now();
+  const at = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  changes.forEach(({ i, delta }) => {
+    state.teams[i].score += delta;
+    state.history.push({ batch, i, delta, name: state.teams[i].name, reason, at });
+  });
+  save();
+  render(new Set(changes.map(c => c.i)));
+}
+
+function render(flash = new Set()) {
+  const all = state.teams.map((t, i) => ({ ...t, i }));
+  const max = Math.max(1, ...all.map(t => t.score));
+
+  const podium = $('podium');
+  podium.replaceChildren();
+  [...all].sort((a, b) => b.score - a.score).slice(0, 3).forEach((t, k) => {
+    const p = el('div', 'pod');
+    const left = el('div');
+    left.append(el('div', 'pl', ['1st overall', '2nd overall', '3rd overall'][k]), el('div', 'nm', t.name), el('div', 'rg', REGIONS.find(r => r.id === t.region)?.name || ''));
+    p.append(left, el('div', 'sc', t.score.toLocaleString()));
+    podium.appendChild(p);
+  });
+
+  const regions = $('regions');
+  regions.replaceChildren();
+  REGIONS.forEach(r => {
+    const teams = all.filter(t => t.region === r.id).sort((a, b) => b.score - a.score);
+    const box = el('div', 'region');
+    const head = el('div', 'rhead');
+    const avg = teams.length ? Math.round(teams.reduce((s, t) => s + t.score, 0) / teams.length) : 0;
+    head.append(el('b', '', r.name), el('span', '', `avg ${avg.toLocaleString()}`));
+    box.appendChild(head);
+    teams.forEach((t, k) => {
+      const row = el('div', 'team' + (k === 0 ? ' top' : '') + (flash.has(t.i) ? ' flash' : ''));
+      const nmwrap = el('div', 'nmwrap');
+      const name = el('input', 'name');
+      name.value = t.name;
+      name.onchange = () => { state.teams[t.i].name = name.value.trim() || t.name; save(); render(); };
+      const bar = el('div', 'bar');
+      const fill = el('i');
+      fill.style.width = Math.max(0, t.score / max * 100) + '%';
+      bar.appendChild(fill);
+      nmwrap.append(name, bar);
+      const score = el('div', 'score' + (t.score < 0 ? ' neg' : ''), t.score.toLocaleString());
+      const btns = el('div', 'btns');
+      [[10, 'plus'], [50, 'plus'], [100, 'plus'], [-50, 'minus']].forEach(([v, c]) => {
+        const b = el('button', c, (v > 0 ? '+' : '−') + Math.abs(v));
+        b.onclick = () => applyBatch([{ i: t.i, delta: v }], 'quick');
+        btns.appendChild(b);
+      });
+      const custom = el('input', 'custom');
+      custom.type = 'number'; custom.placeholder = '±';
+      custom.onkeydown = e => { if (e.key === 'Enter' && custom.value) applyBatch([{ i: t.i, delta: parseInt(custom.value, 10) || 0 }], 'custom'); };
+      btns.appendChild(custom);
+      row.append(el('span', 'rank', String(k + 1)), nmwrap, score, btns);
+      box.appendChild(row);
+    });
+    regions.appendChild(box);
+  });
+
+  const log = $('log');
+  log.replaceChildren();
+  state.history.slice(-60).reverse().forEach(h => {
+    log.appendChild(el('div', '', `${h.at}  ${h.name}  ${h.delta > 0 ? '+' : ''}${h.delta}  ${h.reason && h.reason !== 'quick' ? '· ' + h.reason : ''}`));
+  });
+  if (!state.history.length) log.appendChild(el('div', '', 'No score changes yet. Every team starts with 1,000 credits.'));
+}
+
+function openRound() {
+  const grid = $('rgrid');
+  grid.replaceChildren();
+  REGIONS.forEach(r => {
+    const col = el('div', 'col');
+    col.appendChild(el('b', '', r.name));
+    state.teams.forEach((t, i) => {
+      if (t.region !== r.id) return;
+      const lab = el('label');
+      const inp = el('input');
+      inp.type = 'number'; inp.dataset.i = i;
+      lab.append(el('span', '', t.name), inp);
+      col.appendChild(lab);
+    });
+    grid.appendChild(col);
+  });
+  $('reason').value = '';
+  $('modal').classList.add('open');
+  $('reason').focus();
+}
+
+$('round').onclick = openRound;
+$('cancel').onclick = () => $('modal').classList.remove('open');
+$('apply').onclick = () => {
+  const changes = [...document.querySelectorAll('#rgrid input')]
+    .filter(inp => inp.value.trim() !== '')
+    .map(inp => ({ i: Number(inp.dataset.i), delta: parseInt(inp.value, 10) || 0 }))
+    .filter(c => c.delta !== 0);
+  applyBatch(changes, $('reason').value.trim() || 'round');
+  $('modal').classList.remove('open');
+};
+$('undo').onclick = () => {
+  const last = state.history[state.history.length - 1];
+  if (!last) return;
+  while (state.history.length && state.history[state.history.length - 1].batch === last.batch) {
+    const h = state.history.pop();
+    if (state.teams[h.i]) state.teams[h.i].score -= h.delta;
+  }
+  save(); render();
+};
+$('reset').onclick = () => { if (confirm('Reset all 24 teams to 1,000 credits and clear history?')) { state = defaults(); save(); render(); } };
+$('present').onclick = () => document.body.classList.toggle('presenting');
+$('export').onclick = () => {
+  const csv = 'team,region,score\n' + state.teams.map(t => `"${t.name.replace(/"/g, '""')}",${REGIONS.find(r => r.id === t.region)?.name || ''},${t.score}`).join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+  a.download = 'chaicart-leaderboard.csv';
+  a.click();
+};
+document.addEventListener('keydown', e => {
+  if (e.target.closest('input')) return;
+  if (e.key === 'p' || e.key === 'P') document.body.classList.toggle('presenting');
+  if (e.key === 'Escape') $('modal').classList.remove('open');
+});
+render();
+</script>
+</body>
+</html>

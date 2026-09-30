@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Gallery Walk Posters – Industry Case Studies</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/print.css">
+<style>
+  .poster { display: flex; flex-direction: column; min-height: 273mm; }
+  .poster .hero { padding: 10mm 10mm 9mm; color: var(--ivory); background: #262624; border-radius: 3mm; position: relative; overflow: hidden; }
+  .poster .hero::after { content: ""; position: absolute; right: -25mm; top: -25mm; width: 80mm; height: 80mm; border-radius: 50%; border: 1px solid rgba(217,119,87,.5); }
+  .poster .hero .num { font-size: 9pt; letter-spacing: .16em; text-transform: uppercase; color: var(--clay); font-weight: 600; }
+  .poster .hero h1 { color: var(--ivory); font-size: 34pt; margin: 3mm 0 0; }
+  .poster .hero p { font-family: var(--serif); font-style: italic; font-size: 14pt; margin: 1mm 0 0; color: #C9C5B8; }
+  .poster .sec { margin-top: 6mm; font-size: 12pt; }
+  .poster .sec p { font-size: 12pt; }
+  .poster .tags span { display: inline-block; background: var(--clay-t); color: var(--clay-d); border-radius: 99px; padding: 1.2mm 4mm; margin: 1mm 1.5mm 1mm 0; font-weight: 600; font-size: 10pt; }
+  .poster .q { font-family: var(--serif); font-size: 15pt; color: var(--ink); border-left: 2px solid var(--clay); padding-left: 4mm; }
+  .poster .notes { flex: 1; margin-top: 6mm; border: 1px dashed #B9B5AA; border-radius: 3mm; padding: 5mm; color: var(--muted); font-size: 11pt; min-height: 55mm; background: #fff; }
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <b>Gallery Walk Posters</b>
+  <button onclick="window.print()">Print</button>
+  <span class="hint">Print 2 sets (A3 if possible) to make 12 stations, 2 teams per station. Teams rotate clockwise every 3 minutes and add sticky notes.</span>
+  <a href="index.html">← Hub</a>
+</div>
+<div id="root"></div>
+<script>
+const posters = [
+  { icon: '🎬', name: 'Netflix', tag: 'From a DVD outage to chaos engineering', color: '#b20710',
+    challenge: 'In 2008 a major database corruption stopped Netflix from shipping DVDs for about three days. One big data centre meant one big point of failure.',
+    did: 'Netflix moved to AWS public cloud over several years, completing the migration in early 2016. It rebuilt its monolith as many microservices and invented Chaos Monkey, a tool that randomly shuts down production servers so engineers are forced to build systems that survive failure.',
+    concepts: ['Public cloud', 'Microservices', 'Design for failure', 'Chaos engineering', 'Multi-region'],
+    q: 'Would you let a “monkey” randomly kill ChaiCart servers? What would you need first?' },
+  { icon: '🏏', name: 'Disney+ Hotstar', tag: 'Crores of fans, one final over', color: '#0c1f5c',
+    challenge: 'Live cricket brings enormous spikes. Traffic can jump within seconds when a star batter walks in, or crash when a wicket falls. Streams set records, with around 5.9 crore concurrent viewers reported during the 2023 World Cup final.',
+    did: 'The engineering team talked publicly about pre-scaling infrastructure ahead of big moments because reactive autoscaling can be too slow. They also run massive load tests and game days, use CDNs heavily, and plan “panic mode” features that switch off non-essential services to protect the video stream.',
+    concepts: ['Elastic scaling', 'Pre-warming', 'CDN', 'Load testing', 'Graceful degradation'],
+    q: 'What would ChaiCart switch off first to survive an IPL-final spike?' },
+  { icon: '📲', name: 'UPI / NPCI', tag: 'Billions of payments every month', color: '#1e6b45',
+    challenge: 'India wanted instant, interoperable, near-free digital payments between any bank and any app, available 24×7.',
+    did: 'NPCI launched UPI in 2016 as an API-based platform connecting banks and apps like PhonePe, Google Pay and Paytm. It now handles 10+ billion transactions a month. Being critical financial infrastructure under RBI rules, it runs in NPCI-controlled data centres with high redundancy, a private-cloud-style model.',
+    concepts: ['APIs & platforms', 'Private cloud', 'High availability', 'Regulation & data localisation', 'Massive scale'],
+    q: 'Why might UPI choose a private/regulated setup when Netflix chose public cloud?' },
+  { icon: '🚆', name: 'IRCTC Tatkal', tag: 'The 10 AM stampede', color: '#8a4b0f',
+    challenge: 'Tatkal booking opens at a fixed time. Huge numbers of users (and bots!) hit the site at exactly the same second for a limited number of seats.',
+    did: 'Railway ticketing has invested over the years in more capacity, caching, CAPTCHA and bot protection, queueing and rate limiting, and a better mobile app. The problem is unusual because demand is predictable in time but far larger than supply.',
+    concepts: ['Queues & rate limiting', 'Caching', 'WAF / bot protection', 'Capacity planning', 'Fairness'],
+    q: 'If ChaiCart gave away 100 free chais at 4:00 PM, how would you stop the app from melting?' },
+  { icon: '🏦', name: 'Capital One', tag: 'A bank goes all-in on public cloud', color: '#004977',
+    challenge: 'A large US bank wanted to move faster, use data and AI, and stop running its own data centres.',
+    did: 'Capital One went all-in on AWS and announced in 2020 that it had closed its last data centres. It also lived through the downside: a 2019 data breach linked to a misconfigured web application firewall, a hard lesson in the shared-responsibility model.',
+    concepts: ['Cloud migration', 'Regulated industry', 'Shared responsibility', 'Security misconfiguration', 'DevSecOps'],
+    q: 'Who was responsible for the breach: the bank or the cloud provider? Why?' },
+  { icon: '🎧', name: 'Spotify', tag: 'From own data centres to Google Cloud', color: '#127a3a',
+    challenge: 'Spotify ran its own data centres. Engineers spent time managing hardware instead of building features for millions of listeners.',
+    did: 'Spotify announced its move to Google Cloud in 2016, attracted by managed data and analytics services. Its engineers also built Backstage, an internal developer portal that was open-sourced and became a CNCF project. It kicked off the platform engineering trend.',
+    concepts: ['Managed services', 'Data & analytics', 'Platform engineering', 'Developer experience', 'Open source'],
+    q: 'What “Backstage” would ChaiCart developers need?' },
+];
+const root = document.getElementById('root');
+posters.forEach((p, n) => {
+  const page = document.createElement('div');
+  page.className = 'page';
+  page.innerHTML = `<div class="poster">
+    <div class="hero"><div class="num">Case study ${n + 1} of ${posters.length}</div><h1>${p.name}</h1><p>${p.tag}</p></div>
+    <div class="sec"><h3>The challenge</h3><p>${p.challenge}</p></div>
+    <div class="sec"><h3>What they did</h3><p>${p.did}</p></div>
+    <div class="sec"><h3>Cloud concepts in action</h3><div class="tags">${p.concepts.map(c => `<span>${c}</span>`).join('')}</div></div>
+    <div class="sec"><h3>Question for your team</h3><p class="q">${p.q}</p></div>
+    <div class="notes">Stick your notes here<br>• Which cloud concept saved them?<br>• What would ChaiCart copy?</div>
+  </div>`;
+  root.appendChild(page);
+});
+</script>
+</body>
+</html>

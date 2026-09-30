@@ -1,0 +1,127 @@
+/* Anthropic-inspired print theme. Legacy variable names are remapped so every page inherits the palette. */
+:root {
+  --ivory: #FAF9F5;
+  --ivory-2: #F0EEE6;
+  --line: #DEDAD0;
+  --ink: #141413;
+  --ink-2: #3D3D3A;
+  --muted: #73726C;
+  --clay: #D97757;
+  --clay-d: #A34E32;
+  --clay-t: #F5E4DB;
+  --serif: "Tiempos Headline", "Copernicus", Georgia, "Times New Roman", serif;
+  --sans: "Styrene A", "Inter", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", "Cascadia Code", Consolas, monospace;
+
+  --navy: #141413;
+  --blue: #6A9BCC;
+  --chai: #D97757;
+  --green: #788C5D;
+  --red: #B0413E;
+  --yellow: #C4935F;
+  --purple: #8E88B8;
+  --pink: #C46686;
+  --grey: #73726C;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; background: #E9E6DC; color: var(--ink); font-family: var(--sans); font-size: 10.5pt; -webkit-font-smoothing: antialiased; }
+
+.toolbar {
+  position: sticky; top: 0; z-index: 5; background: var(--ivory); color: var(--ink);
+  border-bottom: 1px solid var(--line);
+  padding: 12px 24px; display: flex; gap: 14px; align-items: center; flex-wrap: wrap; font-size: 14px;
+}
+.toolbar b { font-family: var(--serif); font-weight: 500; font-size: 18px; }
+.toolbar a { color: var(--clay-d); }
+.toolbar button {
+  background: var(--ink); color: var(--ivory); border: 0; border-radius: 99px;
+  padding: 7px 16px; font-weight: 600; cursor: pointer; font-family: var(--sans);
+}
+.toolbar select, .toolbar input { font-family: var(--sans); padding: 4px 6px; border: 1px solid var(--line); border-radius: 6px; background: #fff; }
+.toolbar .hint { font-size: 12px; color: var(--muted); }
+
+.page {
+  width: 210mm; min-height: 297mm; margin: 18px auto; background: var(--ivory);
+  padding: 12mm; box-shadow: 0 1px 4px rgba(20,20,19,.12); position: relative;
+}
+.page.landscape { width: 297mm; min-height: 210mm; }
+.page h1 { margin: 0 0 4mm; font-family: var(--serif); font-weight: 500; font-size: 21pt; letter-spacing: -.01em; color: var(--ink); }
+.page h2 { margin: 0 0 3mm; font-family: var(--serif); font-weight: 500; font-size: 14.5pt; color: var(--ink); }
+.page h3 { margin: 4mm 0 1.5mm; font-size: 10pt; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--clay-d); }
+.page p, .page li { line-height: 1.5; color: var(--ink-2); }
+.page .sub { color: var(--muted); margin-top: -2mm; margin-bottom: 4mm; }
+.page table { border-collapse: collapse; width: 100%; font-size: 9.3pt; background: #fff; }
+.page th, .page td { border: 1px solid var(--line); padding: 1.6mm 2.2mm; text-align: left; vertical-align: top; }
+.page th { background: var(--ivory-2); font-weight: 600; color: var(--ink); }
+.page code { font-family: var(--mono); font-size: .9em; background: var(--ivory-2); padding: 0 1mm; border-radius: 1mm; }
+.mono { font-family: var(--mono); }
+.line { border-bottom: 1px solid #B9B5AA; height: 7mm; }
+.box { border: 1px solid var(--line); background: #fff; border-radius: 2.5mm; padding: 3.5mm 4mm; margin: 2mm 0; }
+.secret { background: var(--clay-t); border: 1px solid var(--clay); border-radius: 2mm; padding: 2mm 3mm; font-weight: 600; color: var(--clay-d); }
+
+/* Game cards */
+.cards { display: flex; flex-wrap: wrap; gap: 3mm; justify-content: flex-start; }
+.gcard {
+  --acc: var(--clay);
+  width: 60mm; height: 86mm; background: #fff; border: .25mm solid #DCD6CA; border-radius: 3mm;
+  padding: 4mm 4mm 3.2mm; display: flex; flex-direction: column;
+  break-inside: avoid; page-break-inside: avoid; position: relative; overflow: hidden;
+}
+.gcard::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 1.2mm; background: var(--acc); }
+.gcard.large { width: 90mm; height: 128mm; padding: 6mm 6mm 4.5mm; border-radius: 4mm; }
+.gcard .top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3.5mm; }
+.gcard .deck { font-size: 6pt; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); display: flex; align-items: center; gap: 1.5mm; }
+.gcard .deck i { width: 1.8mm; height: 1.8mm; border-radius: 50%; background: var(--acc); display: inline-block; }
+.gcard .no { font-family: var(--serif); font-size: 8pt; color: var(--muted); font-variant-numeric: tabular-nums; }
+.gcard .ttl { font-family: var(--serif); font-size: 13.5pt; font-weight: 500; line-height: 1.18; color: var(--ink); letter-spacing: -.005em; }
+.gcard.large .ttl { font-size: 19pt; }
+.gcard .sub { font-family: var(--serif); font-style: italic; font-size: 8.2pt; color: var(--muted); margin: 1.2mm 0 0; line-height: 1.35; }
+.gcard .rule { height: .25mm; width: 8mm; background: var(--acc); margin: 3mm 0 2.8mm; }
+.gcard .body { font-size: 8pt; line-height: 1.45; flex: 1; color: var(--ink-2); }
+.gcard.large .body { font-size: 9.2pt; line-height: 1.5; }
+.gcard .body p { margin: 0 0 1.8mm; }
+.gcard .body b { color: var(--ink); font-weight: 600; }
+.gcard .body ul { margin: 0 0 1.8mm; padding-left: 3.5mm; }
+.gcard .body li { margin-bottom: .8mm; }
+.gcard .body li::marker { color: var(--acc); }
+.gcard .body .write { margin-top: 3mm; font-size: 6.5pt; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); border-bottom: .25mm solid #CFC9BC; padding-bottom: 5mm; }
+.gcard .foot { font-size: 6pt; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); display: flex; justify-content: space-between; padding-top: 2mm; border-top: .25mm solid var(--line); }
+.gcard .delta { font-family: var(--serif); font-size: 22pt; font-weight: 500; line-height: 1; margin: 2.5mm 0 0; letter-spacing: -.01em; }
+.gcard .delta small { font-family: var(--sans); font-size: 6.5pt; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-left: 1.5mm; }
+.gcard .delta.pos { color: #56693F; }
+.gcard .delta.neg { color: var(--red); }
+.gcard .delta.mix { color: var(--ink); font-size: 15pt; }
+
+/* Statement cards (timeline): large centred text, write-in year */
+.gcard.statement .ttl { font-size: 14.5pt; line-height: 1.25; margin: auto 0; }
+.gcard.statement .body { flex: none; margin-bottom: 3mm; }
+
+/* Twist cards: inverted */
+.gcard.twist { background: #262624; border-color: #262624; }
+.gcard.twist::before { background: var(--clay); }
+.gcard.twist .ttl { color: var(--ivory); }
+.gcard.twist .body, .gcard.twist .body p, .gcard.twist .body b { color: #D9D5C9; }
+.gcard.twist .rule { background: var(--clay); }
+.gcard.twist .deck { color: var(--clay); }
+.gcard.twist .deck i { background: var(--clay); }
+.gcard.twist .no, .gcard.twist .foot { color: #9C998F; border-color: #3D3D3A; }
+
+/* Facilitator key cards */
+.gcard.key { background: var(--ivory-2); border-style: dashed; }
+.gcard.key::before { background: var(--ink); }
+.gcard.key .body { font-size: 7.6pt; }
+
+.deck-title { width: 100%; padding: 0 0 5mm; border-bottom: .25mm solid var(--line); margin-bottom: 5mm; }
+.deck-title .dt-k { font-size: 7.5pt; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--clay-d); }
+.deck-title .dt-h { font-family: var(--serif); font-size: 20pt; font-weight: 500; color: var(--ink); margin: 1mm 0; letter-spacing: -.01em; }
+.deck-title small { display: block; font-size: 8.8pt; color: var(--muted); }
+
+@media print {
+  body { background: #fff; }
+  .toolbar, .no-print { display: none !important; }
+  .page { margin: 0; box-shadow: none; width: auto; min-height: auto; page-break-after: always; break-after: page; padding: 0; background: #fff; }
+  .page:last-child { page-break-after: auto; break-after: auto; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+@page { size: A4; margin: 10mm; }

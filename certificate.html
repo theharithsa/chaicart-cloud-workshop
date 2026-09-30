@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Certificates – ChaiCart Cloud Workshop</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/print.css">
+<style>
+  @page { size: A4 landscape; margin: 0; }
+  .form { max-width: 900px; margin: 16px auto; background: #fff; padding: 16px 20px; border-radius: 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px 20px; }
+  .form label { display: flex; flex-direction: column; font-size: 12px; font-weight: 600; gap: 4px; }
+  .form input, .form textarea, .form select { padding: 6px; font: inherit; font-weight: 400; }
+  .form textarea { min-height: 120px; }
+  .cert { width: 297mm; height: 210mm; margin: 16px auto; background: var(--ivory); position: relative; box-shadow: 0 1px 4px rgba(20,20,19,.12); overflow: hidden; }
+  .cert .frame { position: absolute; inset: 12mm; border: .4mm solid var(--ink); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 16mm; }
+  .cert .corner { position: absolute; width: 90mm; height: 90mm; border-radius: 50%; border: .3mm solid var(--clay); opacity: .6; }
+  .cert .kick { letter-spacing: .3em; color: var(--clay-d); font-weight: 600; font-size: 10pt; }
+  .cert h1 { font-size: 36pt; margin: 4mm 0 3mm; color: var(--ink); font-family: var(--serif); font-weight: 500; letter-spacing: -.01em; }
+  .cert .award { font-size: 15pt; color: var(--clay-d); font-weight: 600; margin-bottom: 4mm; }
+  .cert .to { font-size: 11pt; color: var(--muted); }
+  .cert .name { font-size: 34pt; font-family: var(--serif); font-style: italic; border-bottom: .3mm solid var(--ink); padding: 0 12mm 2mm; margin: 4mm 0 6mm; min-width: 150mm; }
+  .cert .desc { font-size: 11.5pt; max-width: 200mm; line-height: 1.6; color: var(--ink-2); }
+  .cert .sig { display: flex; justify-content: space-between; width: 200mm; margin-top: 16mm; font-size: 10pt; }
+  .cert .sig div { border-top: .3mm solid var(--ink); padding-top: 2mm; width: 70mm; }
+  .cert .star { position: absolute; top: 20mm; left: 50%; width: 9mm; height: 9mm; margin-left: -4.5mm; background: var(--clay); clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%); }
+  @media print { .form { display: none; } .cert { margin: 0; box-shadow: none; page-break-after: always; } }
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <b>Certificates</b>
+  <button onclick="window.print()">Print</button>
+  <span class="hint">Fill the form → preview updates → print landscape, margins “None”, background graphics ON.</span>
+  <a href="index.html">← Hub</a>
+</div>
+<div class="form">
+  <label>Certificate type
+    <select id="type">
+      <option value="Certificate of Participation">Participation</option>
+      <option value="Richest Startup Award">Richest Startup</option>
+      <option value="Sherlock Award">Sherlock Award (murder mystery)</option>
+      <option value="Best Architecture Award">Best Architecture</option>
+      <option value="Best Blameless Postmortem Award">Best Postmortem</option>
+      <option value="Most Creative Pitch Award">Most Creative Pitch</option>
+      <option value="Region Champion">Region Champion</option>
+    </select>
+  </label>
+  <label>Workshop title <input id="title" value="Cloud Computing &amp; Business Systems Workshop"></label>
+  <label>Institution / organisation <input id="org" placeholder="e.g. XYZ College of Engineering"></label>
+  <label>Date(s) <input id="date" placeholder="e.g. 6–7 October 2026"></label>
+  <label>Facilitator name &amp; title <input id="fac" placeholder="Name, Title"></label>
+  <label>Second signatory (optional) <input id="sig2" placeholder="Name, Title"></label>
+  <label style="grid-column:1/-1">Participant or team names (one per line)
+    <textarea id="names" placeholder="Priya Sharma&#10;Arjun Rao&#10;Team Mumbai-1a"></textarea></label>
+</div>
+<div id="out"></div>
+<script>
+const $ = id => document.getElementById(id);
+function build() {
+  const names = $('names').value.split('\n').map(s => s.trim()).filter(Boolean);
+  const list = names.length ? names : ['Participant Name'];
+  const type = $('type').value;
+  const out = $('out');
+  out.replaceChildren();
+  list.forEach(n => {
+    const c = document.createElement('div');
+    c.className = 'cert';
+    c.innerHTML = `<div class="corner" style="left:-45mm;top:-45mm"></div>
+      <div class="corner" style="right:-45mm;bottom:-45mm"></div>
+      <div class="star"></div>
+      <div class="frame">
+        <div class="kick">CHAICART STARTUP CHALLENGE</div>
+        <h1></h1><div class="award"></div>
+        <div class="to">This is proudly presented to</div>
+        <div class="name"></div>
+        <div class="desc"></div>
+        <div class="sig"><div class="s1"></div><div class="s2"></div></div>
+      </div>`;
+    const isAward = type !== 'Certificate of Participation';
+    c.querySelector('h1').textContent = isAward ? 'Certificate of Achievement' : 'Certificate of Participation';
+    c.querySelector('.award').textContent = isAward ? type : '';
+    c.querySelector('.name').textContent = n;
+    const org = $('org').value.trim(), date = $('date').value.trim();
+    c.querySelector('.desc').textContent =
+      `for ${isAward ? 'outstanding performance in' : 'successfully participating in'} the two-day “${$('title').value.trim()}”` +
+      `${org ? ' at ' + org : ''}${date ? ', held on ' + date : ''}, covering cloud fundamentals, architecture, observability, SRE, DevOps, security, cost and business systems in the cloud.`;
+    c.querySelector('.s1').textContent = $('fac').value.trim() || 'Facilitator';
+    const s2 = $('sig2').value.trim();
+    if (s2) c.querySelector('.s2').textContent = s2; else c.querySelector('.s2').style.visibility = 'hidden';
+    out.appendChild(c);
+  });
+}
+document.querySelectorAll('.form input, .form textarea, .form select').forEach(el => el.addEventListener('input', build));
+build();
+</script>
+</body>
+</html>
