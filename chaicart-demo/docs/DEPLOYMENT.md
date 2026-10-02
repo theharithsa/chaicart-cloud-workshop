@@ -16,7 +16,7 @@ Azure is not a technical requirement. Firebase with a Cloud Run backend can host
 ## Azure: first deployment
 
 1. Create a dedicated resource group in Central India, then a Linux App Service on Node 24 LTS with one B1 instance. Keep all workshop-only resources in this group for cleanup.
-2. App Service → Environment variables: set `ADMIN_TOKEN` to a fresh random token and `DATA_DIR=/home/chaicart-data`. Configure startup command `npm start`. Enable HTTPS Only. Enable Always On if available on the selected plan.
+2. App Service → Environment variables: configure [Firebase admin sign-in](AUTHENTICATION.md) and set `DATA_DIR=/home/chaicart-data`. Configure startup command `npm start`. Enable HTTPS Only. Enable Always On if available on the selected plan.
 3. In GitHub repository Settings → Secrets and variables → Actions → Variables, add `AZURE_WEBAPP_NAME` with the actual App Service name. This enables deployment on `main`; without it the deploy job is skipped and tests still run.
 4. Create GitHub environment `workshop`. Add environment secret `AZURE_WEBAPP_PUBLISH_PROFILE` using the profile downloaded from the chosen App Service. That profile is a deployment credential. Keep it out of commits. Publish profiles require the App Service's SCM basic authentication setting; organizations that require OIDC should replace the profile deployment with their approved Azure Login/OIDC setup.
 5. In GitHub Actions select **ChaiCart demo — test and deploy → Run workflow** on `main`. The workflow installs/tests in `chaicart-demo/` and deploys that folder after tests pass. It does not deploy the workshop's root HTML as the backend. Normal app changes on `main` also trigger it.
@@ -35,9 +35,9 @@ Before choosing this path:
 
 - Enable the required billing plan and Cloud Run APIs; this is not a promise of a free workshop. Follow Firebase's linked setup guide for current prerequisites.
 - Route the storefront, static assets and `/api/**` to the same backend. Hosting only `public/` without API rewrites produces a storefront with broken menu/checkout calls.
-- Use Secret Manager for `ADMIN_TOKEN`. Keep it out of Firebase config, browser JavaScript and source control.
+- Use Secret Manager / workload identity for backend Firebase credentials. Keep it out of Firebase config, browser JavaScript and source control.
 - Keep one minimum and one maximum instance for a deterministic rehearsal; retain one serving revision. Multiple instances/revisions can split fault state and orders. Minimum instances incur cost, and a minimum setting does not guarantee an instance will never restart.
-- Cloud Run's local filesystem is **ephemeral and uses instance memory**. The current `data/state.json` does not survive instance replacement. Either accept disposable session state explicitly for a rehearsal or implement persistent external storage before relying on order history. Firebase/Firestore is not wired into this app yet. See the [Cloud Run runtime contract](https://docs.cloud.google.com/run/docs/container-contract).
+- Cloud Run's local filesystem is **ephemeral and uses instance memory**. The current `data/state.json` does not survive instance replacement. Either accept disposable session state explicitly for a rehearsal or implement persistent external storage before relying on order history. Firebase Auth/Firestore are used for facilitator authorization; orders/events are not stored in Firestore. See the [Cloud Run runtime contract](https://docs.cloud.google.com/run/docs/container-contract).
 - Rehearse container concurrency. A low platform concurrency limit can make the platform queue or reject traffic before the app's pool becomes saturated. [Cloud Run supports up to 1,000 concurrent requests per instance](https://docs.cloud.google.com/run/docs/about-concurrency); that ceiling is not a safe sizing recommendation. The 60/sec × 45s incident test can produce hundreds of waiting requests. Adjust rate/duration/concurrency and inspect where delays occur so students see application pool timeouts rather than a hosting admission limit.
 - Firebase Hosting imposes a [60-second request timeout](https://firebase.google.com/docs/hosting/serverless-overview), even when the backend timeout is longer. The app's default 30-second pool acquisition timeout fits within it, but storage queueing and startup also consume time.
 - Firebase hosting does not automatically supply Azure Application Insights or Dynatrace telemetry. Adapt the Azure worksheet to Google Cloud tools or keep a separate Azure environment for that section. Dynatrace ingestion still needs deliberate setup and verification.
@@ -58,7 +58,7 @@ For a blocked deployment rehearsal, create a temporary test in `chaicart-demo/te
 | Menu/checkout fails on Firebase | Backend routing exists for `/api/**` and the backend is running |
 | Azure starts the wrong app | Deployment package is `chaicart-demo`, startup is `npm start` |
 | Azure deploy job is skipped | `AZURE_WEBAPP_NAME` is set at repository level, run is on `main`, tests pass |
-| Facilitator returns 401 | App's `ADMIN_TOKEN` matches entered token; no token means APIs are disabled |
+| Facilitator access denied | Verify Firebase project, backend credentials, verified Google email and matching admin document; see the authentication guide |
 | Orders disappear after restart | `DATA_DIR` points to persistent storage; Cloud Run defaults are ephemeral |
 | Failure doesn't appear | App is in pool-exhaustion mode; enough simultaneous requests actually arrive |
 | Different students see different states | Multiple instances or revisions are serving requests |

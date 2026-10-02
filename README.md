@@ -91,11 +91,12 @@ The companion app lives in [`chaicart-demo/`](chaicart-demo/README.md). It inclu
 cd chaicart-demo
 npm ci
 npm test
+export AUTH_MODE="local-token"
 export ADMIN_TOKEN="choose-a-local-demo-token"
 npm start
 ```
 
-Open `http://localhost:8080`; the console is at `/facilitator`. See the [app README](chaicart-demo/README.md) for complete setup, [facilitator runbook](chaicart-demo/docs/FACILITATOR.md) for the live-demo sequence, and [deployment notes](chaicart-demo/docs/DEPLOYMENT.md) for Azure versus Firebase.
+Open `http://localhost:8080`; the console is at `/facilitator`. This quick start uses the explicit local-token fallback. For deployed Google sign-in using the live app's admin list, follow [Firebase authentication setup](chaicart-demo/docs/AUTHENTICATION.md). See the [app README](chaicart-demo/README.md) for complete setup, [facilitator runbook](chaicart-demo/docs/FACILITATOR.md) for the live-demo sequence, and [deployment notes](chaicart-demo/docs/DEPLOYMENT.md) for Azure versus Firebase.
 
 The materials stay hosted on GitHub Pages. The backend must run on a compute service such as Azure App Service or Cloud Run. App tests run through [the demo workflow](.github/workflows/chaicart-demo.yml); Azure deployment stays disabled until `AZURE_WEBAPP_NAME` and the deployment secret are configured.
 

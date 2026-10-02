@@ -36,6 +36,12 @@ jobs:
     environment: workshop
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install runtime dependencies
+        run: npm ci --omit=dev
+        working-directory: chaicart-demo
       - uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ vars.AZURE_WEBAPP_NAME }}

@@ -3,3 +3,8 @@
 data
 node_modules
 test
+
+.env.*
+*service-account*.json
+
+.firebase-install-partial/

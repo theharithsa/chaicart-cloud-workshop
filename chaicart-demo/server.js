@@ -1,6 +1,7 @@
+import {createAuthorizer} from './auth.js';
 import http from 'node:http';
 import { readFile, mkdir, writeFile, rename } from 'node:fs/promises';
-import { randomBytes, randomUUID, timingSafeEqual } from 'node:crypto';
+import { randomBytes, randomUUID } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
@@ -26,7 +27,8 @@ class Pool {
   resize(size){this.size=size;this.drain();}
 }
 const publicDir=fileURLToPath(new URL('./public/',import.meta.url));
-export async function createApp({adminToken=process.env.ADMIN_TOKEN, dataDir=process.env.DATA_DIR||'data', timeout=Number(process.env.POOL_TIMEOUT_MS||30000), gatewayDelay=Number(process.env.GATEWAY_DELAY_MS||205)}={}) {
+export async function createApp({adminToken=process.env.ADMIN_TOKEN, dataDir=process.env.DATA_DIR||'data', timeout=Number(process.env.POOL_TIMEOUT_MS||30000), gatewayDelay=Number(process.env.GATEWAY_DELAY_MS||205), authMode=process.env.AUTH_MODE||'firebase', authorizer, firebaseConfig={apiKey:process.env.FIREBASE_API_KEY,authDomain:process.env.FIREBASE_AUTH_DOMAIN,projectId:process.env.FIREBASE_PROJECT_ID,appId:process.env.FIREBASE_APP_ID}}={}) {
+  const authorize=authorizer||await createAuthorizer({mode:authMode,adminToken,projectId:firebaseConfig.projectId});
   const pool=new Pool();
   let state={orders:[],events:[]}, mode='healthy', erpPaused=false;
   await mkdir(dataDir,{recursive:true});
@@ -45,7 +47,6 @@ export async function createApp({adminToken=process.env.ADMIN_TOKEN, dataDir=pro
   }
   const json=(res,status,body)=>{res.writeHead(status,{'content-type':'application/json','cache-control':'no-store'});res.end(JSON.stringify(body));};
   async function body(req){let text='';for await(const chunk of req){text+=chunk;if(text.length>16384)throw Object.assign(new Error('Request too large'),{status:413});}try{return JSON.parse(text||'{}');}catch{throw Object.assign(new Error('Invalid JSON'),{status:400});}}
-  function authorized(req){const incoming=Buffer.from(req.headers.authorization||'');const expected=Buffer.from('Bearer '+adminToken);return Boolean(adminToken)&&incoming.length===expected.length&&timingSafeEqual(incoming,expected);}
   async function fulfill(order,trace){
     await span(trace,'event-worker','OrderPlaced → business systems',async()=>{
       for(const system of ['CRM','SCM','HCM','BI','ERP'])state.events.push({id:randomUUID(),orderId:order.id,system,status:system==='ERP'&&erpPaused?'queued':'completed',timestamp:new Date().toISOString()});
@@ -58,7 +59,7 @@ export async function createApp({adminToken=process.env.ADMIN_TOKEN, dataDir=pro
     const trace={traceId:randomBytes(16).toString('hex'),timestamp:new Date().toISOString(),path:url.pathname,spans:[]};
     res.setHeader('x-trace-id',trace.traceId);
     res.setHeader('x-content-type-options','nosniff');
-    res.setHeader('content-security-policy',"default-src 'self'; style-src 'self'; script-src 'self'; connect-src 'self'; img-src 'self' data:; frame-ancestors 'none'; base-uri 'none'");
+    res.setHeader('content-security-policy',"default-src 'self'; style-src 'self'; script-src 'self' https://www.gstatic.com https://apis.google.com; connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com https://*.web.app; frame-src https://*.firebaseapp.com https://*.web.app https://accounts.google.com; img-src 'self' data:; frame-ancestors 'none'; base-uri 'none'");
     res.on('finish',()=>{
       if(!url.pathname.startsWith('/api/admin')){
         const sample={time:Date.now(),duration:Date.now()-started,status:res.statusCode,path:url.pathname};samples.push(sample);if(samples.length>5000)samples.shift();
@@ -67,7 +68,8 @@ export async function createApp({adminToken=process.env.ADMIN_TOKEN, dataDir=pro
     });
     try{
       if(url.pathname.startsWith('/api/admin')){
-        if(!authorized(req))return json(res,401,{error:'Facilitator access required'});
+        const identity=await authorize(req);
+        if(req.method==='GET'&&url.pathname==='/api/admin/session')return json(res,200,identity);
         if(req.method==='GET'&&url.pathname==='/api/admin/telemetry'){
           const recent=samples.filter(x=>x.time>Date.now()-60000);const checkout=recent.filter(x=>x.path==='/api/checkout');const durations=checkout.map(x=>x.duration).sort((a,b)=>a-b);const good=checkout.filter(x=>x.status<400&&x.duration<2000).length;
           return json(res,200,{mode,erpPaused,pool:{size:pool.size,active:pool.active,waiting:pool.waiting.length},metrics:{requestsPerMinute:recent.length,checkouts:checkout.length,p95:durations[Math.max(0,Math.ceil(durations.length*.95)-1)]||0,errorRate:checkout.length?checkout.filter(x=>x.status>=400).length/checkout.length*100:0,sli:checkout.length?good/checkout.length*100:null,slo:99.9,badRequests:checkout.length-good,allowedBadRequests:checkout.length*.001},logs:logs.slice(-80),traces:traces.slice(-30),changes,orders:state.orders.slice(-30).reverse(),events:state.events.slice(-100).reverse()});
@@ -82,6 +84,7 @@ export async function createApp({adminToken=process.env.ADMIN_TOKEN, dataDir=pro
         }
         return json(res,404,{error:'Not found'});
       }
+      if(req.method==='GET'&&url.pathname==='/api/auth/config')return json(res,200,{mode:authMode,configured:authMode==='local-token'?Boolean(adminToken):Boolean(firebaseConfig.apiKey&&firebaseConfig.authDomain&&firebaseConfig.projectId&&firebaseConfig.appId),...(authMode==='firebase'?{firebase:firebaseConfig}:{})});
       if(req.method==='GET'&&url.pathname==='/health')return json(res,200,{status:'ok',service:'chaicart',storage:'local-file-demo'});
       if(req.method==='GET'&&url.pathname==='/api/menu')return json(res,200,{items:MENU,deliveryFee:10});
       if(req.method==='POST'&&url.pathname==='/api/checkout'){
@@ -120,7 +123,7 @@ export async function createApp({adminToken=process.env.ADMIN_TOKEN, dataDir=pro
   return {server,pool,close:async()=>{await new Promise(r=>server.close(r));await saving;}};
 }
 if(process.argv[1]===fileURLToPath(import.meta.url)){
-  if(!process.env.ADMIN_TOKEN)console.warn('ADMIN_TOKEN is unset: facilitator APIs are disabled.');
+  if((process.env.AUTH_MODE||'firebase')==='firebase'&&!process.env.FIREBASE_PROJECT_ID)console.warn('Firebase sign-in is unconfigured: facilitator APIs fail closed.');
   const app=await createApp();app.server.listen(Number(process.env.PORT||8080),'0.0.0.0',()=>console.log('ChaiCart listening on '+(process.env.PORT||8080)));
   for(const sig of ['SIGINT','SIGTERM'])process.on(sig,async()=>{await app.close();process.exit(0);});
 }

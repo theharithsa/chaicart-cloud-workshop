@@ -1,6 +1,10 @@
 # ChaiCart workshop demo
 
-A runnable companion to [the two-day ChaiCart workshop](https://github.com/theharithsa/chaicart-cloud-workshop). Node.js 24, plain HTML/CSS/JS, no runtime dependencies. Workshop materials live in the repository root (`../`).
+A runnable companion to [the two-day ChaiCart workshop](https://github.com/theharithsa/chaicart-cloud-workshop). Node.js 24, plain HTML/CSS/JS, Firebase Admin SDK for protected facilitator access. Workshop materials live in the repository root (`../`).
+
+## Facilitator access
+
+The deployed console uses Google sign-in and the existing ChaiCart Live Firestore `admins/{email}` list. See [Firebase authentication setup](docs/AUTHENTICATION.md). Firebase is the default auth mode and fails closed when unconfigured. The quick start below explicitly selects the local shared-token fallback for offline rehearsal.
 
 ## Run locally
 
@@ -11,13 +15,14 @@ git clone https://github.com/theharithsa/chaicart-cloud-workshop.git
 cd chaicart-cloud-workshop/chaicart-demo
 npm ci
 npm test
+export AUTH_MODE="local-token"
 export ADMIN_TOKEN="choose-a-local-token"
 npm start
 ```
 
-On PowerShell, use `$env:ADMIN_TOKEN="choose-a-local-token"` before `npm start`. On either platform, you can generate a random token with `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`.
+On PowerShell, set `$env:AUTH_MODE="local-token"` and `$env:ADMIN_TOKEN="choose-a-local-token"` before `npm start`. On either platform, you can generate a random token with `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`.
 
-Open http://localhost:8080 and http://localhost:8080/facilitator. Enter the token in the facilitator console. No token means the facilitator APIs are disabled. Tokens stay in browser memory; disconnect when projecting the storefront. Never use the local preview token on a public deployment.
+Open http://localhost:8080 and http://localhost:8080/facilitator. Enter the token in the facilitator console. In local-token mode, no token means the facilitator APIs are disabled. In Firebase mode, only verified Google accounts in the shared admin list are allowed. Tokens stay in browser memory; disconnect when projecting the storefront. Never use the local preview token on a public deployment.
 
 ## Workshop mapping
 
@@ -64,7 +69,10 @@ Order state is stored atomically in `data/state.json` (up to 1,000 orders / 3,00
 | Variable | Default | Purpose |
 | --- | --- | --- |
 | `PORT` | 8080 | HTTP port |
-| `ADMIN_TOKEN` | unset | Enables protected facilitator APIs |
+| `AUTH_MODE` | firebase | Google/admin sign-in; local-token for explicit offline rehearsal |
+| `ADMIN_TOKEN` | unset | Local-token mode only |
+| `FIREBASE_*` | unset | Shared live-project web configuration; see authentication guide |
+| `GOOGLE_APPLICATION_CREDENTIALS` | unset | Backend credential-file path, or use application default workload identity |
 | `DATA_DIR` | data | Order / event storage |
 | `POOL_TIMEOUT_MS` | 30000 | Connection acquisition timeout |
 | `GATEWAY_DELAY_MS` | 205 | Simulated external call duration |
@@ -75,7 +83,7 @@ Order state is stored atomically in `data/state.json` (up to 1,000 orders / 3,00
 The app is in `chaicart-demo/` within this repository. GitHub Pages serves only the workshop materials. The root [demo workflow](../.github/workflows/chaicart-demo.yml) tests this subdirectory and deploys only that directory to Azure.
 
 1. In Azure Portal create a dedicated resource group, e.g. `rg-chaicart-workshop`, in Central India. Create a Linux App Service using Node 24 LTS and a Basic B1 plan for the crowd demo; rehearse capacity rather than assuming 120 simultaneous visitors will fit the Free plan. Use one instance.
-2. Set `ADMIN_TOKEN` to a fresh secret and `DATA_DIR=/home/chaicart-data` in App Service environment variables. Set startup command `npm start` and use HTTPS for participants.
+2. Configure [Firebase sign-in](docs/AUTHENTICATION.md) and set `DATA_DIR=/home/chaicart-data` in App Service environment variables. Set startup command `npm start` and use HTTPS for participants.
 3. Deploy this folder using the root workflow in `.github/workflows/chaicart-demo.yml`. For this workflow set repository variable `AZURE_WEBAPP_NAME` and create the GitHub environment `workshop` with secret `AZURE_WEBAPP_PUBLISH_PROFILE`. The deploy job waits for tests; it is skipped when no app name is configured. Publish profiles require SCM basic authentication; prefer your organization's OIDC deployment setup when it is available. Keep credentials out of the repository.
 4. Enable Application Insights on the app, then restart. Follow the [official App Service monitoring guide](https://learn.microsoft.com/en-us/azure/app-service/monitor-app-service) for the Node agent; verify request telemetry and Live Metrics in your actual tenant. Local structured console logs are not automatically guaranteed to appear in Application Insights Logs.
 5. Open the public URL repeatedly and `/chai-not-found` to generate 404s. In Application Insights use `requests | summarize count() by resultCode, bin(timestamp, 1m)`; workspace-based queries can use `AppRequests | summarize count() by ResultCode, bin(TimeGenerated, 1m)`.
@@ -97,7 +105,7 @@ For the workshop's real service map and incoming/outgoing network calls, deploy 
 
 ```bash
 docker build -t chaicart .
-docker run --rm -p 8080:8080 -e ADMIN_TOKEN -v chaicart-data:/app/data chaicart
+docker run --rm -p 8080:8080 -e AUTH_MODE=local-token -e ADMIN_TOKEN -v chaicart-data:/app/data chaicart
 ```
 
 Export `ADMIN_TOKEN` in your shell before the run. Docker execution has not been verified here.

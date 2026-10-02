@@ -4,7 +4,7 @@ Use with the original facilitator guide and slides in the repository root. This 
 
 ## Before participants arrive
 
-- Run `npm ci` and `npm test` in `chaicart-demo/`, then start with a fresh `ADMIN_TOKEN`. A local demo needs Node 24. A public demo needs HTTPS and a separate deployment token.
+- Run `npm ci` and `npm test` in `chaicart-demo/`, then configure [Firebase sign-in](AUTHENTICATION.md), or explicitly select `AUTH_MODE=local-token` with a fresh `ADMIN_TOKEN` for an offline rehearsal. A local demo needs Node 24. A public demo needs HTTPS and configured Firebase admin authorization.
 - Open storefront and `/facilitator` in separate tabs. Sign into the console. Don't project the token entry or copy the token into slides.
 - Confirm normal checkout, menu, tracking and `/chai-not-found` (404). All prices/payments/deliveries are demonstration data.
 - Rehearse the load generator at the final deployed URL. Have Azure/Dynatrace signed in, with request ingestion already confirmed. Prepare a QR code and phone test.
