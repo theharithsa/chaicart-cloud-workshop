@@ -12,7 +12,7 @@ export async function signOutCustomer(){if(auth)await signOutFn(auth);token='';u
 export async function initializeCustomerAuth(){
  const response=await fetch('/api/auth/config');const config=await response.json();mode=config.mode;
  const button=document.querySelector('#customer-login');
- if(mode==='local-token'){button.disabled=false;button.textContent='Use demo customer';return;}
+ if(mode==='local-token'){button.disabled=false;button.textContent='Sign in (demo)';document.querySelector('#customer-name').textContent='Local preview · Google sign-in needs Firebase setup' ;return;}
  if(!config.configured){button.textContent='Sign-in unavailable';document.querySelector('#customer-name').textContent='Firebase configuration is required to order.';return;}
  const {initializeApp}=await import('https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js');
  const {getAuth,GoogleAuthProvider,signInWithPopup,onAuthStateChanged,setPersistence,inMemoryPersistence,signOut}=await import('https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js');

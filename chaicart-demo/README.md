@@ -4,7 +4,7 @@ A runnable companion to [the two-day ChaiCart workshop](https://github.com/theha
 
 ## Customer ordering
 
-Customers sign in with Google using the same Firebase project. Customer accounts do not need an admin document. Checkout, order history and tracking are protected by server-verified UID ownership. Filter coffee is included alongside chai and snacks. In the explicit local-token rehearsal mode below, click **Use demo customer** to obtain a simulated customer session.
+Customers sign in with Google using the same Firebase project. Customer accounts do not need an admin document. Checkout, order history and tracking are protected by server-verified UID ownership. Filter coffee is included alongside chai and snacks. In the explicit local-token rehearsal mode below, click **Sign in (demo)** to obtain a simulated customer session.
 
 ## Facilitator access
 
