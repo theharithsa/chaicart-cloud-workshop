@@ -1,4 +1,4 @@
-import {createAuthorizer} from './auth.js';
+import {createAuthorizer,authError} from './auth.js';
 import http from 'node:http';
 import { readFile, mkdir, writeFile, rename } from 'node:fs/promises';
 import { randomBytes, randomUUID } from 'node:crypto';
@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
 export const MENU = [
+  {id:'coffee',name:'Filter Coffee',description:'Rich coffee, frothy milk, and a fresh start.',price:35,icon:'☕',tag:'Coffee break'},
   {id:'masala',name:'Signature Masala',description:'Bold Assam tea, warming spices, a little everyday magic.',price:25,icon:'☕',tag:'Bestseller'},
   {id:'ginger',name:'Adrak Kick',description:'Fresh ginger. Strong brew. Your afternoon, rescued.',price:30,icon:'🫚',tag:'Fresh & fiery'},
   {id:'elaichi',name:'Elaichi Comfort',description:'Fragrant cardamom and silky milk. Take a slow sip.',price:30,icon:'🌿',tag:'A little calmer'},
@@ -27,8 +28,15 @@ class Pool {
   resize(size){this.size=size;this.drain();}
 }
 const publicDir=fileURLToPath(new URL('./public/',import.meta.url));
-export async function createApp({adminToken=process.env.ADMIN_TOKEN, dataDir=process.env.DATA_DIR||'data', timeout=Number(process.env.POOL_TIMEOUT_MS||30000), gatewayDelay=Number(process.env.GATEWAY_DELAY_MS||205), authMode=process.env.AUTH_MODE||'firebase', authorizer, firebaseConfig={apiKey:process.env.FIREBASE_API_KEY,authDomain:process.env.FIREBASE_AUTH_DOMAIN,projectId:process.env.FIREBASE_PROJECT_ID,appId:process.env.FIREBASE_APP_ID}}={}) {
+export async function createApp({adminToken=process.env.ADMIN_TOKEN, dataDir=process.env.DATA_DIR||'data', timeout=Number(process.env.POOL_TIMEOUT_MS||30000), gatewayDelay=Number(process.env.GATEWAY_DELAY_MS||205), customerAuthorizer, authMode=process.env.AUTH_MODE||'firebase', authorizer, firebaseConfig={apiKey:process.env.FIREBASE_API_KEY,authDomain:process.env.FIREBASE_AUTH_DOMAIN,projectId:process.env.FIREBASE_PROJECT_ID,appId:process.env.FIREBASE_APP_ID}}={}) {
   const authorize=authorizer||await createAuthorizer({mode:authMode,adminToken,projectId:firebaseConfig.projectId});
+  const demoSessions=new Map();
+  const customer=customerAuthorizer||authorize.customer|| (async req=>{
+    const token=(req.headers.authorization||'').replace(/^Bearer /,'');const session=demoSessions.get(token);
+    if(authMode!=='local-token'||!session||session.expires<Date.now())throw authError(401,'Sign in to place or view orders');
+    return session.user;
+  });
+  const publicOrder=order=>{const {lookupToken,customerUid,...visible}=order;return visible;};
   const pool=new Pool();
   let state={orders:[],events:[]}, mode='healthy', erpPaused=false;
   await mkdir(dataDir,{recursive:true});
@@ -84,10 +92,19 @@ export async function createApp({adminToken=process.env.ADMIN_TOKEN, dataDir=pro
         }
         return json(res,404,{error:'Not found'});
       }
+      if(req.method==='POST'&&url.pathname==='/api/auth/demo'){
+        if(authMode!=='local-token')return json(res,404,{error:'Not found'});
+        for(const [key,s]of demoSessions)if(s.expires<Date.now())demoSessions.delete(key);
+        if(demoSessions.size>=200)return json(res,429,{error:'Too many demo sessions; restart the local demo'});
+        const token=randomBytes(32).toString('hex');const user={uid:randomUUID(),email:'Local demo customer'};demoSessions.set(token,{user,expires:Date.now()+3600000});return json(res,201,{token,user,demo:true});
+      }
+      if(req.method==='GET'&&url.pathname==='/api/auth/me')return json(res,200,await customer(req));
+      if(req.method==='GET'&&url.pathname==='/api/orders'){const user=await customer(req);return json(res,200,{orders:state.orders.filter(x=>x.customerUid===user.uid).slice(-20).reverse().map(publicOrder)});}
       if(req.method==='GET'&&url.pathname==='/api/auth/config')return json(res,200,{mode:authMode,configured:authMode==='local-token'?Boolean(adminToken):Boolean(firebaseConfig.apiKey&&firebaseConfig.authDomain&&firebaseConfig.projectId&&firebaseConfig.appId),...(authMode==='firebase'?{firebase:firebaseConfig}:{})});
       if(req.method==='GET'&&url.pathname==='/health')return json(res,200,{status:'ok',service:'chaicart',storage:'local-file-demo'});
       if(req.method==='GET'&&url.pathname==='/api/menu')return json(res,200,{items:MENU,deliveryFee:10});
       if(req.method==='POST'&&url.pathname==='/api/checkout'){
+        const user=await customer(req);
         const b=await body(req);
         if(!b||!Array.isArray(b.items)||!b.items.length||b.items.length>10||!b.items.every(x=>MENU.some(m=>m.id===x.id)&&Number.isInteger(x.quantity)&&x.quantity>0&&x.quantity<=20)||!['Mumbai','Bengaluru','Hyderabad','Delhi','Pune'].includes(b.city))return json(res,400,{error:'Choose a city and valid cart items'});
         let order;
@@ -102,20 +119,21 @@ export async function createApp({adminToken=process.env.ADMIN_TOKEN, dataDir=pro
                 await span(trace,'orders-db-demo','UPDATE payment result',()=>sleep(5),payment.spanId);
               }finally{pool.release();}
             },root.spanId);
-            order={id:'CC-'+randomBytes(5).toString('hex').toUpperCase(),lookupToken:randomBytes(24).toString('hex'),city:b.city,items,total:10+items.reduce((s,x)=>s+x.price*x.quantity,0),createdAt:Date.now(),traceId:trace.traceId};
+            order={customerUid:user.uid,id:'CC-'+randomBytes(5).toString('hex').toUpperCase(),lookupToken:randomBytes(24).toString('hex'),city:b.city,items,total:10+items.reduce((s,x)=>s+x.price*x.quantity,0),createdAt:Date.now(),traceId:trace.traceId};
             state.orders.push(order);if(state.orders.length>1000)state.orders.shift();await fulfill(order,trace);
           });
-          trace.status=201;json(res,201,{...order,etaMinutes:10});
+          trace.status=201;json(res,201,{...publicOrder(order),etaMinutes:10});
         }catch(e){trace.status=504;log('ERROR','payment-service',e.message,{trace_id:trace.traceId});json(res,504,{error:'Payment could not complete. Please try again.',traceId:trace.traceId});}
         finally{traces.push(trace);if(traces.length>100)traces.shift();exportTrace(trace);}
         return;
       }
       if(req.method==='GET'&&url.pathname.startsWith('/api/orders/')){
-        const order=state.orders.find(x=>x.id===url.pathname.split('/').pop()&&x.lookupToken===req.headers['x-order-token']);
+        const user=await customer(req);
+        const order=state.orders.find(x=>x.id===url.pathname.split('/').pop()&&x.customerUid===user.uid);
         if(!order)return json(res,404,{error:'Order not found'});
-        const age=Date.now()-order.createdAt;return json(res,200,{...order,status:age<10000?'Brewing':age<20000?'Packing':age<30000?'Rider assigned':'Delivered',demoTimeline:true});
+        const age=Date.now()-order.createdAt;return json(res,200,{...publicOrder(order),status:age<10000?'Brewing':age<20000?'Packing':age<30000?'Rider assigned':'Delivered',demoTimeline:true});
       }
-      const files={'/':'index.html','/app.js':'app.js','/style.css':'style.css','/facilitator':'facilitator.html','/facilitator.js':'facilitator.js'};
+      const files={'/':'index.html','/app.js':'app.js','/customer-auth.js':'customer-auth.js','/style.css':'style.css','/facilitator':'facilitator.html','/facilitator.js':'facilitator.js'};
       if(req.method==='GET'&&files[url.pathname]){res.setHeader('content-type',url.pathname.endsWith('.js')?'text/javascript':url.pathname.endsWith('.css')?'text/css':'text/html');res.end(await readFile(path.join(publicDir,files[url.pathname])));return;}
       json(res,404,{error:'Chai not found',path:url.pathname});
     }catch(e){log('ERROR','checkout-service',e.message,{trace_id:trace.traceId});if(!res.headersSent)json(res,e.status||500,{error:e.status?e.message:'Something went wrong'});else res.end();}

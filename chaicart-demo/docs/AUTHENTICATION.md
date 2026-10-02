@@ -55,3 +55,11 @@ Authorization tests use injected verification and Firestore adapters; they do no
 References: [verify ID tokens](https://firebase.google.com/docs/auth/admin/verify-id-tokens), [revocation checks](https://firebase.google.com/docs/auth/admin/manage-sessions), [Google sign-in](https://firebase.google.com/docs/auth/web/google-signin).
 
 The runtime dependency override pins UUID 11 for Gaxios 6 to avoid a known UUID buffer-bounds advisory; Gaxios uses the supported `v4` API. Keep this override under review when updating the Firebase SDK.
+
+## Customer ordering
+
+The storefront uses Google sign-in from the same Firebase project. Any verified Google customer can order; customers do not need an `admins` entry. The backend verifies identity on checkout, order history, and tracking. Ownership is recorded from the verified UID; browser-supplied owner fields and old lookup tokens cannot grant access to another user's order. Sign-out clears the visible history/tracking. Orders from earlier versions without a customer UID are not added to a new customer's history.
+
+In explicit `AUTH_MODE=local-token` rehearsal mode, **Use demo customer** creates an opaque server-side session valid for one hour. This is a simulated identity, not verified email/password authentication. Restarting or refreshing/signing out loses access to that demo customer's history. This endpoint is disabled in Firebase mode.
+
+CLI load testing in Firebase mode requires `CUSTOMER_ID_TOKEN` for a verified Google customer (keep it out of source control). Local-mode load testing obtains a demo session automatically. The facilitator's browser surge uses its signed-in Google identity; Firebase token-verification calls add latency and quota use, so rehearse the load on the configured environment.
