@@ -1,0 +1,126 @@
+import http from 'node:http';
+import { readFile, mkdir, writeFile, rename } from 'node:fs/promises';
+import { randomBytes, randomUUID, timingSafeEqual } from 'node:crypto';
+import { fileURLToPath } from 'node:url';
+import path from 'node:path';
+
+export const MENU = [
+  {id:'masala',name:'Signature Masala',description:'Bold Assam tea, warming spices, a little everyday magic.',price:25,icon:'☕',tag:'Bestseller'},
+  {id:'ginger',name:'Adrak Kick',description:'Fresh ginger. Strong brew. Your afternoon, rescued.',price:30,icon:'🫚',tag:'Fresh & fiery'},
+  {id:'elaichi',name:'Elaichi Comfort',description:'Fragrant cardamom and silky milk. Take a slow sip.',price:30,icon:'🌿',tag:'A little calmer'},
+  {id:'samosa',name:'Samosa Duo',description:'Two golden pockets of potato, peas and crunchy joy.',price:40,icon:'🥟',tag:'Chai’s best friend'}
+];
+const sleep = ms => new Promise(r=>setTimeout(r,ms));
+class Pool {
+  active=0; waiting=[]; size=50;
+  acquire(timeout) {
+    if(this.active<this.size){this.active++;return Promise.resolve();}
+    if(this.waiting.length>=1000)return Promise.reject(new Error('Pool queue full'));
+    return new Promise((resolve,reject)=>{
+      const entry={resolve,timer:setTimeout(()=>{this.waiting=this.waiting.filter(x=>x!==entry);reject(new Error('Connection is not available'));},timeout)};
+      this.waiting.push(entry);
+    });
+  }
+  release(){this.active--;this.drain();}
+  drain(){while(this.active<this.size&&this.waiting.length){const e=this.waiting.shift();clearTimeout(e.timer);this.active++;e.resolve();}}
+  resize(size){this.size=size;this.drain();}
+}
+const publicDir=fileURLToPath(new URL('./public/',import.meta.url));
+export async function createApp({adminToken=process.env.ADMIN_TOKEN, dataDir=process.env.DATA_DIR||'data', timeout=Number(process.env.POOL_TIMEOUT_MS||30000), gatewayDelay=Number(process.env.GATEWAY_DELAY_MS||205)}={}) {
+  const pool=new Pool();
+  let state={orders:[],events:[]}, mode='healthy', erpPaused=false;
+  await mkdir(dataDir,{recursive:true});
+  try{state=JSON.parse(await readFile(path.join(dataDir,'state.json'),'utf8'));}catch(e){if(e.code!=='ENOENT')throw e;}
+  let saving=Promise.resolve();
+  function persist(){const snapshot=JSON.stringify(state);const task=saving.then(async()=>{const p=path.join(dataDir,'state.json');await writeFile(p+'.tmp',snapshot);await rename(p+'.tmp',p);});saving=task.catch(()=>{});return task;}
+  const logs=[], traces=[], samples=[], changes=[];
+  function log(level,service,message,extra={}){const e={timestamp:new Date().toISOString(),loglevel:level,'service.name':service,message,...extra};logs.push(e);if(logs.length>500)logs.shift();console.log(JSON.stringify(e));}
+  function change(message){const e={timestamp:new Date().toISOString(),message};changes.push(e);if(changes.length>100)changes.shift();log('INFO','payment-service',message);}
+  async function span(trace,service,name,work,parentId){const s={service,name,spanId:randomBytes(8).toString('hex'),parentId,start:Date.now(),status:'OK'};trace.spans.push(s);try{return await work(s);}catch(e){s.status='ERROR';throw e;}finally{s.duration=Date.now()-s.start;}}
+  function exportTrace(t){
+    if(!process.env.OTEL_EXPORTER_OTLP_ENDPOINT)return;
+    const services=[...new Set(t.spans.map(s=>s.service))];
+    const resourceSpans=services.map(service=>({resource:{attributes:[{key:'service.name',value:{stringValue:service}}]},scopeSpans:[{scope:{name:'chaicart-workshop'},spans:t.spans.filter(s=>s.service===service).map(s=>({traceId:t.traceId,spanId:s.spanId,...(s.parentId?{parentSpanId:s.parentId}:{}),name:s.name,kind:1,startTimeUnixNano:String(BigInt(s.start)*1000000n),endTimeUnixNano:String(BigInt(s.start+s.duration)*1000000n),status:{code:s.status==='ERROR'?2:1}}))}]}));
+    fetch(process.env.OTEL_EXPORTER_OTLP_ENDPOINT.replace(/\/$/,'')+'/v1/traces',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({resourceSpans}),signal:AbortSignal.timeout(5000)}).then(r=>{if(!r.ok)throw new Error('Collector HTTP '+r.status);}).catch(e=>log('WARN','telemetry','Trace export failed',{reason:e.message}));
+  }
+  const json=(res,status,body)=>{res.writeHead(status,{'content-type':'application/json','cache-control':'no-store'});res.end(JSON.stringify(body));};
+  async function body(req){let text='';for await(const chunk of req){text+=chunk;if(text.length>16384)throw Object.assign(new Error('Request too large'),{status:413});}try{return JSON.parse(text||'{}');}catch{throw Object.assign(new Error('Invalid JSON'),{status:400});}}
+  function authorized(req){const incoming=Buffer.from(req.headers.authorization||'');const expected=Buffer.from('Bearer '+adminToken);return Boolean(adminToken)&&incoming.length===expected.length&&timingSafeEqual(incoming,expected);}
+  async function fulfill(order,trace){
+    await span(trace,'event-worker','OrderPlaced → business systems',async()=>{
+      for(const system of ['CRM','SCM','HCM','BI','ERP'])state.events.push({id:randomUUID(),orderId:order.id,system,status:system==='ERP'&&erpPaused?'queued':'completed',timestamp:new Date().toISOString()});
+      if(state.events.length>3000)state.events.splice(0,state.events.length-3000);
+      await persist();
+    });
+  }
+  const server=http.createServer(async(req,res)=>{
+    const started=Date.now();const url=new URL(req.url,'http://localhost');
+    const trace={traceId:randomBytes(16).toString('hex'),timestamp:new Date().toISOString(),path:url.pathname,spans:[]};
+    res.setHeader('x-trace-id',trace.traceId);
+    res.setHeader('x-content-type-options','nosniff');
+    res.setHeader('content-security-policy',"default-src 'self'; style-src 'self'; script-src 'self'; connect-src 'self'; img-src 'self' data:; frame-ancestors 'none'; base-uri 'none'");
+    res.on('finish',()=>{
+      if(!url.pathname.startsWith('/api/admin')){
+        const sample={time:Date.now(),duration:Date.now()-started,status:res.statusCode,path:url.pathname};samples.push(sample);if(samples.length>5000)samples.shift();
+        log(res.statusCode>=500?'ERROR':res.statusCode>=400?'WARN':'INFO','checkout-service',`${req.method} ${url.pathname} ${res.statusCode}`,{duration_ms:sample.duration,trace_id:trace.traceId});
+      }
+    });
+    try{
+      if(url.pathname.startsWith('/api/admin')){
+        if(!authorized(req))return json(res,401,{error:'Facilitator access required'});
+        if(req.method==='GET'&&url.pathname==='/api/admin/telemetry'){
+          const recent=samples.filter(x=>x.time>Date.now()-60000);const checkout=recent.filter(x=>x.path==='/api/checkout');const durations=checkout.map(x=>x.duration).sort((a,b)=>a-b);const good=checkout.filter(x=>x.status<400&&x.duration<2000).length;
+          return json(res,200,{mode,erpPaused,pool:{size:pool.size,active:pool.active,waiting:pool.waiting.length},metrics:{requestsPerMinute:recent.length,checkouts:checkout.length,p95:durations[Math.max(0,Math.ceil(durations.length*.95)-1)]||0,errorRate:checkout.length?checkout.filter(x=>x.status>=400).length/checkout.length*100:0,sli:checkout.length?good/checkout.length*100:null,slo:99.9,badRequests:checkout.length-good,allowedBadRequests:checkout.length*.001},logs:logs.slice(-80),traces:traces.slice(-30),changes,orders:state.orders.slice(-30).reverse(),events:state.events.slice(-100).reverse()});
+        }
+        if(req.method==='POST'&&url.pathname==='/api/admin/scenario'){
+          const b=await body(req);
+          if(!b||!['healthy','pool-exhaustion','gateway-down','erp-down'].includes(b.scenario))return json(res,400,{error:'Unknown scenario'});
+          mode=b.scenario;erpPaused=mode==='erp-down';pool.resize(mode==='pool-exhaustion'?5:50);
+          change(mode==='pool-exhaustion'?'Deploy payment-service v2.3.1: maximumPoolSize=5 (was 50), FINOPS-482; load test skipped':`Rollback / scenario: ${mode}; maximumPoolSize=50`);
+          if(!erpPaused){for(const event of state.events)if(event.status==='queued')event.status='completed';await persist();}
+          return json(res,200,{mode});
+        }
+        return json(res,404,{error:'Not found'});
+      }
+      if(req.method==='GET'&&url.pathname==='/health')return json(res,200,{status:'ok',service:'chaicart',storage:'local-file-demo'});
+      if(req.method==='GET'&&url.pathname==='/api/menu')return json(res,200,{items:MENU,deliveryFee:10});
+      if(req.method==='POST'&&url.pathname==='/api/checkout'){
+        const b=await body(req);
+        if(!b||!Array.isArray(b.items)||!b.items.length||b.items.length>10||!b.items.every(x=>MENU.some(m=>m.id===x.id)&&Number.isInteger(x.quantity)&&x.quantity>0&&x.quantity<=20)||!['Mumbai','Bengaluru','Hyderabad','Delhi','Pune'].includes(b.city))return json(res,400,{error:'Choose a city and valid cart items'});
+        let order;
+        try{
+          await span(trace,'checkout-service','POST /api/checkout',async root=>{
+            const items=await span(trace,'cart-service','Validate cart & calculate total',async()=>b.items.map(x=>({...x,price:MENU.find(m=>m.id===x.id).price})),root.spanId);
+            await span(trace,'payment-service','Process demo payment',async payment=>{
+              await span(trace,'payment-service','Pool.getConnection',async()=>{log('INFO','payment-service','Pool stats',{maximumPoolSize:pool.size,active:pool.active,waiting:pool.waiting.length,trace_id:trace.traceId});await pool.acquire(timeout);},payment.spanId);
+              try{
+                await span(trace,'orders-db-demo','INSERT pending payment',()=>sleep(12),payment.spanId);
+                await span(trace,'payfast-demo','Demo gateway charge',async()=>{await sleep(gatewayDelay);if(mode==='gateway-down')throw new Error('PayFast gateway unavailable');},payment.spanId);
+                await span(trace,'orders-db-demo','UPDATE payment result',()=>sleep(5),payment.spanId);
+              }finally{pool.release();}
+            },root.spanId);
+            order={id:'CC-'+randomBytes(5).toString('hex').toUpperCase(),lookupToken:randomBytes(24).toString('hex'),city:b.city,items,total:10+items.reduce((s,x)=>s+x.price*x.quantity,0),createdAt:Date.now(),traceId:trace.traceId};
+            state.orders.push(order);if(state.orders.length>1000)state.orders.shift();await fulfill(order,trace);
+          });
+          trace.status=201;json(res,201,{...order,etaMinutes:10});
+        }catch(e){trace.status=504;log('ERROR','payment-service',e.message,{trace_id:trace.traceId});json(res,504,{error:'Payment could not complete. Please try again.',traceId:trace.traceId});}
+        finally{traces.push(trace);if(traces.length>100)traces.shift();exportTrace(trace);}
+        return;
+      }
+      if(req.method==='GET'&&url.pathname.startsWith('/api/orders/')){
+        const order=state.orders.find(x=>x.id===url.pathname.split('/').pop()&&x.lookupToken===req.headers['x-order-token']);
+        if(!order)return json(res,404,{error:'Order not found'});
+        const age=Date.now()-order.createdAt;return json(res,200,{...order,status:age<10000?'Brewing':age<20000?'Packing':age<30000?'Rider assigned':'Delivered',demoTimeline:true});
+      }
+      const files={'/':'index.html','/app.js':'app.js','/style.css':'style.css','/facilitator':'facilitator.html','/facilitator.js':'facilitator.js'};
+      if(req.method==='GET'&&files[url.pathname]){res.setHeader('content-type',url.pathname.endsWith('.js')?'text/javascript':url.pathname.endsWith('.css')?'text/css':'text/html');res.end(await readFile(path.join(publicDir,files[url.pathname])));return;}
+      json(res,404,{error:'Chai not found',path:url.pathname});
+    }catch(e){log('ERROR','checkout-service',e.message,{trace_id:trace.traceId});if(!res.headersSent)json(res,e.status||500,{error:e.status?e.message:'Something went wrong'});else res.end();}
+  });
+  return {server,pool,close:async()=>{await new Promise(r=>server.close(r));await saving;}};
+}
+if(process.argv[1]===fileURLToPath(import.meta.url)){
+  if(!process.env.ADMIN_TOKEN)console.warn('ADMIN_TOKEN is unset: facilitator APIs are disabled.');
+  const app=await createApp();app.server.listen(Number(process.env.PORT||8080),'0.0.0.0',()=>console.log('ChaiCart listening on '+(process.env.PORT||8080)));
+  for(const sig of ['SIGINT','SIGTERM'])process.on(sig,async()=>{await app.close();process.exit(0);});
+}

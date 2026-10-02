@@ -4,7 +4,7 @@ A two-day, game-based workshop on **cloud computing and business systems** for e
 
 **Live site:** https://theharithsa.github.io/chaicart-cloud-workshop/
 
-Everything is plain HTML, CSS and JavaScript. No build step, no dependencies, and every page works offline.
+The workshop materials are plain HTML, CSS and JavaScript and work offline. The companion [ChaiCart demo app](chaicart-demo/README.md) has a Node.js backend and requires a running server.
 
 ---
 
@@ -82,6 +82,22 @@ No server is required: open `index.html` directly. To serve it locally instead:
 python -m http.server 8000
 # then open http://localhost:8000
 ```
+
+## ChaiCart demo app
+
+The companion app lives in [`chaicart-demo/`](chaicart-demo/README.md). It includes a storefront, cart, simulated checkout and delivery, plus a protected facilitator console for pool exhaustion, gateway outages, ERP queue replay, metrics, logs and trace waterfalls.
+
+```bash
+cd chaicart-demo
+npm ci
+npm test
+export ADMIN_TOKEN="choose-a-local-demo-token"
+npm start
+```
+
+Open `http://localhost:8080`; the console is at `/facilitator`. See the [app README](chaicart-demo/README.md) for complete setup, [facilitator runbook](chaicart-demo/docs/FACILITATOR.md) for the live-demo sequence, and [deployment notes](chaicart-demo/docs/DEPLOYMENT.md) for Azure versus Firebase.
+
+The materials stay hosted on GitHub Pages. The backend must run on a compute service such as Azure App Service or Cloud Run. App tests run through [the demo workflow](.github/workflows/chaicart-demo.yml); Azure deployment stays disabled until `AZURE_WEBAPP_NAME` and the deployment secret are configured.
 
 ## Customising
 
