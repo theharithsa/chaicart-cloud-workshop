@@ -69,6 +69,7 @@
       <a href="#app-setup">Deployed ChaiCart app and sign-in</a>
       <a href="#dynatrace-prep">Dynatrace preparation</a>
       <a href="#scoring">Scoring</a>
+      <a href="#networking">Networking icebreakers</a>
       <a href="#d1">Day 1 — Build ChaiCart</a>
       <a href="#d2">Day 2 — Keep ChaiCart Alive</a>
       <a href="#late">Contingencies</a>
@@ -124,11 +125,17 @@
     <li><b>Score and transition:</b> captains hand in results, the scorekeeper enters them, you read the transition line.</li>
   </ol>
 
+  <h3 id="networking">Three networking icebreakers</h3>
+  <p><b>Day 1 opening:</b> LinkedIn (slide 6, 7 min). <b>Day 1 after lunch:</b> GitHub (slide 26, 7 min). <b>Day 2 opening:</b> X (slide 4, 5 min). These fit within the existing session blocks; keep introductions and debriefs brief.</p>
+  <p>Students create or improve their profiles, connect with peers, and use the presenter’s QR codes. LinkedIn: request connections with peers and Vishruth. GitHub: follow peers and <code>theharithsa</code>. X: build a learning circle and draft a takeaway; posting is optional. Existing accounts count.</p>
+  <p><b>Scoring:</b> +100 Cloud Credits per team per activity, once only; maximum +300 over both days. Every teammate completes the activity, and the COO reports completion to the captain. Existing accounts, connections and follows count; students improve their profile and make a useful peer introduction. Do not collect passwords, OTPs, profile screenshots or lists of personal handles. If account setup is delayed, students draft their profile and finish during a break; award the activity once completion is reported.</p>
+  <p>Enter separate rounds in <b>leaderboard.html</b>: “LinkedIn network”, “GitHub network” and “X learning circle”. Use the networking score grid on the captain’s sheet to avoid duplicate awards. QR codes are local SVG assets; opening profiles still requires internet.</p>
+
   <h3>Using the slide decks</h3>
   <ul>
     <li><b>→ / Space:</b> next (reveals items one at a time first). <b>←:</b> back. <b>F:</b> full screen. <b>Home / End:</b> first / last slide.</li>
     <li>Activity slides have a timer: click Start. It turns clay-coloured when time is up.</li>
-    <li>Jump to a slide by adding <code>#N</code> to the address, e.g. <code>day2-slides.html#11</code>.</li>
+    <li>Jump to a slide by adding <code>#N</code> to the address, e.g. <code>day2-slides.html#13</code>.</li>
   </ul>
 </div>
 
@@ -239,7 +246,7 @@
   <ul class="check">
     <li>Tables in four quadrants, table tents out, team sheets on tables (Day 1).</li>
     <li>Per table (Day 1): timeline set, service-sort set, one bingo card. Per table pair: architecture set. Posters on walls.</li>
-    <li>Per table (Day 2): treasure-hunt sheet, one die. Per region: Bill Shock pile. Per table pair: tarot deck. Envelopes stay with you until slide 11.</li>
+    <li>Per table (Day 2): treasure-hunt sheet, one die. Per region: Bill Shock pile. Per table pair: tarot deck. Envelopes stay with you until slide 13.</li>
     <li>Open the deck, leaderboard and quiz in separate tabs, plus the deployed ChaiCart storefront and facilitator console. Sign into the console, restore healthy mode and confirm an order. Have Azure and the verified Dynatrace environment signed in for Day 2.</li>
     <li>Day 1 only: reset the leaderboard, and rename teams if you used different names.</li>
   </ul>
@@ -250,6 +257,9 @@
   <div class="dayhead"><div class="kick">Reference</div><h1>Scoring</h1></div>
   <table class="score">
     <tr><th>Day</th><th>Activity</th><th>How to score</th><th>Credits</th></tr>
+    <tr><td>1</td><td>LinkedIn networking</td><td>All teammates complete the profile and connection steps; existing connections count; once per team</td><td>+100</td></tr>
+    <tr><td>1</td><td>GitHub developer circle</td><td>All teammates complete the activity; existing profiles and follows count; once per team</td><td>+100</td></tr>
+    <tr><td>2</td><td>X learning circle</td><td>All teammates complete the activity; existing profiles and follows count; once per team</td><td>+100</td></tr>
     <tr><td>1</td><td>Human Timeline</td><td>First correct team in each region</td><td>+50</td></tr>
     <tr><td>1</td><td>Service Model Sort</td><td>Teams self-mark against the slide: 5 credits per correct card</td><td>up to +100</td></tr>
     <tr><td>1</td><td>Where Should They Live?</td><td>Each convincing defence (applause decides)</td><td>+30</td></tr>
@@ -292,7 +302,7 @@
   <div class="dayhead"><div class="kick">Day 1 · Cloud Computing Fundamentals &amp; Industry Practices</div><h1>Build ChaiCart</h1></div>
 
   <div class="stage">
-    <div class="stage-h"><span class="time">09:30 · 25 min</span><h2>Opening, roles and “Cloud or Not?”</h2><span class="slides">Slides 1–6</span></div>
+    <div class="stage-h"><span class="time">09:30 · 25 min</span><h2>Opening, agenda, LinkedIn and “Cloud or Not?”</h2><span class="slides">Slides 1–8</span></div>
     <div class="meta">
       <div><b>Goal</b>Energy up, teams seated, and a first realisation that “cloud” is a way of delivering computing, not a place.</div>
       <div><b>Materials</b>Table tents and team sheets on tables; team list projected as students arrive; pre-survey (optional).</div>
@@ -301,11 +311,13 @@
     <ol>
       <li><b>Slide 1:</b> pause on the title, then reveal the line.
         <div class="say">For the next two days you are not students. You are founders. You're going to build a company in the cloud, and tomorrow we find out if it survives.</div></li>
-      <li><b>Slide 2:</b> the arc: Build → Survive → Pitch, and the 1,000 credits.</li>
-      <li><b>Slide 3:</b> explain teams as availability zones and regions. Introduce the four captains by name and region; ask each region to cheer.</li>
-      <li><b>Slide 4:</b> 5-minute timer. Teams assign the five roles on their team sheet.</li>
-      <li><b>Slide 5:</b> everyone stands. Reveal items one by one: <i>stand = cloud, sit = not cloud</i>. Hand the mic to one student per item to justify.</li>
-      <li><b>Slide 6:</b> reveal the answers. Spend time on the two twists: UPI (a private, regulated platform) and Excel (depends where the file lives).</li>
+      <li><b>Slide 2:</b> walk through today’s agenda and breaks; show when LinkedIn and GitHub icebreakers happen.</li>
+      <li><b>Slide 3:</b> the arc: Build → Survive → Pitch, and the 1,000 credits.</li>
+      <li><b>Slide 4:</b> explain teams as availability zones and regions. Introduce the four captains by name and region; ask each region to cheer.</li>
+      <li><b>Slide 5:</b> 5-minute timer. Teams assign the five roles on their team sheet.</li>
+      <li><b>Slide 6:</b> LinkedIn icebreaker (7 min). Pair students across teams, scan the presenter’s QR, and make a useful introduction. Captains award +100 once per team after completion; existing profiles and connections count.</li>
+      <li><b>Slide 7:</b> everyone stands. Reveal items one by one: <i>stand = cloud, sit = not cloud</i>. Hand the mic to one student per item to justify.</li>
+      <li><b>Slide 8:</b> reveal the answers. Spend time on the two twists: UPI (a private, regulated platform) and Excel (depends where the file lives).</li>
     </ol>
     <div class="label">Debrief</div>
     <ul><li>“What makes something cloud?” Look for: someone else runs it, network access, shared, pay for what you use.</li></ul>
@@ -314,18 +326,18 @@
   </div>
 
   <div class="stage">
-    <div class="stage-h"><span class="time">09:55 · 35 min</span><h2>What is cloud, Human Timeline, why businesses move</h2><span class="slides">Slides 7–10</span></div>
+    <div class="stage-h"><span class="time">09:55 · 35 min</span><h2>What is cloud, Human Timeline, why businesses move</h2><span class="slides">Slides 9–12</span></div>
     <div class="meta">
       <div><b>Goal</b>Know the five NIST characteristics, place cloud in history and name the business drivers.</div>
       <div><b>Materials</b>Timeline sets on every table; answer-key cards with captains.</div>
       <div><b>Scoring</b>First correct team in each region +50.</div>
     </div>
     <ol>
-      <li><b>Slide 7:</b> electricity analogy; reveal the five cards. For each, ask a random table: “What's the ChaiCart example?”</li>
-      <li><b>Slide 8:</b> teams stand beside their table, each member holding 2–3 cards, and line up in order. <b>No talking for the first 2 minutes.</b> 7-minute timer. When a team shouts “DEPLOYED!”, the captain checks it with the key card. The first correct team in each region wins.</li>
-      <li><b>Slide 9:</b> reveal the timeline year by year while teams check their line. Then the three eras.
+      <li><b>Slide 9:</b> electricity analogy; reveal the five cards. For each, ask a random table: “What's the ChaiCart example?”</li>
+      <li><b>Slide 10:</b> teams stand beside their table, each member holding 2–3 cards, and line up in order. <b>No talking for the first 2 minutes.</b> 7-minute timer. When a team shouts “DEPLOYED!”, the captain checks it with the key card. The first correct team in each region wins.</li>
+      <li><b>Slide 11:</b> reveal the timeline year by year while teams check their line. Then the three eras.
         <div class="say">We went from sharing one big computer, to everyone owning their own, and now back to sharing. Only this time the sharing is global and on demand.</div></li>
-      <li><b>Slide 10:</b> reveal the six drivers. Ask one team per region which driver matters most to ChaiCart.</li>
+      <li><b>Slide 12:</b> reveal the six drivers. Ask one team per region which driver matters most to ChaiCart.</li>
     </ol>
     <div class="watch">1998/1999 and 2013/2014 cause most mistakes. That's useful: it starts the VMware vs Salesforce and Docker vs Kubernetes conversations.</div>
   </div>
@@ -333,17 +345,17 @@
 
 <div class="page">
   <div class="stage">
-    <div class="stage-h"><span class="time">10:30 · 30 min</span><h2>Service models: IaaS, PaaS, SaaS</h2><span class="slides">Slides 11–15</span></div>
+    <div class="stage-h"><span class="time">10:30 · 30 min</span><h2>Service models: IaaS, PaaS, SaaS</h2><span class="slides">Slides 13–17</span></div>
     <div class="meta">
       <div><b>Goal</b>Explain who manages what in each model and classify real products.</div>
       <div><b>Materials</b>Service-sort sets on every table.</div>
       <div><b>Scoring</b>Self-marked: correct cards × 5 credits.</div>
     </div>
     <ol>
-      <li><b>Slide 12:</b> Biryani-as-a-Service. Ask: “Who has ordered on Swiggy? Why not cook?” The answer is always control vs effort.</li>
-      <li><b>Slide 13:</b> map the analogy to the stack, one row at a time: “In PaaS, who patches the OS? The provider. That's why developers love it.”</li>
-      <li><b>Slide 14:</b> sorting race, 6-minute timer. Cards in three columns on the table.</li>
-      <li><b>Slide 15:</b> reveal column by column. Teams count their correct cards and the COO reports the number to the captain. Discuss the tricky ones: Azure Functions (serverless, PaaS family), Blob Storage (raw infrastructure), Dynatrace (SaaS).</li>
+      <li><b>Slide 14:</b> Biryani-as-a-Service. Ask: “Who has ordered on Swiggy? Why not cook?” The answer is always control vs effort.</li>
+      <li><b>Slide 15:</b> map the analogy to the stack, one row at a time: “In PaaS, who patches the OS? The provider. That's why developers love it.”</li>
+      <li><b>Slide 16:</b> sorting race, 6-minute timer. Cards in three columns on the table.</li>
+      <li><b>Slide 17:</b> reveal column by column. Teams count their correct cards and the COO reports the number to the captain. Discuss the tricky ones: Azure Functions (serverless, PaaS family), Blob Storage (raw infrastructure), Dynatrace (SaaS).</li>
     </ol>
     <div class="label">Debrief</div>
     <ul><li>“ChaiCart has 3 developers and no ops person. Which model for the app? For email? For the database?”</li></ul>
@@ -351,32 +363,32 @@
   </div>
 
   <div class="stage">
-    <div class="stage-h"><span class="time">11:15 · 25 min</span><h2>Deployment models: “Where Should They Live?”</h2><span class="slides">Slides 16–19</span></div>
+    <div class="stage-h"><span class="time">11:15 · 25 min</span><h2>Deployment models: “Where Should They Live?”</h2><span class="slides">Slides 18–21</span></div>
     <div class="meta">
       <div><b>Goal</b>Choose between public, private, hybrid and multi-cloud based on constraints.</div>
       <div><b>Materials</b>24 scenario cards (8 scenarios × 3), dealt one per table.</div>
       <div><b>Scoring</b>+30 per convincing defence.</div>
     </div>
     <ol>
-      <li><b>Slide 17:</b> hotel, own house, house + Airbnb, many hotel chains.</li>
-      <li><b>Slide 18:</b> captains deal one scenario card per table, so three teams share each scenario. 3-minute timer to decide.</li>
+      <li><b>Slide 19:</b> hotel, own house, house + Airbnb, many hotel chains.</li>
+      <li><b>Slide 20:</b> captains deal one scenario card per table, so three teams share each scenario. 3-minute timer to decide.</li>
       <li>Go through the eight scenarios. For each, ask the three teams to raise hands, pick one at random for a <b>60-second defence</b> (handheld mic), then let one of the other two challenge with a single question.</li>
       <li>Best debates: <b>bank</b> (regulation vs innovation), <b>hospital</b> (sensitive data + AI), <b>factory</b> (latency → edge).</li>
-      <li><b>Slide 19:</b> debrief the six factors. Mention RBI data localisation and the DPDP Act as real Indian constraints.</li>
+      <li><b>Slide 21:</b> debrief the six factors. Mention RBI data localisation and the DPDP Act as real Indian constraints.</li>
     </ol>
     <div class="watch">Don't present the suggested answers as “the truth”. Say: “Here's what most architects would suggest, but your argument counts more than the label.”</div>
   </div>
 
   <div class="stage">
-    <div class="stage-h"><span class="time">11:40 · 45 min</span><h2>Major platforms and Cloud Shark Tank</h2><span class="slides">Slides 20–23</span></div>
+    <div class="stage-h"><span class="time">11:40 · 45 min</span><h2>Major platforms and Cloud Shark Tank</h2><span class="slides">Slides 22–25</span></div>
     <div class="meta">
       <div><b>Goal</b>Know the major providers, their strengths and equivalent service names.</div>
       <div><b>Materials</b>Per region: 6 client briefs + 6 platform cards (AWS ×2, Azure ×2, Google Cloud, OCI).</div>
       <div><b>Scoring</b>Region winners +50; grand winner +100 more.</div>
     </div>
     <ol>
-      <li><b>Slides 21–22:</b> the landscape and the “Rosetta Stone”. Quiz the room by pointing at a row and asking for the Azure name.</li>
-      <li><b>Slide 23:</b> captains hand each team a platform card and a client brief. <b>8 minutes</b> to prepare.</li>
+      <li><b>Slides 23–24:</b> the landscape and the “Rosetta Stone”. Quiz the room by pointing at a row and asking for the Azure name.</li>
+      <li><b>Slide 25:</b> captains hand each team a platform card and a client brief. <b>8 minutes</b> to prepare.</li>
       <li><b>Region round (10 min):</b> in each quadrant, every CEO pitches for <b>1 minute</b> while the captain times. Each team then votes for the best pitch, not its own. The captain announces the region winner.</li>
       <li><b>Grand final (15 min):</b> the four region winners pitch for 2 minutes on stage. You ask each the “They will ask” question from their card. You and the captains pick the grand winner.</li>
     </ol>
@@ -387,34 +399,35 @@
 
 <div class="page">
   <div class="stage">
-    <div class="stage-h"><span class="time">13:15 · 40 min</span><h2>Cloud Bingo, virtualization and containers</h2><span class="slides">Slides 24–28</span></div>
+    <div class="stage-h"><span class="time">13:15 · 40 min</span><h2>GitHub icebreaker, Cloud Bingo, virtualization and containers</h2><span class="slides">Slides 26–31</span></div>
     <div class="meta">
       <div><b>Goal</b>Re-energise after lunch; explain VMs vs containers and why Kubernetes exists.</div>
       <div><b>Materials</b>One bingo card per table; caller sheet; Cloud Shell open.</div>
-      <div><b>Scoring</b>First three teams to complete a line +30.</div>
+      <div><b>Scoring</b>GitHub activity +100 per completing team; Bingo +30 to the first three teams.</div>
     </div>
     <ol>
-      <li><b>Slide 24, Bingo (8 min):</b> read clues from the caller sheet in random order, ticking each one. The whole team shouts “AUTOSCALE!”; the captain checks the card against your ticks.</li>
-      <li><b>Slide 26:</b> house → apartment → tiffin box. “In an apartment, what's shared and what's yours? In a tiffin service?” (The kitchen = the kernel.)</li>
-      <li><b>Slide 27:</b> walk both stacks from bottom to top; reveal the Kubernetes line.</li>
-      <li><b>Slide 28, live demo:</b> start a VM in the portal (in <code>rg-chaicart-day1</code>), then immediately run the container commands in Cloud Shell. The room bets on which serves a page first. Open the container's IP on screen.</li>
+      <li><b>Slide 26:</b> GitHub networking (7 min). Improve profiles, follow peers and the presenter, and discuss one shared project idea. Captains award +100 once per team after completion; finish delayed signups during a break.</li>
+      <li><b>Slide 27, Bingo (8 min):</b> read clues from the caller sheet in random order, ticking each one. The whole team shouts “AUTOSCALE!”; the captain checks the card against your ticks.</li>
+      <li><b>Slide 29:</b> house → apartment → tiffin box. “In an apartment, what's shared and what's yours? In a tiffin service?” (The kitchen = the kernel.)</li>
+      <li><b>Slide 30:</b> walk both stacks from bottom to top; reveal the Kubernetes line.</li>
+      <li><b>Slide 31, live demo:</b> start a VM in the portal (in <code>rg-chaicart-day1</code>), then immediately run the container commands in Cloud Shell. The room bets on which serves a page first. Open the container's IP on screen.</li>
       <li>After the session: <code>az group delete -n rg-chaicart-day1 --yes</code>.</li>
     </ol>
     <div class="watch">If Wi-Fi is slow, show a screen recording. Never debug live for more than 60 seconds.</div>
   </div>
 
   <div class="stage">
-    <div class="stage-h"><span class="time">13:55 · 50 min</span><h2>Cloud architecture and Architecture Lego</h2><span class="slides">Slides 29–33</span></div>
+    <div class="stage-h"><span class="time">13:55 · 50 min</span><h2>Cloud architecture and Architecture Lego</h2><span class="slides">Slides 32–36</span></div>
     <div class="meta">
       <div><b>Goal</b>Name the core building blocks and design a resilient, scalable architecture.</div>
       <div><b>Materials</b>Chart paper and markers per team; component card set per table pair.</div>
       <div><b>Scoring</b>Region best +50; overall best +100 more.</div>
     </div>
     <ol>
-      <li><b>Slides 30–31:</b> the building blocks, then trace one request from phone to database. Reveal the three principles.</li>
-      <li><b>Slide 32:</b> <b>15-minute build.</b> Teams draw ChaiCart's architecture and write their team name on the chart paper. Captains circulate asking: “What happens if this box dies?”</li>
+      <li><b>Slides 33–34:</b> the building blocks, then trace one request from phone to database. Reveal the three principles.</li>
+      <li><b>Slide 35:</b> <b>15-minute build.</b> Teams draw ChaiCart's architecture and write their team name on the chart paper. Captains circulate asking: “What happens if this box dies?”</li>
       <li>At 15 minutes, reveal the <b>Diwali twist</b> and start the 7-minute timer.</li>
-      <li><b>Region judging (8 min):</b> captains walk their six tables with the six Well-Architected questions from slide 33 and pick the region's best design.</li>
+      <li><b>Region judging (8 min):</b> captains walk their six tables with the six Well-Architected questions from slide 36 and pick the region's best design.</li>
       <li><b>Main stage (8 min):</b> the four region winners hold up their chart paper and explain it in 90 seconds each. Pick the overall best.
         <div class="say">Keep your chart paper. Tomorrow some game cards will ask whether your design had autoscaling, multiple zones or a firewall. Your CTO will have to prove it.</div></li>
     </ol>
@@ -425,25 +438,25 @@
 
 <div class="page">
   <div class="stage">
-    <div class="stage-h"><span class="time">15:00 · 30 min</span><h2>Microservices and the Human Kitchen</h2><span class="slides">Slides 34–37</span></div>
+    <div class="stage-h"><span class="time">15:00 · 30 min</span><h2>Microservices and the Human Kitchen</h2><span class="slides">Slides 37–40</span></div>
     <div class="meta">
       <div><b>Goal</b>Feel the difference between a monolith and microservices, and discover why tracing is needed.</div>
       <div><b>Materials</b>Kitchen station cards, ~30 order tickets, pens, a “DONE” tray.</div>
       <div><b>Scoring</b>+20 to each volunteer's team.</div>
     </div>
     <ol>
-      <li><b>Slide 35:</b> one super-chef vs a station kitchen; reveal the cloud-native definition.</li>
+      <li><b>Slide 38:</b> one super-chef vs a station kitchen; reveal the cloud-native definition.</li>
       <li>Invite <b>six volunteers from six different teams</b> (at least one per region) to the stage. Everyone else counts out loud.</li>
       <li><b>Round 1, monolith (3 min):</b> one volunteer does all five steps on each ticket. Count completed tickets.</li>
       <li><b>Round 2, microservices (3 min):</b> five volunteers, one station each. Tickets flow down the line; each station writes its time on the ticket.</li>
       <li><b>Round 3, chaos (3 min):</b> tap the Payment volunteer; they freeze. After 30 seconds, ask the room: “Where is order CC-007 right now?” Let the volunteers read the timestamps aloud.</li>
-      <li><b>Slide 37:</b> reveal the three insights; land the last card: <i>the ticket was a distributed trace.</i> If time allows, place an order in the deployed app and expand its trace in the facilitator console: cart → payment → pool → demo database → gateway → business events. These are logical services in one Node process, not independently deployed microservices.</li>
+      <li><b>Slide 40:</b> reveal the three insights; land the last card: <i>the ticket was a distributed trace.</i> If time allows, place an order in the deployed app and expand its trace in the facilitator console: cart → payment → pool → demo database → gateway → business events. These are logical services in one Node process, not independently deployed microservices.</li>
     </ol>
     <div class="watch">Pick energetic volunteers and give them the mic. The chaos round is the key moment; don't skip it.</div>
   </div>
 
   <div class="stage">
-    <div class="stage-h"><span class="time">15:30 · 25 min</span><h2>Industry use cases: Gallery Walk</h2><span class="slides">Slides 38–39</span></div>
+    <div class="stage-h"><span class="time">15:30 · 25 min</span><h2>Industry use cases: Gallery Walk</h2><span class="slides">Slides 41–42</span></div>
     <div class="meta">
       <div><b>Goal</b>Connect concepts to real companies; learn from each other.</div>
       <div><b>Materials</b>12 poster stations (2 sets of 6); sticky notes and pens per team.</div>
@@ -459,17 +472,17 @@
   </div>
 
   <div class="stage">
-    <div class="stage-h"><span class="time">15:55 · 35 min</span><h2>Observability intro, Dynatrace peek, quiz, cliffhanger</h2><span class="slides">Slides 40–44</span></div>
+    <div class="stage-h"><span class="time">15:55 · 35 min</span><h2>Observability intro, Dynatrace peek, quiz, cliffhanger</h2><span class="slides">Slides 43–47</span></div>
     <div class="meta">
       <div><b>Goal</b>Introduce metrics, logs and traces; tease Day 2.</div>
       <div><b>Materials</b>Dynatrace on your pre-chosen trace; quiz.html#day1; quiz answer sheets (team sheet p. 3); one sealed envelope to show.</div>
       <div><b>Scoring</b>Quiz: +10 per correct answer.</div>
     </div>
     <ol>
-      <li><b>Slide 41:</b> the doctor analogy; then the monitoring vs observability quote.</li>
-      <li><b>Slide 42, 5-minute Dynatrace peek:</b> service map, a response-time chart, your story trace (“this is the order ticket from the kitchen!”), the Problems page. Ask the audience question on the slide.</li>
-      <li><b>Slide 43, quiz:</b> each COO writes answers on the team's answer sheet. 20 seconds per question (press T), then R to reveal. On the last screen, the answer key appears: teams swap sheets with a neighbour, mark, return, and report the score to their captain.</li>
-      <li><b>Slide 44:</b> reveal the envelope and hold up a real one.
+      <li><b>Slide 44:</b> the doctor analogy; then the monitoring vs observability quote.</li>
+      <li><b>Slide 45, 5-minute Dynatrace peek:</b> service map, a response-time chart, your story trace (“this is the order ticket from the kitchen!”), the Problems page. Ask the audience question on the slide.</li>
+      <li><b>Slide 46, quiz:</b> each COO writes answers on the team's answer sheet. 20 seconds per question (press T), then R to reveal. On the last screen, the answer key appears: teams swap sheets with a neighbour, mark, return, and report the score to their captain.</li>
+      <li><b>Slide 47:</b> reveal the envelope and hold up a real one.
         <div class="say">ChaiCart launches tomorrow at 9 AM. Something will break. I have 24 envelopes, and you'll get yours at exactly the right moment.</div></li>
       <li>Show the Day 1 leaderboard in presentation mode.</li>
     </ol>
@@ -490,43 +503,45 @@
   <div class="dayhead"><div class="kick">Day 2 · Cloud Operations, Observability &amp; Business Systems</div><h1>Keep ChaiCart Alive</h1></div>
 
   <div class="stage">
-    <div class="stage-h"><span class="time">09:30 · 10 min</span><h2>Warm-up and Breaking News</h2><span class="slides">Slides 1–3</span></div>
+    <div class="stage-h"><span class="time">09:30 · 10 min</span><h2>Agenda, X icebreaker, warm-up and Breaking News</h2><span class="slides">Slides 1–5</span></div>
     <ol>
-      <li><b>Slide 2:</b> one team per region shouts one word for Day 1. Show the leaderboard; remind everyone of the five roles.</li>
-      <li><b>Slide 3:</b> read the breaking news dramatically; reveal the “payment stuck on spinner” line and pause.</li>
+      <li><b>Slide 2:</b> walk through the Day 2 agenda, breaks and final Demo Day.</li>
+      <li><b>Slide 3:</b> one team per region shouts one word for Day 1. Show the leaderboard; remind everyone of the five roles.</li>
+      <li><b>Slide 4:</b> X learning circle (5 min). Students improve their bio, find peers and draft a takeaway; no public post is required. Captains award +100 once per team after completion; posting is optional.</li>
+      <li><b>Slide 5:</b> read the breaking news dramatically; reveal the “payment stuck on spinner” line and pause.</li>
     </ol>
   </div>
 
   <div class="stage">
-    <div class="stage-h"><span class="time">09:40 · 15 min</span><h2>Performance, reliability and Guess the Downtime</h2><span class="slides">Slides 4–7</span></div>
+    <div class="stage-h"><span class="time">09:40 · 15 min</span><h2>Performance, reliability and Guess the Downtime</h2><span class="slides">Slides 6–9</span></div>
     <ol>
-      <li><b>Slide 5:</b> the four user-facing signals. Explain p95 with the “95 happy, 5 tweeting” example.</li>
-      <li><b>Slide 6:</b> for each row, teams write a guess in large numbers on scrap paper and hold it up. Captains spot the closest team in their region (+20).</li>
+      <li><b>Slide 7:</b> the four user-facing signals. Explain p95 with the “95 happy, 5 tweeting” example.</li>
+      <li><b>Slide 8:</b> for each row, teams write a guess in large numbers on scrap paper and hold it up. Captains spot the closest team in their region (+20).</li>
       <li>Ask: “Does a chai app need five nines? Does UPI?”</li>
-      <li><b>Slide 7:</b> the six reliability patterns, linked back to the Human Kitchen.</li>
+      <li><b>Slide 9:</b> the six reliability patterns, linked back to the Human Kitchen.</li>
     </ol>
   </div>
 
   <div class="stage">
-    <div class="stage-h"><span class="time">09:55 · 15 min</span><h2>Monitoring vs observability, APM, golden signals</h2><span class="slides">Slides 8–10</span></div>
+    <div class="stage-h"><span class="time">09:55 · 15 min</span><h2>Monitoring vs observability, APM, golden signals</h2><span class="slides">Slides 10–12</span></div>
     <ol>
-      <li><b>Slide 9:</b> smoke alarm vs fire investigator; reveal APM.</li>
-      <li><b>Slide 10:</b> the golden signals, RED and USE. <b>Stress the final hint about connection pools.</b> It is a deliberate clue for the mystery.</li>
+      <li><b>Slide 11:</b> smoke alarm vs fire investigator; reveal APM.</li>
+      <li><b>Slide 12:</b> the golden signals, RED and USE. <b>Stress the final hint about connection pools.</b> It is a deliberate clue for the mystery.</li>
     </ol>
     <div class="next">“You have the theory. Now you have a crime to solve.”</div>
   </div>
 
   <div class="stage">
-    <div class="stage-h"><span class="time">10:10 · 50 min</span><h2>Murder mystery: Who Killed Checkout?</h2><span class="slides">Slides 11–15</span></div>
+    <div class="stage-h"><span class="time">10:10 · 50 min</span><h2>Murder mystery: Who Killed Checkout?</h2><span class="slides">Slides 13–17</span></div>
     <div class="meta">
       <div><b>Goal</b>Correlate metrics, logs, traces and change events to find a root cause.</div>
       <div><b>Materials</b>24 sealed envelopes (captains hand out 6 each); solution page for each captain.</div>
-      <div><b>Scoring</b>See slide 13; up to +525.</div>
+      <div><b>Scoring</b>See slide 15; up to +525.</div>
     </div>
     <ol>
-      <li><b>Slide 11:</b> captains give every team its envelope face down. On your word: “Open them. Now.”</li>
-      <li><b>Slide 12:</b> introduce the six suspects with some theatre.</li>
-      <li><b>Slide 13:</b> rules and scoring. <b>25-minute</b> timer. COOs hand accusation forms to their captain, who writes the time on each.</li>
+      <li><b>Slide 13:</b> captains give every team its envelope face down. On your word: “Open them. Now.”</li>
+      <li><b>Slide 14:</b> introduce the six suspects with some theatre.</li>
+      <li><b>Slide 15:</b> rules and scoring. <b>25-minute</b> timer. COOs hand accusation forms to their captain, who writes the time on each.</li>
       <li><b>Hints</b> (announce to the whole room if most teams are stuck):
         <ul>
           <li>At 10 min: “Compare database connections before and after 08:58.”</li>
@@ -534,8 +549,8 @@
           <li>At 20 min: “In the failed trace, what's <i>missing</i>?”</li>
         </ul></li>
       <li>While teams work, captains mark forms as they arrive using the solution page, and tell you the first correct team in their region with its time. The earliest of the four wins the +100 room bonus and the Sherlock Award.</li>
-      <li><b>Slide 14, reveal:</b> go suspect by suspect, innocents first. Ask the room to shout “innocent” or “guilty” before each reveal.</li>
-      <li><b>Slide 15, lessons:</b> stress the irony: a cost-saving change caused the outage. After the reveal, use the deployed app companion if rehearsed: baseline in <b>Healthy / Roll back</b>, select <b>Deploy Dave: pool 50 → 5</b>, launch the surge, compare waits/504s and missing gateway spans, then roll back and stop traffic. Keep controls hidden during the paper investigation. Live timings will differ from the printed evidence.</li>
+      <li><b>Slide 16, reveal:</b> go suspect by suspect, innocents first. Ask the room to shout “innocent” or “guilty” before each reveal.</li>
+      <li><b>Slide 17, lessons:</b> stress the irony: a cost-saving change caused the outage. After the reveal, use the deployed app companion if rehearsed: baseline in <b>Healthy / Roll back</b>, select <b>Deploy Dave: pool 50 → 5</b>, launch the surge, compare waits/504s and missing gateway spans, then roll back and stop traffic. Keep controls hidden during the paper investigation. Live timings will differ from the printed evidence.</li>
     </ol>
     <div class="label">The solution in one breath</div>
     <p>Deploy Dave (payment-service v2.3.1 at 08:58) cut the DB connection pool from 50 to 5 to save cost. Traffic Tara (3× launch traffic at 09:00) exhausted the five connections. Requests waited 30 s and timed out, and checkout returned 504s. The database, gateway, cache and disk are innocent: the database was <i>starved</i>, not overloaded.</p>
@@ -546,32 +561,32 @@
 
 <div class="page">
   <div class="stage">
-    <div class="stage-h"><span class="time">11:15 · 45 min</span><h2>Logs, metrics, traces and the Treasure Hunt</h2><span class="slides">Slides 16–20</span></div>
+    <div class="stage-h"><span class="time">11:15 · 45 min</span><h2>Logs, metrics, traces and the Treasure Hunt</h2><span class="slides">Slides 18–22</span></div>
     <div class="meta">
       <div><b>Goal</b>Recognise each signal type and query real telemetry in Dynatrace and Azure.</div>
       <div><b>Materials</b>Treasure-hunt sheet per team; Dynatrace and Azure tabs; QR code for the web app.</div>
       <div><b>Scoring</b>Worksheet points (max 150), self-marked.</div>
     </div>
     <ol>
-      <li><b>Slides 17–18:</b> the same incident as a metric, a log and a trace; how tracing works (trace ID = ticket number, span = station).</li>
-      <li><b>Slide 19, Part A, Dynatrace (~20 min):</b> you drive the screen. Read each question, give teams 90 seconds to discuss, then take a suggestion from a random table on where to click. Teams write answers from what they see.</li>
+      <li><b>Slides 19–20:</b> the same incident as a metric, a log and a trace; how tracing works (trace ID = ticket number, span = station).</li>
+      <li><b>Slide 21, Part A, Dynatrace (~20 min):</b> you drive the screen. Read each question, give teams 90 seconds to discuss, then take a suggestion from a random table on where to click. Teams write answers from what they see.</li>
       <li><b>Part B, Azure (~15 min):</b> share the deployed ChaiCart QR code. Teams open the menu and sign in with Google to place demo orders. Show the App Service resource and the app console. Request <code>/chai-not-found</code> for a real 404. Show Live Metrics and run the worksheet KQL only after Application Insights ingestion is verified; otherwise use prepared evidence or a separately instrumented app. Confirm the budget alert exists before presenting Q14; budget alerts do not cap spending.</li>
       <li>Read out the answers; teams self-mark and COOs report the total to their captain.</li>
-      <li><b>Slide 20:</b> recap with the DQL examples: observability is asking new questions without shipping new code.</li>
+      <li><b>Slide 22:</b> recap with the DQL examples: observability is asking new questions without shipping new code.</li>
     </ol>
     <div class="watch">120 phones on one Wi-Fi can be slow. Mobile data works too; tell students they can use it. If the environment has no failures, switch Q1 and Q3 from “failed” to “slowest”.</div>
   </div>
 
   <div class="stage">
-    <div class="stage-h"><span class="time">12:00 · 40 min</span><h2>SRE, SLOs and Error Budget Poker</h2><span class="slides">Slides 21–24</span></div>
+    <div class="stage-h"><span class="time">12:00 · 40 min</span><h2>SRE, SLOs and Error Budget Poker</h2><span class="slides">Slides 23–26</span></div>
     <div class="meta">
       <div><b>Goal</b>Understand SLI/SLO/SLA and use error budgets to balance speed and reliability.</div>
       <div><b>Materials</b>Your Error Budget cards, one die per team, team sheets (tracker).</div>
       <div><b>Scoring</b>As printed; leftover minutes × 3.</div>
     </div>
     <ol>
-      <li><b>Slides 22–23:</b> the Treynor Sloss quote, then SLI → SLO → SLA. Do the error-budget maths live: 30 × 24 × 60 × 0.1% ≈ 43 minutes.</li>
-      <li><b>Slide 24:</b> each SRE holds the 43-minute budget. Read one card aloud and start the 60-second timer. Teams decide and hold up <b>one finger for A, two for B</b>. Those who need to roll do so and update the tracker.</li>
+      <li><b>Slides 24–25:</b> the Treynor Sloss quote, then SLI → SLO → SLA. Do the error-budget maths live: 30 × 24 × 60 × 0.1% ≈ 43 minutes.</li>
+      <li><b>Slide 26:</b> each SRE holds the 43-minute budget. Read one card aloud and start the 60-second timer. Teams decide and hold up <b>one finger for A, two for B</b>. Those who need to roll do so and update the tracker.</li>
       <li>Cards 3 and 8 depend on the Day 1 architecture: the CTO must show proof on the chart paper to the captain.</li>
       <li>Card 10 ends the month. Ask the team deepest in the red what it would do differently.</li>
     </ol>
@@ -580,7 +595,7 @@
   </div>
 
   <div class="stage">
-    <div class="stage-h"><span class="time">13:25 · 15 min</span><h2>Blameless postmortem</h2><span class="slides">Slide 25</span></div>
+    <div class="stage-h"><span class="time">13:25 · 15 min</span><h2>Blameless postmortem</h2><span class="slides">Slide 27</span></div>
     <div class="meta">
       <div><b>Goal</b>Practise blameless language and concrete action items.</div>
       <div><b>Materials</b>Team sheet page 2 (postmortem template).</div>
@@ -596,84 +611,84 @@
 
 <div class="page">
   <div class="stage">
-    <div class="stage-h"><span class="time">13:40 · 45 min</span><h2>DevOps, Paper Plane Factory, DORA, CI/CD demo</h2><span class="slides">Slides 26–30</span></div>
+    <div class="stage-h"><span class="time">13:40 · 45 min</span><h2>DevOps, Paper Plane Factory, DORA, CI/CD demo</h2><span class="slides">Slides 28–32</span></div>
     <div class="meta">
       <div><b>Goal</b>Experience batch vs flow; know the DORA metrics and safe deployment strategies.</div>
       <div><b>Materials</b>15 half-sheets of A4 per team per round (about 360 A4 sheets cut in half); aisles as flight paths with a 3 m mark.</div>
       <div><b>Scoring</b>Most planes flying 3+ m in round 2, per region: +50.</div>
     </div>
     <ol>
-      <li><b>Slide 27:</b> the DevOps loop, CI, CD and IaC. Keep it short; the game makes the point.</li>
-      <li><b>Slide 28:</b> show a simple dart-plane fold (30 seconds). Four members are stations: <i>fold body → wings → decorate → QA test flight</i> down the aisle. The COO times and counts.
+      <li><b>Slide 29:</b> the DevOps loop, CI, CD and IaC. Keep it short; the game makes the point.</li>
+      <li><b>Slide 30:</b> show a simple dart-plane fold (30 seconds). Four members are stations: <i>fold body → wings → decorate → QA test flight</i> down the aisle. The COO times and counts.
         <ul>
           <li><b>Round 1 (4 min), waterfall:</b> each station finishes a batch of 3 before passing any on. QA flies only at the end.</li>
           <li><b>Round 2 (4 min), flow:</b> one plane at a time; every station checks its own work; QA gives instant feedback.</li>
           <li>Teams record both rounds on team-sheet page 3 and report round 2 to the captain.</li>
         </ul></li>
       <li>Debrief: “When did you find out your folding was bad in round 1? In round 2?” That is the case for CI: fast feedback.</li>
-      <li><b>Slide 29:</b> DORA metrics and deployment strategies; land the Deploy Dave / canary joke.</li>
-      <li><b>Slide 30, CI/CD demo:</b> use the repository’s existing ChaiCart workflow. Until Azure deployment credentials are configured, demonstrate passing and failing tests on a rehearsal branch/PR and explain that deployment is skipped. Once deployment is enabled and rehearsed, change <code>chaicart-demo/public/index.html</code>, show the successful deploy, and refresh the Azure URL. Use a controlled failing-test change and revert it immediately after the demonstration; do not leave <code>main</code> broken.</li>
+      <li><b>Slide 31:</b> DORA metrics and deployment strategies; land the Deploy Dave / canary joke.</li>
+      <li><b>Slide 32, CI/CD demo:</b> use the repository’s existing ChaiCart workflow. Until Azure deployment credentials are configured, demonstrate passing and failing tests on a rehearsal branch/PR and explain that deployment is skipped. Once deployment is enabled and rehearsed, change <code>chaicart-demo/public/index.html</code>, show the successful deploy, and refresh the Azure URL. Use a controlled failing-test change and revert it immediately after the demonstration; do not leave <code>main</code> broken.</li>
     </ol>
     <div class="watch">Planes in a room of 120 get loud and chaotic. Only QA throws, only down its own region's aisle, and only when the captain says “fly”. Collect all paper before moving on.</div>
   </div>
 
   <div class="stage">
-    <div class="stage-h"><span class="time">14:25 · 35 min</span><h2>Security, scalability, cost and Cloud Bill Shock</h2><span class="slides">Slides 31–36</span></div>
+    <div class="stage-h"><span class="time">14:25 · 35 min</span><h2>Security, scalability, cost and Cloud Bill Shock</h2><span class="slides">Slides 33–38</span></div>
     <div class="meta">
       <div><b>Goal</b>Understand shared responsibility, core security controls, scaling methods and FinOps levers.</div>
       <div><b>Materials</b>Four shuffled Bill Shock piles (one per region); architecture chart papers.</div>
       <div><b>Scoring</b>As printed; naming the control refunds half a loss.</div>
     </div>
     <ol>
-      <li><b>Slide 32:</b> shared responsibility; callback to the Capital One poster.</li>
-      <li><b>Slides 33–35:</b> move briskly. Ask one CFO per region which FinOps lever it would pull first.</li>
-      <li><b>Slide 36:</b> captains take their pile to the tables; each CFO draws 3 cards. For “depends on your design” cards, the CTO shows the chart paper to the captain. For each negative card, naming the preventing control aloud refunds half.</li>
+      <li><b>Slide 34:</b> shared responsibility; callback to the Capital One poster.</li>
+      <li><b>Slides 35–37:</b> move briskly. Ask one CFO per region which FinOps lever it would pull first.</li>
+      <li><b>Slide 38:</b> captains take their pile to the tables; each CFO draws 3 cards. For “depends on your design” cards, the CTO shows the chart paper to the captain. For each negative card, naming the preventing control aloud refunds half.</li>
       <li>Ask each captain for the most painful card in the region, and the room: “Who has seen this happen in real life?”</li>
     </ol>
     <div class="next">Break (10 min). “Now let's leave the servers and look at the systems that actually run a business.”</div>
   </div>
 
   <div class="stage">
-    <div class="stage-h"><span class="time">15:10 · 35 min</span><h2>Business systems and Follow the Order</h2><span class="slides">Slides 37–41</span></div>
+    <div class="stage-h"><span class="time">15:10 · 35 min</span><h2>Business systems and Follow the Order</h2><span class="slides">Slides 39–43</span></div>
     <div class="meta">
       <div><b>Goal</b>Understand CRM, ERP, SCM, HCM, ITSM and BI; how they integrate; why they moved to SaaS.</div>
       <div><b>Materials</b>Follow the Order cards (7 systems + token), a stamp or pen.</div>
       <div><b>Setup</b>Seven volunteers (from different regions) in a line on stage.</div>
     </div>
     <ol>
-      <li><b>Slide 38:</b> “Which of these have you used without knowing it?” (e.g. HCM when applying for an internship).</li>
-      <li><b>Slide 39:</b> Commerce starts with the order token, reads its line into the mic, stamps it and passes it on. Each system does the same.</li>
+      <li><b>Slide 40:</b> “Which of these have you used without knowing it?” (e.g. HCM when applying for an internship).</li>
+      <li><b>Slide 41:</b> Commerce starts with the order token, reads its line into the mic, stamps it and passes it on. Each system does the same.</li>
       <li>Twist: “ERP is down for maintenance!” The ERP volunteer sits. What still works (order, loyalty)? What piles up (invoices)? This is why queues and events matter between systems.</li>
-      <li><b>Slides 40–41:</b> integration, why SaaS wins, the role of cloud in digital business. In the deployed app, select <b>Pause ERP</b>, place an order, show the queued invoice alongside completed CRM/SCM/HCM/BI events, then select <b>Healthy / Roll back</b> to replay. This is simulated event processing; the app does not connect to SAP, Salesforce or other business systems.</li>
+      <li><b>Slides 42–43:</b> integration, why SaaS wins, the role of cloud in digital business. In the deployed app, select <b>Pause ERP</b>, place an order, show the queued invoice alongside completed CRM/SCM/HCM/BI events, then select <b>Healthy / Roll back</b> to replay. This is simulated event processing; the app does not connect to SAP, Salesforce or other business systems.</li>
     </ol>
   </div>
 </div>
 
 <div class="page">
   <div class="stage">
-    <div class="stage-h"><span class="time">15:45 · 30 min</span><h2>Trends, Career Tarot, skills, hot-seat Q&amp;A</h2><span class="slides">Slides 42–46</span></div>
+    <div class="stage-h"><span class="time">15:45 · 30 min</span><h2>Trends, Career Tarot, skills, hot-seat Q&amp;A</h2><span class="slides">Slides 44–48</span></div>
     <div class="meta">
       <div><b>Goal</b>See where the industry is heading; every student leaves with a 90-day plan.</div>
       <div><b>Materials</b>12 tarot decks, one per table pair; team sheet page 2 (90-day plan).</div>
       <div><b>Audience note</b>7th-semester students are close to placements; 5th-semester to internships. Speak to both.</div>
     </div>
     <ol>
-      <li><b>Slide 43:</b> vote with hands for the trend that will matter most in five years.</li>
-      <li><b>Slide 44:</b> each student draws a card from the shared deck, reads it, may swap once with a teammate, then fills in the 90-day plan. 10-minute timer.</li>
-      <li><b>Slide 45:</b> the skills stack. Emphasise one cloud properly, one portfolio project on GitHub, and a fundamentals certificate that students can earn this semester.</li>
-      <li><b>Slide 46, hot seat:</b> reveal one question at a time and take two or three answers each via the handheld mic. Close with open Q&amp;A about working in the industry.</li>
+      <li><b>Slide 45:</b> vote with hands for the trend that will matter most in five years.</li>
+      <li><b>Slide 46:</b> each student draws a card from the shared deck, reads it, may swap once with a teammate, then fills in the 90-day plan. 10-minute timer.</li>
+      <li><b>Slide 47:</b> the skills stack. Emphasise one cloud properly, one portfolio project on GitHub, and a fundamentals certificate that students can earn this semester.</li>
+      <li><b>Slide 48, hot seat:</b> reveal one question at a time and take two or three answers each via the handheld mic. Close with open Q&amp;A about working in the industry.</li>
     </ol>
     <div class="watch">This is the section students remember for their careers. Share real stories: an incident you worked on, what interviews look for, what a day in your job looks like.</div>
   </div>
 
   <div class="stage">
-    <div class="stage-h"><span class="time">16:15 · 45 min</span><h2>Final quiz, Demo Day, awards, close</h2><span class="slides">Slides 47–49</span></div>
+    <div class="stage-h"><span class="time">16:15 · 45 min</span><h2>Final quiz, Demo Day, awards, close</h2><span class="slides">Slides 49–51</span></div>
     <ol>
-      <li><b>Slide 47:</b> the Day 2 quiz, same answer-sheet and swap-marking process (10 min). The scorekeeper enters the results straight away so the final leaderboard is ready.</li>
-      <li><b>Slide 48, region round (15 min):</b> in each quadrant, every CEO pitches for 90 seconds using the five points on the slide. The region votes for its finalist.</li>
+      <li><b>Slide 49:</b> the Day 2 quiz, same answer-sheet and swap-marking process (10 min). The scorekeeper enters the results straight away so the final leaderboard is ready.</li>
+      <li><b>Slide 50, region round (15 min):</b> in each quadrant, every CEO pitches for 90 seconds using the five points on the slide. The region votes for its finalist.</li>
       <li><b>Grand final (15 min):</b> four finalists pitch for 3 minutes on stage (timer on slide). You and the captains choose Most Creative Pitch.</li>
       <li><b>Awards (5 min):</b> show the final leaderboard in presentation mode. Announce Richest Startup, the four Region Champions, Sherlock, Best Architecture, Best Postmortem and Most Creative Pitch.</li>
-      <li><b>Slide 49:</b> thank everyone; hand out the cheat sheet and collect post-surveys at the door.</li>
+      <li><b>Slide 51:</b> thank everyone; hand out the cheat sheet and collect post-surveys at the door.</li>
     </ol>
     <div class="say">You built it, you broke it, and you kept it alive. That's the job. Every cloud engineer in the world does exactly what you did today, just with more zeros on the bill.</div>
   </div>
@@ -712,6 +727,7 @@
   <p>Keep your six teams moving, run the in-region rounds, check answers, and write every result on your score sheet for the scorekeeper.</p>
 
   <h3>Activity by activity</h3>
+  <p>Networking: LinkedIn at the Day 1 opening, GitHub after lunch on Day 1, and X at the Day 2 opening. Award +100 per team per activity when all teammates complete it; existing accounts, connections and follows count. Record each only once; maximum +300. Ask the COO for completion, not account credentials or screenshots.</p>
   <table>
     <tr><th style="width:38mm">Activity</th><th>What you do</th></tr>
     <tr><td>Day 1 · Human Timeline</td><td>Check teams that shout “DEPLOYED!” against the answer-key card. First correct team: +50.</td></tr>
@@ -719,7 +735,7 @@
     <tr><td>Day 1 · Deployment debate</td><td>Deal one scenario card per table. Note any team that wins a defence (+30).</td></tr>
     <tr><td>Day 1 · Shark Tank</td><td>Hand out 6 briefs + 6 platform cards. Run the region round: 1-minute pitches, each team votes (not for itself). Winner +50, goes to the grand final.</td></tr>
     <tr><td>Day 1 · Bingo</td><td>Check bingo cards against the facilitator's ticked list.</td></tr>
-    <tr><td>Day 1 · Architecture</td><td>Ask “What if this box dies?” while teams build. Judge with the six questions on slide 33. Region best +50, goes to stage.</td></tr>
+    <tr><td>Day 1 · Architecture</td><td>Ask “What if this box dies?” while teams build. Judge with the six questions on slide 36. Region best +50, goes to stage.</td></tr>
     <tr><td>Day 1 · Gallery Walk</td><td>Read notes during rotations; flag the best one in your region to the facilitator.</td></tr>
     <tr><td>Days 1–2 · Quizzes</td><td>Collect each team's marked score (× 10 credits).</td></tr>
     <tr><td>Day 2 · Guess the Downtime</td><td>Spot the closest paper held up in your region each round (+20).</td></tr>
@@ -739,6 +755,17 @@
   <div class="dayhead"><div class="kick">One per captain</div><h1>Region score sheet</h1></div>
   <p>Region: ______________________ &nbsp;&nbsp; Captain: ______________________</p>
   <p class="sub" style="margin-top:2mm">Write the credits each team earned per activity (use − for losses). Hand the sheet to the scorekeeper at the end of each block.</p>
+  <h3>Networking icebreakers — +100 each, once per team</h3>
+  <table>
+    <tr><th>Team</th><th>LinkedIn · Day 1 AM</th><th>GitHub · Day 1 PM</th><th>X · Day 2 AM</th><th>Total (max 300)</th></tr>
+    <tr><td>-1a</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>-1b</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>-1c</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>-1d</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>-1e</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>-1f</td><td></td><td></td><td></td><td></td></tr>
+  </table>
+  <p class="sub">Record 100 after completion. Existing accounts, connections and follows count. Award each activity once only.</p>
   <h3>Day 1</h3>
   <table>
     <tr><th style="width:30mm">Team</th><th>Timeline</th><th>Service sort</th><th>Debate</th><th>Shark Tank</th><th>Bingo</th><th>Architecture</th><th>Kitchen</th><th>Gallery</th><th>Quiz 1</th></tr>

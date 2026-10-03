@@ -28,8 +28,8 @@ The workshop materials are plain HTML, CSS and JavaScript and work offline. The 
 |---|---|
 | [`index.html`](index.html) | Hub page linking every resource, with run-of-show and supplies |
 | [`facilitator-guide.html`](facilitator-guide.html) | Printable guide: setup, printing quantities, region captains, scoring, and a step-by-step script for every stage |
-| [`day1-slides.html`](day1-slides.html) | Day 1 deck (44 slides): *Build ChaiCart* |
-| [`day2-slides.html`](day2-slides.html) | Day 2 deck (49 slides): *Keep ChaiCart Alive* |
+| [`day1-slides.html`](day1-slides.html) | Day 1 deck (47 slides): *Build ChaiCart* |
+| [`day2-slides.html`](day2-slides.html) | Day 2 deck (51 slides): *Keep ChaiCart Alive* |
 | [`leaderboard.html`](leaderboard.html) | Live Cloud Credits scoring for 24 teams in 4 regions, with batch round entry and presentation mode |
 | [`quiz.html`](quiz.html) | Recap quizzes for both days with timer, reveal and answer key |
 
@@ -52,6 +52,10 @@ Introduction and evolution · IaaS, PaaS, SaaS · public, private, hybrid and mu
 
 **Day 2 — Cloud Operations, Observability and Business Systems**
 Performance and reliability · monitoring, observability and APM · logs, metrics and traces · SRE · DevOps and CI/CD · security, scalability and cost · business systems in the cloud · the role of cloud in digital business · trends, careers and skills · case studies and Q&A
+
+## Networking icebreakers
+
+Three short activities build a peer network across three sessions: LinkedIn in the Day 1 opening, GitHub after lunch on Day 1, and X in the Day 2 opening. Both decks have a day-specific agenda and local QR codes for the presenter’s profiles. Each activity awards **100 Cloud Credits per team**, once, for a maximum of **300**. Existing profiles, connections and follows count. If signup is delayed, draft the profile first and complete setup during a break; captains record completed activities. Captains use the networking score grid and enter separate leaderboard rounds.
 
 ## Using the materials
 

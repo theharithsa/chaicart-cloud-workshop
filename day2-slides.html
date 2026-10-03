@@ -18,6 +18,18 @@
 </section>
 
 <!-- 2 -->
+<section class="slide day-agenda" id="day2-agenda">
+  <div class="kicker">Today’s agenda · 09:30–17:00</div>
+  <h2>Day 2 — Keep ChaiCart Alive</h2>
+  <div class="grid-3 grow">
+    <div class="card"><h3>Morning · 09:30–12:40</h3><ul class="small"><li>X networking icebreaker</li><li>Reliability, monitoring &amp; APM</li><li>Who Killed Checkout?</li><li>Logs, metrics &amp; Treasure Hunt</li><li>SRE &amp; Error Budget Poker</li></ul></div>
+    <div class="card c-green"><h3>Afternoon · 13:25–15:00</h3><ul class="small"><li>Blameless postmortem</li><li>DevOps &amp; Paper Plane Factory</li><li>CI/CD demonstration</li><li>Security, scale &amp; Cloud Bill Shock</li></ul></div>
+    <div class="card c-chai"><h3>Final session · 15:10–17:00</h3><ul class="small"><li>Business systems &amp; Follow the Order</li><li>Trends &amp; Career Tarot</li><li>Skills and Q&amp;A</li><li>Quiz, Demo Day &amp; awards</li></ul></div>
+  </div>
+  <p class="small muted">Breaks: 11:00 &amp; 15:00 · Lunch: 12:40–13:25 · X activity: +100 credits per team</p>
+</section>
+
+<!-- 3 -->
 <section class="slide">
   <div class="kicker">Warm-up · 3 min</div>
   <h2>Yesterday in one word</h2>
@@ -29,7 +41,28 @@
   </div>
 </section>
 
-<!-- 3 -->
+<!-- 4 -->
+<section class="slide network-activity" id="network-x">
+  <span class="tag">NETWORKING 3/3 · 5 min · +100 Cloud Credits / team</span>
+  <h2>Learn in public, together</h2>
+  <div class="network-grid grow">
+    <div>
+      <ol class="small"><li>Create or update your <b>X profile</b>: a short bio describing what you are learning.</li><li>Find two workshop peers and follow each other if you choose. Use the QR to find <b>@theharithsa</b>.</li><li>Draft one useful takeaway from Day 1 and one question for Day 2. Share with a teammate; posting is optional.</li><li>Offer a useful reply or resource to a peer. Choose one person to check in with after the workshop.</li></ol>
+      <p class="small"><b>Why:</b> Turn your feed into a learning circle: ask, share and help instead of only scrolling.</p>
+      <div class="timer" data-timer="300"></div>
+    </div>
+    <div class="network-profile">
+      <a href="https://x.com/theharithsa" target="_blank" rel="noopener noreferrer"><img src="assets/qr/x.svg" alt="QR code for Vishruth’s X profile" width="240" height="240"></a>
+      <h3>X · @theharithsa</h3>
+      <a class="tiny" href="https://x.com/theharithsa" target="_blank" rel="noopener noreferrer">x.com/theharithsa</a>
+      <p class="tiny muted">Scan to open the presenter’s profile.</p>
+    </div>
+  </div>
+  <p class="network-credit"><b>Earn +100:</b> every teammate completes the activity; COO reports completion to the captain. Once per team.</p>
+  <p class="tiny muted">Already have an account? Improve it; existing connections and follows count. Signup delayed? Draft your profile now and finish during a break; ask your captain to record completion. Never share passwords or OTPs.</p>
+</section>
+
+<!-- 5 -->
 <section class="slide section">
   <div class="breaking">● BREAKING NEWS · 09:00 AM</div>
   <h1 style="margin-top:.4em">ChaiCart is <span class="green">LIVE</span> in 5 cities! 🎉</h1>
@@ -37,14 +70,14 @@
   <p class="frag red" style="font-size:1.6em"><b>09:04 — “Payment stuck on spinner” 😡😡😡</b></p>
 </section>
 
-<!-- 4 -->
+<!-- 6 -->
 <section class="slide section">
   <div class="num">CHAPTER 1</div>
   <h1>Performance &amp;<br><span class="accent">Reliability</span></h1>
   <p class="muted">Users don't care about your CPU. They care: “Is it fast? Does it work?”</p>
 </section>
 
-<!-- 5 -->
+<!-- 7 -->
 <section class="slide">
   <div class="kicker">What users actually feel</div>
   <h2>Four things that decide if they come back</h2>
@@ -57,7 +90,7 @@
   <p class="frag"><b>Why p95, not average?</b> If 95 people wait 0.2s and 5 people wait 30s, the average looks “fine” — those 5 are tweeting about you. 🐦</p>
 </section>
 
-<!-- 6 -->
+<!-- 8 -->
 <section class="slide">
   <span class="tag">GAME · Guess the Downtime ⏳ · closest team +20 each round</span>
   <h2>How much downtime per year is allowed?</h2>
@@ -71,7 +104,7 @@
   <p class="frag">Each extra nine costs <b>roughly 10× more</b> effort &amp; money. Does a chai app need five nines? Does UPI?</p>
 </section>
 
-<!-- 7 -->
+<!-- 9 -->
 <section class="slide">
   <div class="kicker">Reliability patterns</div>
   <h2>How reliable systems are built</h2>
@@ -85,13 +118,13 @@
   </div>
 </section>
 
-<!-- 8 -->
+<!-- 10 -->
 <section class="slide section">
   <div class="num">CHAPTER 2</div>
   <h1>Monitoring, Observability<br><span class="accent">&amp; APM</span></h1>
 </section>
 
-<!-- 9 -->
+<!-- 11 -->
 <section class="slide">
   <div class="kicker">Not the same thing</div>
   <h2>Monitoring vs Observability</h2>
@@ -108,7 +141,7 @@
   </div>
 </section>
 
-<!-- 10 -->
+<!-- 12 -->
 <section class="slide">
   <div class="kicker">What to watch</div>
   <h2>The 4 Golden Signals (Google SRE)</h2>
@@ -125,14 +158,14 @@
   <p class="frag accent center">💡 Remember “saturation” and “connection pools”… you'll need it in 2 minutes.</p>
 </section>
 
-<!-- 11 -->
+<!-- 13 -->
 <section class="slide section">
   <div class="kicker">🔪 Murder Mystery</div>
   <h1 style="font-size:4em">Who Killed <span class="red">Checkout</span>?</h1>
   <p style="font-size:1.3em" class="frag"><b>Open your envelopes. Now.</b> ✉️</p>
 </section>
 
-<!-- 12 -->
+<!-- 14 -->
 <section class="slide">
   <div class="kicker">The suspects</div>
   <h2>Six suspects. One killer. Maybe an accomplice.</h2>
@@ -146,7 +179,7 @@
   </div>
 </section>
 
-<!-- 13 -->
+<!-- 15 -->
 <section class="slide">
   <span class="tag red">INVESTIGATION · 25 min</span>
   <h2>Rules of the investigation 🕵️</h2>
@@ -174,7 +207,7 @@
   </div>
 </section>
 
-<!-- 14 -->
+<!-- 16 -->
 <section class="slide">
   <div class="kicker">The reveal 🎭</div>
   <h2>Let's walk the evidence chain</h2>
@@ -187,7 +220,7 @@
   </ol>
 </section>
 
-<!-- 15 -->
+<!-- 17 -->
 <section class="slide">
   <div class="kicker">Lessons from the crime scene</div>
   <h2>What real SREs take away</h2>
@@ -200,13 +233,13 @@
   <p class="frag center">Fix: <b>roll back</b> now. Prevent: <b>load test in CI, canary deploys, SLO alerts on payment latency, pool-saturation alerts</b>.</p>
 </section>
 
-<!-- 16 -->
+<!-- 18 -->
 <section class="slide section">
   <div class="num">CHAPTER 3</div>
   <h1>Logs, Metrics &amp;<br><span class="accent">Distributed Tracing</span></h1>
 </section>
 
-<!-- 17 -->
+<!-- 19 -->
 <section class="slide">
   <div class="kicker">The three pillars (and friends)</div>
   <h2>What each signal looks like</h2>
@@ -239,7 +272,7 @@ timed out after 30000ms</pre>
   <p class="frag">Plus: <b>events</b> (deployments, config changes), <b>profiles</b> (code hotspots), <b>real-user data</b>. Standard for collecting them all: <b class="accent">OpenTelemetry</b> (CNCF).</p>
 </section>
 
-<!-- 18 -->
+<!-- 20 -->
 <section class="slide">
   <div class="kicker">How tracing works</div>
   <h2>Remember the kitchen order ticket? 🎫</h2>
@@ -263,7 +296,7 @@ timed out after 30000ms</pre>
   </div>
 </section>
 
-<!-- 19 -->
+<!-- 21 -->
 <section class="slide">
   <span class="tag blue">HANDS-ON · Observability Treasure Hunt 🗺️ · 35 min</span>
   <h2>Hunt for clues in a real environment</h2>
@@ -290,7 +323,7 @@ timed out after 30000ms</pre>
   <p>Worksheet: <a href="treasure-hunt.html" target="_blank">treasure-hunt.html</a> · <b>+10 per correct answer</b></p>
 </section>
 
-<!-- 20 -->
+<!-- 22 -->
 <section class="slide">
   <span class="tag blue">LIVE DEMO · DQL</span>
   <h2>Asking questions of your telemetry</h2>
@@ -310,13 +343,13 @@ timeseries cpu = avg(dt.host.cpu.usage), by: { dt.entity.host }</pre>
   <p class="small muted">Observability = being able to ask <i>new</i> questions without shipping new code.</p>
 </section>
 
-<!-- 21 -->
+<!-- 23 -->
 <section class="slide section">
   <div class="num">CHAPTER 4</div>
   <h1>Site Reliability<br><span class="accent">Engineering (SRE)</span></h1>
 </section>
 
-<!-- 22 -->
+<!-- 24 -->
 <section class="slide">
   <div class="kicker">What is SRE?</div>
   <blockquote>“SRE is what happens when you ask a software engineer to design an operations team.”<br><span class="small muted">— Ben Treynor Sloss, Google</span></blockquote>
@@ -328,7 +361,7 @@ timeseries cpu = avg(dt.host.cpu.usage), by: { dt.entity.host }</pre>
   </div>
 </section>
 
-<!-- 23 -->
+<!-- 25 -->
 <section class="slide">
   <div class="kicker">The SLI → SLO → SLA ladder</div>
   <h2>Making reliability measurable</h2>
@@ -344,7 +377,7 @@ timeseries cpu = avg(dt.host.cpu.usage), by: { dt.entity.host }</pre>
   </div>
 </section>
 
-<!-- 24 -->
+<!-- 26 -->
 <section class="slide">
   <span class="tag">GAME · Error Budget Poker 🃏 · 20 min</span>
   <h2>Spend your 43 minutes wisely</h2>
@@ -369,7 +402,7 @@ timeseries cpu = avg(dt.host.cpu.usage), by: { dt.entity.host }</pre>
   </div>
 </section>
 
-<!-- 25 -->
+<!-- 27 -->
 <section class="slide">
   <span class="tag green">ROLE-PLAY · Blameless Postmortem · 12 min · Region best +40 · Overall best +75</span>
   <h2>Write the postmortem for “Who Killed Checkout?”</h2>
@@ -396,13 +429,13 @@ timeseries cpu = avg(dt.host.cpu.usage), by: { dt.entity.host }</pre>
   <div class="timer" data-timer="720"></div>
 </section>
 
-<!-- 26 -->
+<!-- 28 -->
 <section class="slide section">
   <div class="num">CHAPTER 5</div>
   <h1>DevOps, CI/CD &amp;<br><span class="accent">Cloud-Native Development</span></h1>
 </section>
 
-<!-- 27 -->
+<!-- 29 -->
 <section class="slide">
   <div class="kicker">The infinite loop ♾️</div>
   <h2>DevOps = culture + automation + measurement</h2>
@@ -419,7 +452,7 @@ timeseries cpu = avg(dt.host.cpu.usage), by: { dt.entity.host }</pre>
   </div>
 </section>
 
-<!-- 28 -->
+<!-- 30 -->
 <section class="slide">
   <span class="tag">GAME · Paper Plane Factory · 20 min · Most flying planes in each region +50</span>
   <h2>Batch vs flow</h2>
@@ -443,7 +476,7 @@ timeseries cpu = avg(dt.host.cpu.usage), by: { dt.entity.host }</pre>
   <div class="timer" data-timer="240"></div>
 </section>
 
-<!-- 29 -->
+<!-- 31 -->
 <section class="slide">
   <div class="kicker">Measuring DevOps</div>
   <h2>The DORA metrics</h2>
@@ -460,7 +493,7 @@ timeseries cpu = avg(dt.host.cpu.usage), by: { dt.entity.host }</pre>
   <p class="frag accent">Deploy Dave would have been caught by a canary + an SLO alert. 😉</p>
 </section>
 
-<!-- 30 -->
+<!-- 32 -->
 <section class="slide">
   <span class="tag blue">LIVE DEMO · CI/CD to Azure</span>
   <h2>From commit to cloud in minutes</h2>
@@ -481,13 +514,13 @@ jobs:
   <p class="small">Show: push a change to the page title → pipeline turns green → refresh the site. Then push a failing test → pipeline blocks the deploy. 🛑</p>
 </section>
 
-<!-- 31 -->
+<!-- 33 -->
 <section class="slide section">
   <div class="num">CHAPTER 6</div>
   <h1>Security, Scalability<br><span class="accent">&amp; Cost</span></h1>
 </section>
 
-<!-- 32 -->
+<!-- 34 -->
 <section class="slide">
   <div class="kicker">Shared responsibility model</div>
   <h2>Provider secures <u>the</u> cloud. You secure what's <u>in</u> the cloud.</h2>
@@ -503,7 +536,7 @@ jobs:
   <p class="frag small">⚠️ Most cloud breaches are <b>customer misconfigurations</b> — public storage, leaked keys, over-privileged accounts, no MFA.</p>
 </section>
 
-<!-- 33 -->
+<!-- 35 -->
 <section class="slide">
   <div class="kicker">Security essentials</div>
   <h2>The cloud security starter pack 🔐</h2>
@@ -517,7 +550,7 @@ jobs:
   </div>
 </section>
 
-<!-- 34 -->
+<!-- 36 -->
 <section class="slide">
   <div class="kicker">Scalability</div>
   <h2>Growing without breaking</h2>
@@ -533,7 +566,7 @@ jobs:
   </div>
 </section>
 
-<!-- 35 -->
+<!-- 37 -->
 <section class="slide">
   <div class="kicker">Cost &amp; FinOps</div>
   <h2>The cloud is cheap… until the bill arrives 🧾</h2>
@@ -548,7 +581,7 @@ jobs:
   <p class="frag small"><b>FinOps</b> = engineering + finance + business sharing responsibility for cloud spend. Also watch data <b>egress</b> and <b>log/telemetry volume</b> — silent bill killers.</p>
 </section>
 
-<!-- 36 -->
+<!-- 38 -->
 <section class="slide">
   <span class="tag">GAME · Cloud Bill Shock 💸 · 15 min</span>
   <h2>The month-end bill arrives…</h2>
@@ -568,14 +601,14 @@ jobs:
   </div>
 </section>
 
-<!-- 37 -->
+<!-- 39 -->
 <section class="slide section">
   <div class="num">CHAPTER 7</div>
   <h1>Business Systems<br><span class="accent">in the Cloud</span></h1>
   <p class="muted">The software that actually runs a company</p>
 </section>
 
-<!-- 38 -->
+<!-- 40 -->
 <section class="slide">
   <div class="kicker">The business systems map</div>
   <h2>What runs behind every “Order placed” message</h2>
@@ -592,7 +625,7 @@ jobs:
   <p class="frag small">Almost all of these are now delivered as <b>SaaS</b> — that's cloud computing's biggest business impact.</p>
 </section>
 
-<!-- 39 -->
+<!-- 41 -->
 <section class="slide">
   <span class="tag">ACTIVITY · Follow the Order 📦 · 15 min</span>
   <h2>One chai order, seven business systems</h2>
@@ -617,7 +650,7 @@ jobs:
   </div>
 </section>
 
-<!-- 40 -->
+<!-- 42 -->
 <section class="slide">
   <div class="kicker">Connecting the systems</div>
   <h2>Integration is where the real work is</h2>
@@ -632,7 +665,7 @@ jobs:
   </div>
 </section>
 
-<!-- 41 -->
+<!-- 43 -->
 <section class="slide">
   <div class="kicker">The role of cloud in digital business</div>
   <h2>“Every company is becoming a software company”</h2>
@@ -646,13 +679,13 @@ jobs:
   </div>
 </section>
 
-<!-- 42 -->
+<!-- 44 -->
 <section class="slide section">
   <div class="num">CHAPTER 8</div>
   <h1>Trends, Careers<br><span class="accent">&amp; Skills</span></h1>
 </section>
 
-<!-- 43 -->
+<!-- 45 -->
 <section class="slide">
   <div class="kicker">Where the industry is heading</div>
   <h2>Top trends to watch 🔮</h2>
@@ -670,7 +703,7 @@ jobs:
   </div>
 </section>
 
-<!-- 44 -->
+<!-- 46 -->
 <section class="slide">
   <span class="tag">ACTIVITY · Career Tarot 🔮 · 15 min</span>
   <h2>Draw your cloud destiny</h2>
@@ -688,7 +721,7 @@ jobs:
   <div class="timer" data-timer="600"></div>
 </section>
 
-<!-- 45 -->
+<!-- 47 -->
 <section class="slide">
   <div class="kicker">The skills stack</div>
   <h2>What to learn — in order</h2>
@@ -717,7 +750,7 @@ jobs:
   </div>
 </section>
 
-<!-- 46 -->
+<!-- 48 -->
 <section class="slide">
   <div class="kicker">Interactive discussion</div>
   <h2>Hot-seat questions 🔥</h2>
@@ -731,7 +764,7 @@ jobs:
   </div>
 </section>
 
-<!-- 47 -->
+<!-- 49 -->
 <section class="slide">
   <span class="tag green">QUIZ · Day 2 recap · +10 per correct answer</span>
   <h2>Final quiz</h2>
@@ -739,7 +772,7 @@ jobs:
   <p><a href="quiz.html#day2" target="_blank">Launch Day 2 quiz</a></p>
 </section>
 
-<!-- 48 -->
+<!-- 50 -->
 <section class="slide">
   <span class="tag">FINALE · ChaiCart Demo Day · Region round 15 min · Grand final 15 min</span>
   <h2>Demo Day</h2>
@@ -769,7 +802,7 @@ jobs:
   </div>
 </section>
 
-<!-- 49 -->
+<!-- 51 -->
 <section class="slide title">
   <div class="kicker">Thank you</div>
   <h1 style="font-size:3em">You built it. You broke it.<br><span class="accent">You kept it alive.</span> ☕☁️</h1>

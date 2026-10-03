@@ -227,3 +227,11 @@ blockquote {
   background: #DCC79F; clip-path: polygon(0 0, 100% 0, 50% 100%); border-radius: .4em .4em 0 0;
 }
 .envelope span { position: relative; margin-top: 3em; border: 2px solid var(--clay-d); color: var(--clay-d); padding: .2em .7em; transform: rotate(-6deg); letter-spacing: .12em; font-size: .8em; }
+
+/* Networking icebreakers: local QR assets stay available without a QR service. */
+.network-grid { display: grid; grid-template-columns: 1fr 12em; gap: 1.3em; align-items: start; min-height: 0; }
+.network-profile { text-align: center; }
+.network-profile img { display: block; width: 9em; height: 9em; margin: 0 auto .45em; background: #fff; }
+.network-profile a { overflow-wrap: anywhere; }
+.network-credit { font-size: .72em; padding: .45em .7em; border-radius: .4em; background: var(--olive-t); }
+.network-activity .timer { margin-top: .5em; }
