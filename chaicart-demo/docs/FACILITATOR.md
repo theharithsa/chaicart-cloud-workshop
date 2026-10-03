@@ -2,13 +2,27 @@
 
 Use with the original facilitator guide and slides in the repository root. This app supplements the paper games; it doesn't replace scoring, architecture posters or the murder-mystery envelopes.
 
+## Deployed workshop environment
+
+- [Storefront — chai, coffee and snacks](https://chaicart-workshop-vh-20261003.azurewebsites.net/)
+- [Facilitator console](https://chaicart-workshop-vh-20261003.azurewebsites.net/facilitator)
+- Azure subscription **D1/APAC**, Central India; resource group `rg-chaicart-workshop`.
+- App `chaicart-workshop-vh-20261003`; plan `plan-chaicart-workshop`, Linux B1, one instance, Node 24 LTS. HTTPS, Always On and `/health` checks are enabled.
+- Orders/events persist in `/home/chaicart-data/state.json`. Keep one instance; telemetry and fault settings reset on restart.
+- Customer login: verified Google account. Facilitator login: verified Google account with a matching Firestore `admins/{email}` document. No facilitator shared token is used on Azure.
+- Firebase backend credentials are in an encrypted App Service setting. Never project or export secret settings. See [authentication](AUTHENTICATION.md) and [deployment](DEPLOYMENT.md) notes.
+
 ## Before participants arrive
 
-- Run `npm ci` and `npm test` in `chaicart-demo/`, then configure [Firebase sign-in](AUTHENTICATION.md), or explicitly select `AUTH_MODE=local-token` with a fresh `ADMIN_TOKEN` for an offline rehearsal. A local demo needs Node 24. A public demo needs HTTPS and configured Firebase admin authorization.
-- Open storefront and `/facilitator` in separate tabs. Sign into the console. Don't project the token entry or copy the token into slides.
-- Confirm normal checkout, menu, tracking and `/chai-not-found` (404). All prices/payments/deliveries are demonstration data.
-- Rehearse the load generator at the final deployed URL. Have Azure/Dynatrace signed in, with request ingestion already confirmed. Prepare a QR code and phone test.
-- Save screenshots/recordings for unreliable Wi-Fi. The original slides and games work offline; this storefront still requires its backend.
+- Open the deployed storefront and facilitator console in separate tabs. Sign in with Google; restore **Healthy / Roll back** and stop any running surge.
+- Confirm normal checkout, menu, tracking and `/chai-not-found` (404). Each customer must sign in to order. All prices/payments/deliveries are demonstration data.
+- Test the storefront from a phone and prepare its QR code. Rehearse the surge at the Azure URL before inviting classroom traffic; B1 capacity has not been verified for the crowd.
+- Health, public routes and signed-out access controls passed deployment checks. Google sign-in, authenticated ordering/controls and restart persistence need a live rehearsal.
+- **Observability status:** the app console works locally within the Node process. Dynatrace OTel metrics/logs/traces and Application Insights ingestion are not configured or verified. Use a separately instrumented environment or saved evidence for cloud-only questions until ingestion is confirmed.
+- **CI/CD status:** GitHub tests pass; automatic Azure deployment is not enabled. Configure and rehearse deployment credentials before the live commit-to-deploy exercise. Follow the existing workflow, not a second Portal-generated workflow.
+- Save screenshots/recordings for unreliable Wi-Fi. The original slides and games work offline; this storefront requires the Azure backend.
+
+For an offline rehearsal only, follow the README's explicit local-token setup. That fallback is separate from the deployed Google sign-in flow.
 
 ## Day 1: build and trace an order (5–10 minutes)
 
@@ -32,10 +46,12 @@ The printed evidence has fixed numbers/timestamps; the app reproduces the bottle
 If the browser throttles traffic in a background tab, run the CLI generator from `chaicart-demo/`:
 
 ```bash
-BASE_URL=https://your-app.azurewebsites.net RATE=60 SECONDS=45 npm run load
+BASE_URL=https://chaicart-workshop-vh-20261003.azurewebsites.net RATE=60 SECONDS=45 npm run load
 ```
 
-On PowerShell, set `$env:BASE_URL`, `$env:RATE` and `$env:SECONDS` first. The tool creates demo orders at the chosen destination; run it only against your workshop app. It waits for pending requests after the sending interval ends.
+Firebase mode also requires `CUSTOMER_ID_TOKEN` for a signed-in, verified Google customer. Set it securely in the current shell; never paste it into slides, commands saved in Git, or shared evidence. The facilitator console surge uses its current Google session and is the simplest presenter path.
+
+On PowerShell, set `$env:BASE_URL`, `$env:RATE`, `$env:SECONDS` and `$env:CUSTOMER_ID_TOKEN` first. The tool creates demo orders at the chosen destination; run it only against your workshop app. It waits for pending requests after the sending interval ends.
 
 ## Distinguish a gateway outage (2 minutes)
 
@@ -43,8 +59,8 @@ Select **PayFast outage** and place an order. The failed trace now includes the 
 
 ## Observability treasure hunt (5 minutes plus worksheet)
 
-- Share the deployed storefront URL. Phones refresh it while you show verified Live Metrics in Azure.
-- Request `/chai-not-found` to show real 404s in Application Insights. Use the worksheet's KQL.
+- Share the deployed storefront QR code. Phones load the menu and sign in to place orders; show request timings, logs and logical traces in the facilitator console.
+- Request `/chai-not-found` for a real 404. Live Metrics and the worksheet's KQL require Application Insights ingestion, which is still pending; use prepared evidence or a separately verified environment until it is ready.
 - Use Dynatrace only after ingesting the required signals. The app's local dashboard cannot prove host CPU, a real database bottleneck, network service flow or a Dynatrace Problem. Use your instrumented environment for those questions.
 - The console's SLI uses a rolling 60-second sample: checkout successful **and under 2 seconds**. Relate it to the 99.9% goal, then return to the paper game's 30-day error budget. Those are different observation windows.
 
@@ -57,6 +73,6 @@ Select **PayFast outage** and place an order. The failed trace now includes the 
 
 ## Reset and close
 
-Stop traffic, restore healthy mode, wait for pending work to drain, export evidence and disconnect. Restarting resets telemetry/scenarios but leaves persisted orders/events at `DATA_DIR`. Rehearsal orders aren't customer data, but keep the generated `data/` directory out of Git.
+Stop traffic, restore healthy mode, wait for pending work to drain, export evidence and disconnect. Restarting resets telemetry/scenarios but leaves persisted orders/events at `DATA_DIR`. Orders are linked to signed-in customer UIDs. Keep persisted state, credential files and exported evidence out of Git; review evidence before sharing.
 
-After the workshop, inspect and delete only the dedicated cloud resources. Verify plans, monitoring and minimum instances are removed too. Budget alerts don't shut services down.
+Keep `rg-chaicart-workshop` running between workshop days; delete only `rg-chaicart-day1` after the container race. After the whole workshop, export evidence and inspect/delete `rg-chaicart-workshop` only when the app is no longer needed. Verify plans, monitoring and minimum instances are removed too. Budget alerts don't shut services down.

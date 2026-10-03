@@ -201,30 +201,31 @@
     <tr><td>certificate</td><td>120 + awards</td><td>Paste the student list; print awards after Demo Day or pre-print blanks</td></tr>
   </table>
 
-  <h3>Azure preparation (the day before)</h3>
+  <h3>Deployed ChaiCart app — presenter setup</h3>
+  <p><b>Storefront:</b> <a href="https://chaicart-workshop-vh-20261003.azurewebsites.net/">chaicart-workshop-vh-20261003.azurewebsites.net</a><br>
+  <b>Facilitator console:</b> <a href="https://chaicart-workshop-vh-20261003.azurewebsites.net/facilitator">Open facilitator controls</a><br>
+  <b>Runbook:</b> <a href="chaicart-demo/docs/FACILITATOR.md">App demo sequence</a> · <a href="chaicart-demo/docs/DEPLOYMENT.md">Deployment and recovery notes</a></p>
+  <table>
+    <tr><th>Azure setting</th><th>Current environment</th></tr>
+    <tr><td>Subscription / region</td><td>D1/APAC / Central India</td></tr>
+    <tr><td>Resource group</td><td><code>rg-chaicart-workshop</code></td></tr>
+    <tr><td>App / plan</td><td><code>chaicart-workshop-vh-20261003</code> / <code>plan-chaicart-workshop</code></td></tr>
+    <tr><td>Runtime / capacity</td><td>Node 24 LTS, Linux B1, one instance; HTTPS, Always On and <code>/health</code> check enabled</td></tr>
+    <tr><td>Order storage</td><td><code>/home/chaicart-data/state.json</code>; keep one app instance</td></tr>
+  </table>
   <ol>
-    <li>Open <b>Cloud Shell</b> once so its storage gets created. The first launch takes a minute; don't do it live.</li>
-    <li>On new subscriptions, register the providers: <code>az provider register -n Microsoft.ContainerInstance</code> and <code>-n Microsoft.Web</code>.</li>
-    <li>Pre-create the treasure-hunt web app. Use the <b>Basic B1</b> plan for the workshop day: 120 phones can exhaust the Free F1 plan's daily CPU quota and stop the app mid-session. B1 costs a small amount per hour; delete it afterwards.
-<pre class="cmd">mkdir chaicart && cd chaicart
-cat > index.js &lt;&lt;'EOF'
-const http = require('http');
-http.createServer((req, res) => {
-  if (req.url === '/') { res.end('ChaiCart is live!'); }
-  else { res.statusCode = 404; res.end('Not found'); }
-}).listen(process.env.PORT || 8080);
-EOF
-echo '{"name":"chaicart","scripts":{"start":"node index.js"}}' > package.json
-az webapp up -n chaicart-&lt;yourname&gt; -g rg-chaicart-demo --runtime "NODE:20-lts" --sku B1 -l centralindia</pre>
-      Then Portal → the web app → <b>Application Insights → Turn on</b>. Hit the URL a few times and confirm <b>Live Metrics</b> shows traffic.</li>
-    <li>Use a <b>separate resource group</b> (e.g. <code>rg-chaicart-day1</code>) for the Day 1 container demo so you can delete it without touching the web app.</li>
-    <li>For the CI/CD demo: Portal → web app → <b>Deployment Center → GitHub</b> generates the GitHub Actions workflow for you. Rehearse one green run and one failing-test run.</li>
-    <li>Make a large QR code for the web app URL to show on screen.</li>
+    <li>Use this deployed app for the PaaS and ordering demo; do not recreate the old “ChaiCart is live!” placeholder. Customers sign in with Google to order chai, coffee or snacks. Payments and delivery are simulated.</li>
+    <li>Open storefront and facilitator console in separate tabs. Sign into the console with a verified Google account whose email exists in Firebase <code>admins/{email}</code>. Customers need no admin entry. There is no public facilitator token.</li>
+    <li>Before class, verify Google sign-in, one order, tracking, and facilitator controls. Select <b>Healthy / Roll back</b>, stop any surge, and prepare a QR code for the storefront. Health and public-route checks passed at deployment; authenticated flows and crowd capacity need rehearsal.</li>
+    <li>Use a separate resource group, <code>rg-chaicart-day1</code>, for the VM/container race. Open Cloud Shell beforehand and register <code>Microsoft.ContainerInstance</code> if needed. Keep the workshop app running between Day 1 and Day 2.</li>
+    <li>The app has local metrics, structured logs and logical traces. <b>Dynatrace OTel metrics/logs/traces and Application Insights ingestion are not configured or verified yet.</b> Use the app console or a separately verified monitoring environment until that setup is complete.</li>
+    <li>The repository's <b>ChaiCart demo — test and deploy</b> workflow runs tests, but automatic Azure deployment is not enabled. Configure the deployment credentials and rehearse a green deployment before presenting CI/CD as live. See the deployment notes; a Git push alone currently does not update Azure.</li>
+    <li>Backend Firebase credentials are stored in an encrypted App Service setting. Keep credentials, settings values and Google sign-in screens off the projector. Key Vault migration requires a subscription administrator. After the workshop, export evidence and remove the dedicated resources when no longer needed; stopping the app alone does not stop plan charges.</li>
   </ol>
 
   <h3>Dynatrace preparation</h3>
   <ul class="check">
-    <li>Pick an environment with live, realistic data: services, traces, at least one recent problem.</li>
+    <li>Until ChaiCart OTel ingestion is implemented and verified, pick a separate instrumented environment with live services, traces and at least one recent problem. Do not describe its telemetry as coming from this app.</li>
     <li>Bookmark Services, Distributed Traces, Problems, Logs and a Notebook with the treasure-hunt queries already pasted in.</li>
     <li>Run every DQL query from the Day 2 slides and the worksheet; adjust field names if your environment differs.</li>
     <li>Choose one “story” trace in advance: a failed request with an obvious slow span.</li>
@@ -235,7 +236,7 @@ az webapp up -n chaicart-&lt;yourname&gt; -g rg-chaicart-demo --runtime "NODE:20
     <li>Tables in four quadrants, table tents out, team sheets on tables (Day 1).</li>
     <li>Per table (Day 1): timeline set, service-sort set, one bingo card. Per table pair: architecture set. Posters on walls.</li>
     <li>Per table (Day 2): treasure-hunt sheet, one die. Per region: Bill Shock pile. Per table pair: tarot deck. Envelopes stay with you until slide 11.</li>
-    <li>Open the deck, leaderboard and quiz in separate tabs; Dynatrace and Azure signed in (Day 2).</li>
+    <li>Open the deck, leaderboard and quiz in separate tabs, plus the deployed ChaiCart storefront and facilitator console. Sign into the console, restore healthy mode and confirm an order. Have Azure and the verified Dynatrace environment signed in for Day 2.</li>
     <li>Day 1 only: reset the leaderboard, and rename teams if you used different names.</li>
   </ul>
 </div>
@@ -432,7 +433,7 @@ az webapp up -n chaicart-&lt;yourname&gt; -g rg-chaicart-demo --runtime "NODE:20
       <li><b>Round 1, monolith (3 min):</b> one volunteer does all five steps on each ticket. Count completed tickets.</li>
       <li><b>Round 2, microservices (3 min):</b> five volunteers, one station each. Tickets flow down the line; each station writes its time on the ticket.</li>
       <li><b>Round 3, chaos (3 min):</b> tap the Payment volunteer; they freeze. After 30 seconds, ask the room: “Where is order CC-007 right now?” Let the volunteers read the timestamps aloud.</li>
-      <li><b>Slide 37:</b> reveal the three insights; land the last card: <i>the ticket was a distributed trace.</i></li>
+      <li><b>Slide 37:</b> reveal the three insights; land the last card: <i>the ticket was a distributed trace.</i> If time allows, place an order in the deployed app and expand its trace in the facilitator console: cart → payment → pool → demo database → gateway → business events. These are logical services in one Node process, not independently deployed microservices.</li>
     </ol>
     <div class="watch">Pick energetic volunteers and give them the mic. The chaos round is the key moment; don't skip it.</div>
   </div>
@@ -530,7 +531,7 @@ az webapp up -n chaicart-&lt;yourname&gt; -g rg-chaicart-demo --runtime "NODE:20
         </ul></li>
       <li>While teams work, captains mark forms as they arrive using the solution page, and tell you the first correct team in their region with its time. The earliest of the four wins the +100 room bonus and the Sherlock Award.</li>
       <li><b>Slide 14, reveal:</b> go suspect by suspect, innocents first. Ask the room to shout “innocent” or “guilty” before each reveal.</li>
-      <li><b>Slide 15, lessons:</b> stress the irony: a cost-saving change caused the outage.</li>
+      <li><b>Slide 15, lessons:</b> stress the irony: a cost-saving change caused the outage. After the reveal, use the deployed app companion if rehearsed: baseline in <b>Healthy / Roll back</b>, select <b>Deploy Dave: pool 50 → 5</b>, launch the surge, compare waits/504s and missing gateway spans, then roll back and stop traffic. Keep controls hidden during the paper investigation. Live timings will differ from the printed evidence.</li>
     </ol>
     <div class="label">The solution in one breath</div>
     <p>Deploy Dave (payment-service v2.3.1 at 08:58) cut the DB connection pool from 50 to 5 to save cost. Traffic Tara (3× launch traffic at 09:00) exhausted the five connections. Requests waited 30 s and timed out, and checkout returned 504s. The database, gateway, cache and disk are innocent: the database was <i>starved</i>, not overloaded.</p>
@@ -550,7 +551,7 @@ az webapp up -n chaicart-&lt;yourname&gt; -g rg-chaicart-demo --runtime "NODE:20
     <ol>
       <li><b>Slides 17–18:</b> the same incident as a metric, a log and a trace; how tracing works (trace ID = ticket number, span = station).</li>
       <li><b>Slide 19, Part A, Dynatrace (~20 min):</b> you drive the screen. Read each question, give teams 90 seconds to discuss, then take a suggestion from a random table on where to click. Teams write answers from what they see.</li>
-      <li><b>Part B, Azure (~15 min):</b> show the QR code. All 120 phones open the web app and refresh while you show <b>Live Metrics</b>. Then request a missing URL for Q12, run the KQL for Q13, and show the budget alert for Q14.</li>
+      <li><b>Part B, Azure (~15 min):</b> share the deployed ChaiCart QR code. Teams open the menu and sign in with Google to place demo orders. Show the App Service resource and the app console. Request <code>/chai-not-found</code> for a real 404. Show Live Metrics and run the worksheet KQL only after Application Insights ingestion is verified; otherwise use prepared evidence or a separately instrumented app. Confirm the budget alert exists before presenting Q14; budget alerts do not cap spending.</li>
       <li>Read out the answers; teams self-mark and COOs report the total to their captain.</li>
       <li><b>Slide 20:</b> recap with the DQL examples: observability is asking new questions without shipping new code.</li>
     </ol>
@@ -607,7 +608,7 @@ az webapp up -n chaicart-&lt;yourname&gt; -g rg-chaicart-demo --runtime "NODE:20
         </ul></li>
       <li>Debrief: “When did you find out your folding was bad in round 1? In round 2?” That is the case for CI: fast feedback.</li>
       <li><b>Slide 29:</b> DORA metrics and deployment strategies; land the Deploy Dave / canary joke.</li>
-      <li><b>Slide 30, CI/CD demo:</b> change the page title, commit, show the pipeline turning green, refresh the site. Then commit a failing test and show the pipeline blocking the deploy.</li>
+      <li><b>Slide 30, CI/CD demo:</b> use the repository’s existing ChaiCart workflow. Until Azure deployment credentials are configured, demonstrate passing and failing tests on a rehearsal branch/PR and explain that deployment is skipped. Once deployment is enabled and rehearsed, change <code>chaicart-demo/public/index.html</code>, show the successful deploy, and refresh the Azure URL. Use a controlled failing-test change and revert it immediately after the demonstration; do not leave <code>main</code> broken.</li>
     </ol>
     <div class="watch">Planes in a room of 120 get loud and chaotic. Only QA throws, only down its own region's aisle, and only when the captain says “fly”. Collect all paper before moving on.</div>
   </div>
@@ -639,7 +640,7 @@ az webapp up -n chaicart-&lt;yourname&gt; -g rg-chaicart-demo --runtime "NODE:20
       <li><b>Slide 38:</b> “Which of these have you used without knowing it?” (e.g. HCM when applying for an internship).</li>
       <li><b>Slide 39:</b> Commerce starts with the order token, reads its line into the mic, stamps it and passes it on. Each system does the same.</li>
       <li>Twist: “ERP is down for maintenance!” The ERP volunteer sits. What still works (order, loyalty)? What piles up (invoices)? This is why queues and events matter between systems.</li>
-      <li><b>Slides 40–41:</b> integration, why SaaS wins, the role of cloud in digital business.</li>
+      <li><b>Slides 40–41:</b> integration, why SaaS wins, the role of cloud in digital business. In the deployed app, select <b>Pause ERP</b>, place an order, show the queued invoice alongside completed CRM/SCM/HCM/BI events, then select <b>Healthy / Roll back</b> to replay. This is simulated event processing; the app does not connect to SAP, Salesforce or other business systems.</li>
     </ol>
   </div>
 </div>
