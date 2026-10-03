@@ -32,6 +32,24 @@ node --env-file=.env server.js
 
 The server does not automatically load `.env` when running plain `npm start`. On Azure, set application environment variables instead of uploading a `.env` file.
 
+## Azure environment credentials
+
+The backend accepts `FIREBASE_SERVICE_ACCOUNT_JSON` as a server-only environment setting. It validates the service-account project before initializing Firebase Admin. This takes precedence over Application Default Credentials; local runs can continue using `GOOGLE_APPLICATION_CREDENTIALS`.
+
+App Service settings are encrypted at rest, but users with permission to read app configuration can retrieve their values. If Key Vault permissions are unavailable, the JSON can be stored directly in this setting using a private temporary settings file, `az webapp config appsettings set --settings @FILE --output none`, and removal of that temporary file afterwards. Never echo the value, put it on a command line, or commit the settings file. Key Vault is preferred for centralized secret management. See [App Service security](https://learn.microsoft.com/en-us/azure/app-service/overview-security).
+
+### Key Vault option
+
+For App Service, store the service-account JSON as a **Key Vault secret**, enable the app's system-assigned managed identity, and give that identity **Key Vault Secrets User** access to the dedicated vault. Set the App Service setting `FIREBASE_SERVICE_ACCOUNT_JSON` to:
+
+```text
+@Microsoft.KeyVault(SecretUri=https://YOUR-VAULT.vault.azure.net/secrets/firebase-service-account/)
+```
+
+App Service resolves this reference; the backend receives the JSON and initializes Firebase Admin with it. An unresolved reference, invalid JSON, or a different project fails startup with a sanitized error. Never set this variable in browser code, GitHub repository variables, or a committed `.env`. The public `/api/auth/config` response does not include it.
+
+Upload secrets using a file argument and suppress secret-value output. Do not upload the credential file in the application ZIP. Keep the four public Firebase web settings separate and add the actual Azure hostname to Firebase Authentication's authorized domains. When rotating the key, update the vault secret and refresh App Service's Key Vault references. See [Microsoft's Key Vault reference guide](https://learn.microsoft.com/en-us/azure/app-service/app-service-key-vault-references).
+
 ## Offline fallback for rehearsal
 
 For a local demo without Firebase, explicitly use:

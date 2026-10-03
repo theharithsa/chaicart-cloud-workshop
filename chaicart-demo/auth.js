@@ -21,11 +21,23 @@ export function firebaseAuthorizer({verifyIdToken,hasAdmin}){
  };
  admin.customer=customer;return admin;
 }
-export async function createAuthorizer({mode,adminToken,projectId}){
+export function firebaseCredential({projectId,serviceAccountJson,applicationDefault,cert}){
+  if(!serviceAccountJson)return applicationDefault();
+  try{
+    const account=JSON.parse(serviceAccountJson);
+    if(account.type!=='service_account'||account.project_id!==projectId||!account.client_email||!account.private_key)throw new Error('Invalid credential');
+    return cert(account);
+  }catch{
+    // Never include credential contents or SDK parse errors in startup logs.
+    throw new Error('Firebase service-account configuration is invalid or unresolved. Check the Key Vault reference and project.');
+  }
+}
+export async function createAuthorizer({mode,adminToken,projectId,serviceAccountJson=process.env.FIREBASE_SERVICE_ACCOUNT_JSON}){
   if(mode==='local-token')return async req=>{const a=Buffer.from(req.headers.authorization||'');const b=Buffer.from('Bearer '+adminToken);if(!adminToken||a.length!==b.length||!timingSafeEqual(a,b))throw authError(401,'Local facilitator token required');return {email:'local-demo'};};
   if(mode!=='firebase'||!projectId)return async()=>{throw authError(503,'Firebase facilitator sign-in is not configured');};
-  const {initializeApp,applicationDefault}=await import('firebase-admin/app');
+  const {initializeApp,applicationDefault,cert}=await import('firebase-admin/app');
   const {getAuth}=await import('firebase-admin/auth');const {getFirestore}=await import('firebase-admin/firestore');
-  const app=initializeApp({projectId,credential:applicationDefault()},'chaicart-'+randomUUID());
+  const credential=firebaseCredential({projectId,serviceAccountJson,applicationDefault,cert});
+  const app=initializeApp({projectId,credential},'chaicart-'+randomUUID());
   return firebaseAuthorizer({verifyIdToken:(token,revoked)=>getAuth(app).verifyIdToken(token,revoked),hasAdmin:async email=>(await getFirestore(app).collection('admins').doc(email).get()).exists});
 }

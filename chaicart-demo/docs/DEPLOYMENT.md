@@ -16,7 +16,7 @@ Azure is not a technical requirement. Firebase with a Cloud Run backend can host
 ## Azure: first deployment
 
 1. Create a dedicated resource group in Central India, then a Linux App Service on Node 24 LTS with one B1 instance. Keep all workshop-only resources in this group for cleanup.
-2. App Service → Environment variables: configure [Firebase admin sign-in](AUTHENTICATION.md) and set `DATA_DIR=/home/chaicart-data`. Configure startup command `npm start`. Enable HTTPS Only. Enable Always On if available on the selected plan.
+2. App Service → Environment variables: configure [Firebase admin sign-in](AUTHENTICATION.md), `DATA_DIR=/home/chaicart-data`, and `SCM_DO_BUILD_DURING_DEPLOYMENT=true`. Configure startup command `npm start`. Enable HTTPS Only, Always On, and the `/health` health check. The app's `.deployment` file also enables build automation for source ZIP uploads; Firebase dependencies must be installed before startup.
 3. In GitHub repository Settings → Secrets and variables → Actions → Variables, add `AZURE_WEBAPP_NAME` with the actual App Service name. This enables deployment on `main`; without it the deploy job is skipped and tests still run.
 4. Create GitHub environment `workshop`. Add environment secret `AZURE_WEBAPP_PUBLISH_PROFILE` using the profile downloaded from the chosen App Service. That profile is a deployment credential. Keep it out of commits. Publish profiles require the App Service's SCM basic authentication setting; organizations that require OIDC should replace the profile deployment with their approved Azure Login/OIDC setup.
 5. In GitHub Actions select **ChaiCart demo — test and deploy → Run workflow** on `main`. The workflow installs/tests in `chaicart-demo/` and deploys that folder after tests pass. It does not deploy the workshop's root HTML as the backend. Normal app changes on `main` also trigger it.
@@ -26,6 +26,39 @@ Azure is not a technical requirement. Firebase with a Cloud Run backend can host
 9. Rehearse load, fault, rollback and ERP replay before class. Export evidence and capture cloud screenshots for the Wi-Fi fallback. Delete the dedicated resources after the workshop.
 
 Persistent file storage still requires **one application instance**. Multiple instances would hold different pools, scenario settings and telemetry, and can overwrite the same JSON state. Do not enable autoscaling for this implementation. A restart resets fault mode and in-memory telemetry; order/event data can survive if the persistent path is correctly mounted.
+
+## Workshop Azure environment
+
+Provisioned on 3 October 2026 in subscription **D1/APAC**:
+
+| Resource | Value |
+| --- | --- |
+| Resource group | `rg-chaicart-workshop` |
+| Region | Central India |
+| App Service plan | `plan-chaicart-workshop`, Linux B1, one instance |
+| App Service | `chaicart-workshop-vh-20261003`, Node 24 LTS |
+| Storefront | https://chaicart-workshop-vh-20261003.azurewebsites.net/ |
+| Facilitator | https://chaicart-workshop-vh-20261003.azurewebsites.net/facilitator |
+| Persistent state | `/home/chaicart-data/state.json` |
+
+Firebase's authorized domains include this hostname. The backend service-account credential is in the encrypted App Service setting `FIREBASE_SERVICE_ACCOUNT_JSON`, with explicit approval, because the deployment account cannot assign Key Vault roles or write vault secrets. No private credential is included in source or the deployment ZIP. A subscription administrator can migrate this setting to a Key Vault reference using the [authentication guide](AUTHENTICATION.md). The unused empty vault from the initial attempt was deleted.
+
+The initial deployment uses Azure CLI; GitHub deployment still requires the variable and environment secret described above. Without these, GitHub Actions tests run but the deploy job is skipped. Do not assume a Git push updates this environment.
+
+For a manual deployment from the repository root, create a ZIP of the contents of `chaicart-demo/` containing the source, `package.json`, `package-lock.json`, and `.deployment`, excluding `.env`, credentials, `data/`, `node_modules`, and `.firebase-install-partial`. Then:
+
+```bash
+git archive --format=zip --output=/tmp/chaicart-azure-deploy.zip HEAD:chaicart-demo
+az account set --subscription 09140929-1ca1-4623-90ec-a890c043f83a
+az webapp deploy --resource-group rg-chaicart-workshop \
+  --name chaicart-workshop-vh-20261003 --src-path /tmp/chaicart-azure-deploy.zip --type zip
+```
+
+The archive command deploys committed code only. Commit intended changes first; ignored secrets and local files are excluded.
+
+Check `/health` after deployment and rehearse Google sign-in, ordering, and facilitator controls. App Service build success does not by itself prove the app started successfully. Inspect startup logs if dependencies are missing.
+
+This B1 plan is billable while it exists; stopping only the web app does not stop plan charges. After the workshop, export evidence and delete the dedicated resource group if it is no longer needed. OTel metrics/logs/traces ingestion into Dynatrace and Application Insights ingestion are separate follow-up work and have not been configured by this deployment.
 
 ## Firebase / Cloud Run considerations
 
@@ -67,4 +100,4 @@ For a blocked deployment rehearsal, create a temporary test in `chaicart-demo/te
 
 ## Verification status
 
-Local backend tests and browser checks were completed during development. Azure deployment, Firebase deployment, Docker execution, crowd capacity and external telemetry ingestion remain unverified until rehearsed on the chosen services.
+Azure deployment on 3 October 2026 was verified with `/health`, `/api/menu`, public Firebase configuration, storefront and facilitator browser rendering, 401 responses for signed-out protected APIs, and 404 for the disabled local demo-login endpoint. All 12 backend tests passed locally, including credential project validation and sanitized failure handling. Google sign-in, authenticated ordering/facilitator controls, and restart persistence still require a live rehearsal on the Azure hostname. Firebase/Cloud Run deployment, Docker execution, crowd capacity and external telemetry ingestion remain unverified.

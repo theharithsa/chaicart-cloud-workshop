@@ -1,8 +1,16 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {firebaseAuthorizer,createAuthorizer} from '../auth.js';
+import {firebaseAuthorizer,createAuthorizer,firebaseCredential} from '../auth.js';
 const user={uid:'admin-uid',email:'facilitator@example.test',email_verified:true,firebase:{sign_in_provider:'google.com'}};
 const request={headers:{authorization:'Bearer signed-id-token'}};
+test('Key Vault credential must resolve and match the Firebase project; failures never fall back or expose secret values',()=>{
+ const options={projectId:'workshop',applicationDefault:()=>{throw new Error('Unexpected fallback');},cert:account=>account};
+ const account={type:'service_account',project_id:'workshop',client_email:'service@example.test',private_key:'private-test-value'};
+ assert.deepEqual(firebaseCredential({...options,serviceAccountJson:JSON.stringify(account)}),account);
+ for(const value of ['@Microsoft.KeyVault(SecretUri=https://vault/secrets/key/)',JSON.stringify({...account,project_id:'other'}),'private-test-value']){
+  assert.throws(()=>firebaseCredential({...options,serviceAccountJson:value}),e=>e.message.includes('invalid or unresolved')&&!e.message.includes('private-test-value'));
+ }
+});
 test('verified Google user must be in Firestore admin list; membership checked on every call',async()=>{let checks=0,member=true;const authorize=firebaseAuthorizer({verifyIdToken:async(token,revoked)=>{assert.equal(token,'signed-id-token');assert.equal(revoked,true);return user;},hasAdmin:async email=>{assert.equal(email,user.email);checks++;return member;}});assert.equal((await authorize(request)).email,user.email);member=false;await assert.rejects(authorize(request),e=>e.status===403);assert.equal(checks,2);});
 test('rejects missing, expired and revoked tokens',async()=>{const authorize=firebaseAuthorizer({verifyIdToken:async()=>{throw Object.assign(new Error('expired'),{code:'auth/id-token-expired'});},hasAdmin:async()=>true});await assert.rejects(authorize({headers:{}}),e=>e.status===401);await assert.rejects(authorize(request),e=>e.status===401);});
 test('anonymous, unverified and non-Google identities cannot authorize',async()=>{for(const invalid of [{...user,email_verified:false},{...user,email:undefined},{...user,firebase:{sign_in_provider:'anonymous'}}]){let checked=false;const authorize=firebaseAuthorizer({verifyIdToken:async()=>invalid,hasAdmin:async()=>{checked=true;return true;}});await assert.rejects(authorize(request),e=>e.status===403);assert.equal(checked,false);}});

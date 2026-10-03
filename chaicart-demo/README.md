@@ -2,6 +2,8 @@
 
 A runnable companion to [the two-day ChaiCart workshop](https://github.com/theharithsa/chaicart-cloud-workshop). Node.js 24, plain HTML/CSS/JS, Firebase Admin SDK for protected facilitator access. Workshop materials live in the repository root (`../`).
 
+**Azure demo:** [Storefront](https://chaicart-workshop-vh-20261003.azurewebsites.net/) · [Facilitator console](https://chaicart-workshop-vh-20261003.azurewebsites.net/facilitator). Sign in with Google to order; facilitator controls require an existing Firestore admin entry. See the [deployed environment and redeployment notes](docs/DEPLOYMENT.md#workshop-azure-environment).
+
 ## Customer ordering
 
 Customers sign in with Google using the same Firebase project. Customer accounts do not need an admin document. Checkout, order history and tracking are protected by server-verified UID ownership. Filter coffee is included alongside chai and snacks. In the explicit local-token rehearsal mode below, click **Sign in (demo)** to obtain a simulated customer session.
@@ -77,6 +79,7 @@ Order state is stored atomically in `data/state.json` (up to 1,000 orders / 3,00
 | `ADMIN_TOKEN` | unset | Local-token mode only |
 | `FIREBASE_*` | unset | Shared live-project web configuration; see authentication guide |
 | `GOOGLE_APPLICATION_CREDENTIALS` | unset | Backend credential-file path, or use application default workload identity |
+| `FIREBASE_SERVICE_ACCOUNT_JSON` | unset | Backend-only service-account JSON; supports resolved Azure Key Vault references and takes precedence over ADC |
 | `DATA_DIR` | data | Order / event storage |
 | `POOL_TIMEOUT_MS` | 30000 | Connection acquisition timeout |
 | `GATEWAY_DELAY_MS` | 205 | Simulated external call duration |
@@ -87,7 +90,7 @@ Order state is stored atomically in `data/state.json` (up to 1,000 orders / 3,00
 The app is in `chaicart-demo/` within this repository. GitHub Pages serves only the workshop materials. The root [demo workflow](../.github/workflows/chaicart-demo.yml) tests this subdirectory and deploys only that directory to Azure.
 
 1. In Azure Portal create a dedicated resource group, e.g. `rg-chaicart-workshop`, in Central India. Create a Linux App Service using Node 24 LTS and a Basic B1 plan for the crowd demo; rehearse capacity rather than assuming 120 simultaneous visitors will fit the Free plan. Use one instance.
-2. Configure [Firebase sign-in](docs/AUTHENTICATION.md) and set `DATA_DIR=/home/chaicart-data` in App Service environment variables. Set startup command `npm start` and use HTTPS for participants.
+2. Configure [Firebase sign-in](docs/AUTHENTICATION.md), `DATA_DIR=/home/chaicart-data`, and `SCM_DO_BUILD_DURING_DEPLOYMENT=true` in App Service environment variables. Set startup command `npm start` and use HTTPS for participants. The `.deployment` file enables remote build for source ZIP deployments.
 3. Deploy this folder using the root workflow in `.github/workflows/chaicart-demo.yml`. For this workflow set repository variable `AZURE_WEBAPP_NAME` and create the GitHub environment `workshop` with secret `AZURE_WEBAPP_PUBLISH_PROFILE`. The deploy job waits for tests; it is skipped when no app name is configured. Publish profiles require SCM basic authentication; prefer your organization's OIDC deployment setup when it is available. Keep credentials out of the repository.
 4. Enable Application Insights on the app, then restart. Follow the [official App Service monitoring guide](https://learn.microsoft.com/en-us/azure/app-service/monitor-app-service) for the Node agent; verify request telemetry and Live Metrics in your actual tenant. Local structured console logs are not automatically guaranteed to appear in Application Insights Logs.
 5. Open the public URL repeatedly and `/chai-not-found` to generate 404s. In Application Insights use `requests | summarize count() by resultCode, bin(timestamp, 1m)`; workspace-based queries can use `AppRequests | summarize count() by ResultCode, bin(TimeGenerated, 1m)`.
@@ -95,7 +98,7 @@ The app is in `chaicart-demo/` within this repository. GitHub Pages serves only 
 7. Generate a QR code from the deployed HTTPS URL. Test it on a phone on mobile data.
 8. After the workshop, inspect and delete the dedicated resource group in Portal. Confirm the app, App Service plan and monitoring resources are included; don't delete shared resources.
 
-Azure deployment and telemetry ingestion have not been executed or verified by this local build.
+The Azure app was deployed on 3 October 2026. Health, menu, Firebase web configuration, storefront/facilitator rendering, rejection of signed-out protected requests, and disabled local demo login were verified. Google sign-in and authenticated ordering/facilitator actions still require a live rehearsal on the Azure hostname. Crowd capacity and external telemetry ingestion remain unverified.
 
 ## Dynatrace / OpenTelemetry
 

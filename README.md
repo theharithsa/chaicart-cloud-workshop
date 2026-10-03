@@ -6,6 +6,8 @@ A two-day, game-based workshop on **cloud computing and business systems** for e
 
 The workshop materials are plain HTML, CSS and JavaScript and work offline. The companion [ChaiCart demo app](chaicart-demo/README.md) has a Node.js backend and requires a running server.
 
+**ChaiCart app on Azure:** [Order chai or coffee](https://chaicart-workshop-vh-20261003.azurewebsites.net/) · [Facilitator console](https://chaicart-workshop-vh-20261003.azurewebsites.net/facilitator). Google sign-in is required; facilitator controls use the shared Firebase admin list. [Azure setup and redeployment instructions](chaicart-demo/docs/DEPLOYMENT.md#workshop-azure-environment).
+
 ---
 
 ## At a glance
