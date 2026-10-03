@@ -50,6 +50,7 @@
   <b>Facilitator Guide</b>
   <button onclick="window.print()">Print</button>
   <span class="hint">Your companion for both days. Slide numbers refer to the counter shown bottom-right in the decks.</span>
+  <a href="#contents">Contents</a>
   <a href="index.html">← Hub</a>
 </div>
 
@@ -60,17 +61,20 @@
     <div class="kick">Facilitator Guide · Cloud Computing &amp; Business Systems</div>
     <h1>The ChaiCart<br>Cloud Workshop</h1>
     <p>A two-day, game-based workshop for 120 engineering students (5th and 7th semester) in 24 teams of five. On Day 1 they found a cloud startup; on Day 2 they keep it alive through outages, bill shocks and a murder mystery.</p>
-    <div class="toc">
+    <h2 id="contents">Contents</h2>
+    <nav class="toc" aria-label="Table of contents">
       <a href="#how">How the workshop works</a>
       <a href="#room">Room, regions and captains</a>
       <a href="#prep">Preparation checklist</a>
+      <a href="#app-setup">Deployed ChaiCart app and sign-in</a>
+      <a href="#dynatrace-prep">Dynatrace preparation</a>
       <a href="#scoring">Scoring</a>
       <a href="#d1">Day 1 — Build ChaiCart</a>
       <a href="#d2">Day 2 — Keep ChaiCart Alive</a>
       <a href="#late">Contingencies</a>
       <a href="#captain">Region captain briefing</a>
       <a href="#slip">Region score sheet</a>
-    </div>
+    </nav>
   </div>
 </div>
 
@@ -201,7 +205,7 @@
     <tr><td>certificate</td><td>120 + awards</td><td>Paste the student list; print awards after Demo Day or pre-print blanks</td></tr>
   </table>
 
-  <h3>Deployed ChaiCart app — presenter setup</h3>
+  <h3 id="app-setup">Deployed ChaiCart app — presenter setup</h3>
   <p><b>Storefront:</b> <a href="https://chaicart-workshop-vh-20261003.azurewebsites.net/">chaicart-workshop-vh-20261003.azurewebsites.net</a><br>
   <b>Facilitator console:</b> <a href="https://chaicart-workshop-vh-20261003.azurewebsites.net/facilitator">Open facilitator controls</a><br>
   <b>Runbook:</b> <a href="chaicart-demo/docs/FACILITATOR.md">App demo sequence</a> · <a href="chaicart-demo/docs/DEPLOYMENT.md">Deployment and recovery notes</a></p>
@@ -223,7 +227,7 @@
     <li>Backend Firebase credentials are stored in an encrypted App Service setting. Keep credentials, settings values and Google sign-in screens off the projector. Key Vault migration requires a subscription administrator. After the workshop, export evidence and remove the dedicated resources when no longer needed; stopping the app alone does not stop plan charges.</li>
   </ol>
 
-  <h3>Dynatrace preparation</h3>
+  <h3 id="dynatrace-prep">Dynatrace preparation</h3>
   <ul class="check">
     <li>Until ChaiCart OTel ingestion is implemented and verified, pick a separate instrumented environment with live services, traces and at least one recent problem. Do not describe its telemetry as coming from this app.</li>
     <li>Bookmark Services, Distributed Traces, Problems, Logs and a Notebook with the treasure-hunt queries already pasted in.</li>

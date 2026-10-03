@@ -2,6 +2,19 @@
 
 Use with the original facilitator guide and slides in the repository root. This app supplements the paper games; it doesn't replace scoring, architecture posters or the murder-mystery envelopes.
 
+## Contents
+
+- [Deployed workshop environment](#deployed-environment)
+- [Before participants arrive](#preflight)
+- [Day 1: build and trace an order (5–10 minutes)](#day-1-demo)
+- [Day 2: Who Killed Checkout? live companion (5–8 minutes)](#day-2-incident)
+- [Distinguish a gateway outage (2 minutes)](#gateway-outage)
+- [Observability treasure hunt (5 minutes plus worksheet)](#treasure-hunt)
+- [Follow the Order / ERP maintenance (3 minutes)](#erp-maintenance)
+- [Reset and close](#reset-and-close)
+
+<a id="deployed-environment"></a>
+
 ## Deployed workshop environment
 
 - [Storefront — chai, coffee and snacks](https://chaicart-workshop-vh-20261003.azurewebsites.net/)
@@ -11,6 +24,8 @@ Use with the original facilitator guide and slides in the repository root. This 
 - Orders/events persist in `/home/chaicart-data/state.json`. Keep one instance; telemetry and fault settings reset on restart.
 - Customer login: verified Google account. Facilitator login: verified Google account with a matching Firestore `admins/{email}` document. No facilitator shared token is used on Azure.
 - Firebase backend credentials are in an encrypted App Service setting. Never project or export secret settings. See [authentication](AUTHENTICATION.md) and [deployment](DEPLOYMENT.md) notes.
+
+<a id="preflight"></a>
 
 ## Before participants arrive
 
@@ -24,6 +39,8 @@ Use with the original facilitator guide and slides in the repository root. This 
 
 For an offline rehearsal only, follow the README's explicit local-token setup. That fallback is separate from the deployed Google sign-in flow.
 
+<a id="day-1-demo"></a>
+
 ## Day 1: build and trace an order (5–10 minutes)
 
 1. Explain the browser → Node app → simulated dependencies. Show the Azure deployment for PaaS and Dockerfile for portability.
@@ -31,6 +48,8 @@ For an offline rehearsal only, follow the README's explicit local-token setup. T
 3. Open the console trace: cart validation → payment → pool acquisition → demo DB → gateway → business events. Expand the most recent trace.
 4. Relate each span to the Human Kitchen station. Be explicit that these are logical services within one process; separate deployment and HTTP context propagation are a later extension.
 5. Show five business effects: CRM, SCM, HCM, BI and ERP. Delivery advances in 30 seconds for the demo, despite the storefront's 10-minute promise.
+
+<a id="day-2-incident"></a>
 
 ## Day 2: Who Killed Checkout? live companion (5–8 minutes)
 
@@ -53,9 +72,13 @@ Firebase mode also requires `CUSTOMER_ID_TOKEN` for a signed-in, verified Google
 
 On PowerShell, set `$env:BASE_URL`, `$env:RATE`, `$env:SECONDS` and `$env:CUSTOMER_ID_TOKEN` first. The tool creates demo orders at the chosen destination; run it only against your workshop app. It waits for pending requests after the sending interval ends.
 
+<a id="gateway-outage"></a>
+
 ## Distinguish a gateway outage (2 minutes)
 
 Select **PayFast outage** and place an order. The failed trace now includes the gateway call; it wasn't stuck acquiring a pool slot. Roll back. Ask: which evidence rules out the gateway in the earlier incident?
+
+<a id="treasure-hunt"></a>
 
 ## Observability treasure hunt (5 minutes plus worksheet)
 
@@ -64,12 +87,16 @@ Select **PayFast outage** and place an order. The failed trace now includes the 
 - Use Dynatrace only after ingesting the required signals. The app's local dashboard cannot prove host CPU, a real database bottleneck, network service flow or a Dynatrace Problem. Use your instrumented environment for those questions.
 - The console's SLI uses a rolling 60-second sample: checkout successful **and under 2 seconds**. Relate it to the 99.9% goal, then return to the paper game's 30-day error budget. Those are different observation windows.
 
+<a id="erp-maintenance"></a>
+
 ## Follow the Order / ERP maintenance (3 minutes)
 
 1. Select **Pause ERP**.
 2. Place an order from the storefront. Checkout succeeds; CRM/SCM/HCM/BI events complete while ERP queues.
 3. Show the queued invoice event, then recover with **Healthy / Roll back**. Queued ERP events become completed.
 4. Explain this is simulated event replay, not a connection to Salesforce, SAP or an external durable broker.
+
+<a id="reset-and-close"></a>
 
 ## Reset and close
 
