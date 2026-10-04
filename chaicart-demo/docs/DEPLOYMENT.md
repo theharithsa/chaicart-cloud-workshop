@@ -58,7 +58,7 @@ The archive command deploys committed code only. Commit intended changes first; 
 
 Check `/health` after deployment and rehearse Google sign-in, ordering, and facilitator controls. App Service build success does not by itself prove the app started successfully. Inspect startup logs if dependencies are missing.
 
-This B1 plan is billable while it exists; stopping only the web app does not stop plan charges. After the workshop, export evidence and delete the dedicated resource group if it is no longer needed. OTel metrics/logs/traces ingestion into Dynatrace and Application Insights ingestion are separate follow-up work and have not been configured by this deployment.
+This B1 plan is billable while it exists; stopping only the web app does not stop plan charges. After the workshop, export evidence and delete the dedicated resource group if it is no longer needed. Dynatrace RUM and application OTel now have an explicit implementation and [observability runbook](OBSERVABILITY.md). Configure the server-only ingest token/endpoint and verify each signal; Application Insights and host monitoring remain separate.
 
 ## Firebase / Cloud Run considerations
 

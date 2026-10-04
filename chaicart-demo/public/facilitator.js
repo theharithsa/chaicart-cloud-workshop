@@ -26,7 +26,7 @@ async function configureSignIn(){
   $('#google-login').hidden=false;
   $('#google-login').onclick=async()=>{try{await signInWithPopup(firebaseAuth,new GoogleAuthProvider());}catch(e){$('#notice').textContent=e.message;}};
   onAuthStateChanged(firebaseAuth,async user=>{
-   clearInterval(poll);stop();firebaseUser=user;token='';$('#dashboard').hidden=true;$('#identity').textContent='';
+   clearInterval(poll);stop();firebaseUser=user;window.dtrum?.identifyUser(user?.email||'');token='';$('#dashboard').hidden=true;$('#identity').textContent='';
    if(!user){$('#google-login').hidden=false;return;}
    try{const identity=await api('session');$('#identity').textContent='Signed in as '+identity.email;$('#google-login').hidden=true;$('#dashboard').hidden=false;$('#notice').textContent='Admin access verified. Evidence refreshes every 2 seconds.';await refresh();poll=setInterval(refresh,2000);}
    catch(e){$('#notice').textContent=e.message;await signOut(firebaseAuth);}

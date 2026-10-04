@@ -33,7 +33,7 @@ Use with the original facilitator guide and slides in the repository root. This 
 - Confirm normal checkout, menu, tracking and `/chai-not-found` (404). Each customer must sign in to order. All prices/payments/deliveries are demonstration data.
 - Test the storefront from a phone and prepare its QR code. Rehearse the surge at the Azure URL before inviting classroom traffic; B1 capacity has not been verified for the crowd.
 - Health, public routes and signed-out access controls passed deployment checks. Google sign-in, authenticated ordering/controls and restart persistence need a live rehearsal.
-- **Observability status:** the app console works locally within the Node process. Dynatrace OTel metrics/logs/traces and Application Insights ingestion are not configured or verified. Use a separately instrumented environment or saved evidence for cloud-only questions until ingestion is confirmed.
+- **Observability status:** RUM tags and Node OTel instrumentation are implemented. Follow the [observability runbook](OBSERVABILITY.md) to verify RUM, traces, metrics and correlated logs before teaching. Logs alone do not prove all three signals work. Application Insights and VM/host monitoring are separate.
 - **CI/CD status:** GitHub tests pass; automatic Azure deployment is not enabled. Configure and rehearse deployment credentials before the live commit-to-deploy exercise. Follow the existing workflow, not a second Portal-generated workflow.
 - Save screenshots/recordings for unreliable Wi-Fi. The original slides and games work offline; this storefront requires the Azure backend.
 

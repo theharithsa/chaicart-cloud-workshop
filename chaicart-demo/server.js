@@ -1,3 +1,4 @@
+import {createTelemetry} from './telemetry.js';
 import {createAuthorizer,authError} from './auth.js';
 import http from 'node:http';
 import { readFile, mkdir, writeFile, rename } from 'node:fs/promises';
@@ -29,6 +30,7 @@ class Pool {
 }
 const publicDir=fileURLToPath(new URL('./public/',import.meta.url));
 export async function createApp({adminToken=process.env.ADMIN_TOKEN, dataDir=process.env.DATA_DIR||'data', timeout=Number(process.env.POOL_TIMEOUT_MS||30000), gatewayDelay=Number(process.env.GATEWAY_DELAY_MS||205), customerAuthorizer, authMode=process.env.AUTH_MODE||'firebase', authorizer, firebaseConfig={apiKey:process.env.FIREBASE_API_KEY,authDomain:process.env.FIREBASE_AUTH_DOMAIN,projectId:process.env.FIREBASE_PROJECT_ID,appId:process.env.FIREBASE_APP_ID}}={}) {
+  const telemetry=createTelemetry();
   const authorize=authorizer||await createAuthorizer({mode:authMode,adminToken,projectId:firebaseConfig.projectId});
   const demoSessions=new Map();
   const customer=customerAuthorizer||authorize.customer|| (async req=>{
@@ -44,14 +46,14 @@ export async function createApp({adminToken=process.env.ADMIN_TOKEN, dataDir=pro
   let saving=Promise.resolve();
   function persist(){const snapshot=JSON.stringify(state);const task=saving.then(async()=>{const p=path.join(dataDir,'state.json');await writeFile(p+'.tmp',snapshot);await rename(p+'.tmp',p);});saving=task.catch(()=>{});return task;}
   const logs=[], traces=[], samples=[], changes=[];
-  function log(level,service,message,extra={}){const e={timestamp:new Date().toISOString(),loglevel:level,'service.name':service,message,...extra};logs.push(e);if(logs.length>500)logs.shift();console.log(JSON.stringify(e));}
+  function log(level,service,message,extra={}){const e={timestamp:new Date().toISOString(),loglevel:level,'service.name':'chaicart-demo',component:service,message,...telemetry.log(level,message,{component:service,...extra})};logs.push(e);if(logs.length>500)logs.shift();console.log(JSON.stringify(e));}
   function change(message){const e={timestamp:new Date().toISOString(),message};changes.push(e);if(changes.length>100)changes.shift();log('INFO','payment-service',message);}
-  async function span(trace,service,name,work,parentId){const s={service,name,spanId:randomBytes(8).toString('hex'),parentId,start:Date.now(),status:'OK'};trace.spans.push(s);try{return await work(s);}catch(e){s.status='ERROR';throw e;}finally{s.duration=Date.now()-s.start;}}
-  function exportTrace(t){
-    if(!process.env.OTEL_EXPORTER_OTLP_ENDPOINT)return;
-    const services=[...new Set(t.spans.map(s=>s.service))];
-    const resourceSpans=services.map(service=>({resource:{attributes:[{key:'service.name',value:{stringValue:service}}]},scopeSpans:[{scope:{name:'chaicart-workshop'},spans:t.spans.filter(s=>s.service===service).map(s=>({traceId:t.traceId,spanId:s.spanId,...(s.parentId?{parentSpanId:s.parentId}:{}),name:s.name,kind:1,startTimeUnixNano:String(BigInt(s.start)*1000000n),endTimeUnixNano:String(BigInt(s.start+s.duration)*1000000n),status:{code:s.status==='ERROR'?2:1}}))}]}));
-    fetch(process.env.OTEL_EXPORTER_OTLP_ENDPOINT.replace(/\/$/,'')+'/v1/traces',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({resourceSpans}),signal:AbortSignal.timeout(5000)}).then(r=>{if(!r.ok)throw new Error('Collector HTTP '+r.status);}).catch(e=>log('WARN','telemetry','Trace export failed',{reason:e.message}));
+  async function span(localTrace,service,name,work,parentId){
+    return telemetry.span(name,{'chaicart.component':service,'chaicart.simulated':service.includes('demo')||['cart-service','payment-service','event-worker'].includes(service)},async current=>{
+      const s={service,name,spanId:current.spanContext().spanId==='0000000000000000'?randomBytes(8).toString('hex'):current.spanContext().spanId,parentId,start:Date.now(),status:'OK'};
+      localTrace.spans.push(s);
+      try{return await work(s);}catch(e){s.status='ERROR';throw e;}finally{s.duration=Date.now()-s.start;}
+    });
   }
   const json=(res,status,body)=>{res.writeHead(status,{'content-type':'application/json','cache-control':'no-store'});res.end(JSON.stringify(body));};
   async function body(req){let text='';for await(const chunk of req){text+=chunk;if(text.length>16384)throw Object.assign(new Error('Request too large'),{status:413});}try{return JSON.parse(text||'{}');}catch{throw Object.assign(new Error('Invalid JSON'),{status:400});}}
@@ -62,12 +64,19 @@ export async function createApp({adminToken=process.env.ADMIN_TOKEN, dataDir=pro
       await persist();
     });
   }
-  const server=http.createServer(async(req,res)=>{
+  telemetry.gauges('chaicart.payment.pool.capacity','{connection}',()=>pool.size);
+  telemetry.gauges('chaicart.payment.pool.active','{connection}',()=>pool.active);
+  telemetry.gauges('chaicart.payment.pool.waiting','{request}',()=>pool.waiting.length);
+  telemetry.gauges('chaicart.fulfillment.backlog','{event}',()=>state.events.filter(e=>e.status==='queued').length);
+  telemetry.gauges('chaicart.fulfillment.backlog.age','s',()=>{const queued=state.events.filter(e=>e.status==='queued');return queued.length?(Date.now()-Math.min(...queued.map(e=>Date.parse(e.timestamp))))/1000:0;});
+  const server=http.createServer((req,res)=>telemetry.request(req,res,async()=>{
     const started=Date.now();const url=new URL(req.url,'http://localhost');
-    const trace={traceId:randomBytes(16).toString('hex'),timestamp:new Date().toISOString(),path:url.pathname,spans:[]};
+    const sc=telemetry.current()?.spanContext();
+    const trace={traceId:sc&&sc.traceId!=='00000000000000000000000000000000'?sc.traceId:randomBytes(16).toString('hex'),timestamp:new Date().toISOString(),path:url.pathname,spans:[]};
     res.setHeader('x-trace-id',trace.traceId);
+    telemetry.enrich({'chaicart.scenario':mode});
     res.setHeader('x-content-type-options','nosniff');
-    res.setHeader('content-security-policy',"default-src 'self'; style-src 'self'; script-src 'self' https://www.gstatic.com https://apis.google.com; connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com https://*.web.app; frame-src https://*.firebaseapp.com https://*.web.app https://accounts.google.com; img-src 'self' data:; frame-ancestors 'none'; base-uri 'none'");
+    res.setHeader('content-security-policy',"default-src 'self'; style-src 'self'; script-src 'self' https://www.gstatic.com https://apis.google.com https://js-cdn.dynatrace.com; connect-src 'self' https://*.dynatrace.com https://*.dynatrace-managed.com https://*.googleapis.com https://*.firebaseapp.com https://*.web.app; frame-src https://*.firebaseapp.com https://*.web.app https://accounts.google.com; img-src 'self' data:; frame-ancestors 'none'; base-uri 'none'");
     res.on('finish',()=>{
       if(!url.pathname.startsWith('/api/admin')){
         const sample={time:Date.now(),duration:Date.now()-started,status:res.statusCode,path:url.pathname};samples.push(sample);if(samples.length>5000)samples.shift();
@@ -76,7 +85,7 @@ export async function createApp({adminToken=process.env.ADMIN_TOKEN, dataDir=pro
     });
     try{
       if(url.pathname.startsWith('/api/admin')){
-        const identity=await authorize(req);
+        const identity=await telemetry.span('Authorize facilitator',{},()=>authorize(req));telemetry.enrich({'user.id':identity.uid||'local-demo','user.email':identity.email,'user.role':'facilitator'});
         if(req.method==='GET'&&url.pathname==='/api/admin/session')return json(res,200,identity);
         if(req.method==='GET'&&url.pathname==='/api/admin/telemetry'){
           const recent=samples.filter(x=>x.time>Date.now()-60000);const checkout=recent.filter(x=>x.path==='/api/checkout');const durations=checkout.map(x=>x.duration).sort((a,b)=>a-b);const good=checkout.filter(x=>x.status<400&&x.duration<2000).length;
@@ -86,6 +95,7 @@ export async function createApp({adminToken=process.env.ADMIN_TOKEN, dataDir=pro
           const b=await body(req);
           if(!b||!['healthy','pool-exhaustion','gateway-down','erp-down'].includes(b.scenario))return json(res,400,{error:'Unknown scenario'});
           mode=b.scenario;erpPaused=mode==='erp-down';pool.resize(mode==='pool-exhaustion'?5:50);
+          telemetry.enrich({'chaicart.scenario':mode});log('INFO','facilitator','Scenario changed',{'event.name':'scenario.changed',scenario:mode});
           change(mode==='pool-exhaustion'?'Deploy payment-service v2.3.1: maximumPoolSize=5 (was 50), FINOPS-482; load test skipped':`Rollback / scenario: ${mode}; maximumPoolSize=50`);
           if(!erpPaused){for(const event of state.events)if(event.status==='queued')event.status='completed';await persist();}
           return json(res,200,{mode});
@@ -98,13 +108,13 @@ export async function createApp({adminToken=process.env.ADMIN_TOKEN, dataDir=pro
         if(demoSessions.size>=200)return json(res,429,{error:'Too many demo sessions; restart the local demo'});
         const token=randomBytes(32).toString('hex');const user={uid:randomUUID(),email:'Local demo customer'};demoSessions.set(token,{user,expires:Date.now()+3600000});return json(res,201,{token,user,demo:true});
       }
-      if(req.method==='GET'&&url.pathname==='/api/auth/me')return json(res,200,await customer(req));
-      if(req.method==='GET'&&url.pathname==='/api/orders'){const user=await customer(req);return json(res,200,{orders:state.orders.filter(x=>x.customerUid===user.uid).slice(-20).reverse().map(publicOrder)});}
+      if(req.method==='GET'&&url.pathname==='/api/auth/me'){const user=await telemetry.span('Verify customer identity',{},()=>customer(req));telemetry.enrich({'user.id':user.uid,'user.email':user.email});return json(res,200,user);}
+      if(req.method==='GET'&&url.pathname==='/api/orders'){const user=await telemetry.span('Verify customer identity',{},()=>customer(req));telemetry.enrich({'user.id':user.uid,'user.email':user.email,'user.role':'customer'});return json(res,200,{orders:state.orders.filter(x=>x.customerUid===user.uid).slice(-20).reverse().map(publicOrder)});}
       if(req.method==='GET'&&url.pathname==='/api/auth/config')return json(res,200,{mode:authMode,configured:authMode==='local-token'?Boolean(adminToken):Boolean(firebaseConfig.apiKey&&firebaseConfig.authDomain&&firebaseConfig.projectId&&firebaseConfig.appId),...(authMode==='firebase'?{firebase:firebaseConfig}:{})});
       if(req.method==='GET'&&url.pathname==='/health')return json(res,200,{status:'ok',service:'chaicart',storage:'local-file-demo'});
       if(req.method==='GET'&&url.pathname==='/api/menu')return json(res,200,{items:MENU,deliveryFee:10});
       if(req.method==='POST'&&url.pathname==='/api/checkout'){
-        const user=await customer(req);
+        const user=await telemetry.span('Verify customer identity',{},()=>customer(req));telemetry.enrich({'user.id':user.uid,'user.email':user.email,'user.role':'customer'});
         const b=await body(req);
         if(!b||!Array.isArray(b.items)||!b.items.length||b.items.length>10||!b.items.every(x=>MENU.some(m=>m.id===x.id)&&Number.isInteger(x.quantity)&&x.quantity>0&&x.quantity<=20)||!['Mumbai','Bengaluru','Hyderabad','Delhi','Pune'].includes(b.city))return json(res,400,{error:'Choose a city and valid cart items'});
         let order;
@@ -112,33 +122,34 @@ export async function createApp({adminToken=process.env.ADMIN_TOKEN, dataDir=pro
           await span(trace,'checkout-service','POST /api/checkout',async root=>{
             const items=await span(trace,'cart-service','Validate cart & calculate total',async()=>b.items.map(x=>({...x,price:MENU.find(m=>m.id===x.id).price})),root.spanId);
             await span(trace,'payment-service','Process demo payment',async payment=>{
-              await span(trace,'payment-service','Pool.getConnection',async()=>{log('INFO','payment-service','Pool stats',{maximumPoolSize:pool.size,active:pool.active,waiting:pool.waiting.length,trace_id:trace.traceId});await pool.acquire(timeout);},payment.spanId);
+              await span(trace,'payment-service','Pool.getConnection',async()=>{const poolStarted=performance.now();log('INFO','payment-service','Pool stats',{maximumPoolSize:pool.size,active:pool.active,waiting:pool.waiting.length,trace_id:trace.traceId});try{await pool.acquire(timeout);telemetry.recordOperation('payment.pool.acquire','success',(performance.now()-poolStarted)/1000);}catch(e){telemetry.recordOperation('payment.pool.acquire','failure',(performance.now()-poolStarted)/1000);throw e;}},payment.spanId);
               try{
                 await span(trace,'orders-db-demo','INSERT pending payment',()=>sleep(12),payment.spanId);
                 await span(trace,'payfast-demo','Demo gateway charge',async()=>{await sleep(gatewayDelay);if(mode==='gateway-down')throw new Error('PayFast gateway unavailable');},payment.spanId);
                 await span(trace,'orders-db-demo','UPDATE payment result',()=>sleep(5),payment.spanId);
               }finally{pool.release();}
             },root.spanId);
-            order={customerUid:user.uid,id:'CC-'+randomBytes(5).toString('hex').toUpperCase(),lookupToken:randomBytes(24).toString('hex'),city:b.city,items,total:10+items.reduce((s,x)=>s+x.price*x.quantity,0),createdAt:Date.now(),traceId:trace.traceId};
+            order={customerUid:user.uid,id:'CC-'+randomBytes(5).toString('hex').toUpperCase(),lookupToken:randomBytes(24).toString('hex'),city:b.city,items,total:10+items.reduce((s,x)=>s+x.price*x.quantity,0),createdAt:Date.now(),traceId:trace.traceId,transactionId:res.getHeader('x-transaction-id')};
+            telemetry.enrich({'order.id':order.id,'transaction.id':order.transactionId});log('INFO','checkout','Order placed',{'event.name':'order.placed','order.id':order.id});
             state.orders.push(order);if(state.orders.length>1000)state.orders.shift();await fulfill(order,trace);
           });
           trace.status=201;json(res,201,{...publicOrder(order),etaMinutes:10});
         }catch(e){trace.status=504;log('ERROR','payment-service',e.message,{trace_id:trace.traceId});json(res,504,{error:'Payment could not complete. Please try again.',traceId:trace.traceId});}
-        finally{traces.push(trace);if(traces.length>100)traces.shift();exportTrace(trace);}
+        finally{traces.push(trace);if(traces.length>100)traces.shift();}
         return;
       }
       if(req.method==='GET'&&url.pathname.startsWith('/api/orders/')){
-        const user=await customer(req);
+        const user=await telemetry.span('Verify customer identity',{},()=>customer(req));telemetry.enrich({'user.id':user.uid,'user.email':user.email,'user.role':'customer'});
         const order=state.orders.find(x=>x.id===url.pathname.split('/').pop()&&x.customerUid===user.uid);
         if(!order)return json(res,404,{error:'Order not found'});
-        const age=Date.now()-order.createdAt;return json(res,200,{...publicOrder(order),status:age<10000?'Brewing':age<20000?'Packing':age<30000?'Rider assigned':'Delivered',demoTimeline:true});
+        telemetry.enrich({'order.id':order.id,'transaction.id':order.transactionId||res.getHeader('x-transaction-id')});const age=Date.now()-order.createdAt;return json(res,200,{...publicOrder(order),status:age<10000?'Brewing':age<20000?'Packing':age<30000?'Rider assigned':'Delivered',demoTimeline:true});
       }
       const files={'/':'index.html','/app.js':'app.js','/customer-auth.js':'customer-auth.js','/style.css':'style.css','/facilitator':'facilitator.html','/facilitator.js':'facilitator.js'};
       if(req.method==='GET'&&files[url.pathname]){res.setHeader('content-type',url.pathname.endsWith('.js')?'text/javascript':url.pathname.endsWith('.css')?'text/css':'text/html');res.end(await readFile(path.join(publicDir,files[url.pathname])));return;}
       json(res,404,{error:'Chai not found',path:url.pathname});
     }catch(e){log('ERROR','checkout-service',e.message,{trace_id:trace.traceId});if(!res.headersSent)json(res,e.status||500,{error:e.status?e.message:'Something went wrong'});else res.end();}
-  });
-  return {server,pool,close:async()=>{await new Promise(r=>server.close(r));await saving;}};
+  }));
+  return {server,pool,telemetry,close:async()=>{await new Promise(r=>server.close(r));await saving;await telemetry.shutdown();}};
 }
 if(process.argv[1]===fileURLToPath(import.meta.url)){
   if((process.env.AUTH_MODE||'firebase')==='firebase'&&!process.env.FIREBASE_PROJECT_ID)console.warn('Firebase sign-in is unconfigured: facilitator APIs fail closed.');

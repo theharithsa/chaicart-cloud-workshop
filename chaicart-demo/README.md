@@ -83,7 +83,8 @@ Order state is stored atomically in `data/state.json` (up to 1,000 orders / 3,00
 | `DATA_DIR` | data | Order / event storage |
 | `POOL_TIMEOUT_MS` | 30000 | Connection acquisition timeout |
 | `GATEWAY_DELAY_MS` | 205 | Simulated external call duration |
-| `OTEL_EXPORTER_OTLP_ENDPOINT` | unset | OpenTelemetry Collector base URL (HTTP JSON /v1/traces) |
+| `DYNATRACE_PLATFORM_TOKEN` | unset | Server-only platform token with all three ingest permissions |
+| `OTEL_EXPORTER_OTLP_ENDPOINT` | unset | OTLP/HTTP protobuf base URL; exports traces, logs and metrics |
 
 ## Azure deployment
 
@@ -102,11 +103,11 @@ The Azure app was deployed on 3 October 2026. Health, menu, Firebase web configu
 
 ## Dynatrace / OpenTelemetry
 
-The app can export its logical traces as OTLP HTTP JSON to an OpenTelemetry Collector. It doesn't export host metrics or a real PostgreSQL service; use an instrumented environment/OneAgent for the worksheet's host CPU and Problems questions. A Dynatrace Problem is not guaranteed simply by injecting this fault.
+The Node OTel SDK exports authenticated, batched OTLP/HTTP protobuf traces, correlated logs, delta counters and explicit-bucket histograms. Runtime metrics cover the Node process. Payment/database/business-system spans are explicitly logical/simulated components, not separate deployed services or a real PostgreSQL instance.
 
-Set `OTEL_EXPORTER_OTLP_ENDPOINT=http://your-collector:4318`. Configure the collector's OTLP HTTP receiver and a traces pipeline forwarding to your tenant using Dynatrace's supported OTLP exporter configuration. See [Dynatrace's OpenTelemetry Collector guide](https://docs.dynatrace.com/docs/ingest-from/opentelemetry/collector). Keep the Dynatrace token in the collector's environment, never in the browser. The exporter is best effort and does not retry; rehearse ingestion and sampling before the workshop. JSON console logs need a separate log ingestion pipeline for DQL. No external telemetry is sent unless an exporter endpoint is set.
+Set `OTEL_EXPORTER_OTLP_ENDPOINT=https://indiacs.live.dynatrace.com/api/v2/otlp` and put `DYNATRACE_PLATFORM_TOKEN` in protected server configuration. Platform tokens use Bearer authentication and require the owning user and token to have all three signal permissions. RUM tags are installed on customer/facilitator pages and identify Google users by email. No token is shipped to the browser. Export queues/timeouts are bounded and business requests do not wait for exports.
 
-For the workshop's real service map and incoming/outgoing network calls, deploy separate services and propagate W3C trace context, or use your existing instrumented environment. The local waterfall is a fallback teaching view, not evidence of network-distributed services.
+See [the observability runbook](docs/OBSERVABILITY.md) for identity, transaction correlation, metrics, DQL queries, demo sequence and verification. OneAgent/cloud monitoring and alert configuration are still needed for host/infra-specific worksheet questions and automatic Problems; OTel application instrumentation alone does not prove those.
 
 ## Container
 
