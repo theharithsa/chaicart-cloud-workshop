@@ -23,7 +23,7 @@
   <h2>Day 2 — Keep ChaiCart Alive</h2>
   <div class="grid-3 grow">
     <div class="card"><h3>Morning · 09:30–12:40</h3><ul class="small"><li>X networking icebreaker</li><li>Reliability, monitoring &amp; APM</li><li>Who Killed Checkout?</li><li>Logs, metrics &amp; Treasure Hunt</li><li>SRE &amp; Error Budget Poker</li></ul></div>
-    <div class="card c-green"><h3>Afternoon · 13:25–15:00</h3><ul class="small"><li>Blameless postmortem</li><li>DevOps &amp; Paper Plane Factory</li><li>CI/CD demonstration</li><li>Security, scale &amp; Cloud Bill Shock</li></ul></div>
+    <div class="card c-green"><h3>Afternoon · 13:25–15:00</h3><ul class="small"><li>Blameless postmortem</li><li>DevOps &amp; Digital Delivery Factory</li><li>CI/CD demonstration</li><li>Security, scale &amp; Cloud Bill Shock</li></ul></div>
     <div class="card c-chai"><h3>Final session · 15:10–17:00</h3><ul class="small"><li>Business systems &amp; Follow the Order</li><li>Trends &amp; Career Tarot</li><li>Skills and Q&amp;A</li><li>Quiz, Demo Day &amp; awards</li></ul></div>
   </div>
   <p class="small muted">Breaks: 11:00 &amp; 15:00 · Lunch: 12:40–13:25 · X activity: +100 credits per team</p>
@@ -162,7 +162,7 @@
 <section class="slide section">
   <div class="kicker">🔪 Murder Mystery</div>
   <h1 style="font-size:4em">Who Killed <span class="red">Checkout</span>?</h1>
-  <p style="font-size:1.3em" class="frag"><b>Open your envelopes. Now.</b> ✉️</p>
+  <p style="font-size:1.3em" class="frag"><b>Open the incident evidence in ChaiCart Live. Now.</b> 🕵️</p>
 </section>
 
 <!-- 14 -->
@@ -186,7 +186,7 @@
   <div class="grid-2 grow">
     <div>
       <ul>
-        <li>Your envelope: <b>Exhibit A</b> Metrics · <b>B</b> Logs · <b>C</b> Traces · <b>D</b> Change log · <b>E</b> Witnesses</li>
+        <li>Your app evidence: <b>Exhibit A</b> Metrics · <b>B</b> Logs · <b>C</b> Traces · <b>D</b> Change log · <b>E</b> Witnesses</li>
         <li>Fill the <b>Accusation Form</b>: killer, weapon, accomplice, evidence, fix</li>
         <li>Evidence must cite at least <b>one metric, one log line and one trace</b></li>
         <li>The COO hands the form to your <b>region captain</b>, who writes the time on it. Speed counts</li>
@@ -320,7 +320,7 @@ timed out after 30000ms</pre>
       </ul>
     </div>
   </div>
-  <p>Worksheet: <a href="treasure-hunt.html" target="_blank">treasure-hunt.html</a> · <b>+10 per correct answer</b></p>
+  <p>Answers and proof: <a href="https://chaicloud-workshop.web.app/" target="_blank">ChaiCart Live</a> · <b>+10 per correct answer</b></p>
 </section>
 
 <!-- 22 -->
@@ -387,7 +387,7 @@ timeseries cpu = avg(dt.host.cpu.usage), by: { dt.entity.host }</pre>
         <li>Your <b>SRE</b> holds the budget: <b>43 minutes</b></li>
         <li>I reveal an <b>event card</b> — each team chooses A or B in 60 seconds</li>
         <li>Some choices need a <b>dice roll</b> 🎲</li>
-        <li>Track minutes on your team sheet</li>
+        <li>Track minutes in the app</li>
       </ul>
       <div class="timer" data-timer="60"></div>
     </div>
@@ -396,7 +396,7 @@ timeseries cpu = avg(dt.host.cpu.usage), by: { dt.entity.host }</pre>
       <ul class="small">
         <li>Budget left: <b class="green">+3 credits per minute</b></li>
         <li>Budget exhausted: <b class="red">−100 credits</b> &amp; feature freeze (no more “ship” choices)</li>
-        <li>Features shipped: credits as printed on the card</li>
+        <li>Features shipped: credits shown on the app card</li>
       </ul>
     </div>
   </div>
@@ -454,26 +454,14 @@ timeseries cpu = avg(dt.host.cpu.usage), by: { dt.entity.host }</pre>
 
 <!-- 30 -->
 <section class="slide">
-  <span class="tag">GAME · Paper Plane Factory · 20 min · Most flying planes in each region +50</span>
-  <h2>Batch vs flow</h2>
-  <p class="small">Four stations: <b>fold → wings → decorate → QA test-flight</b>. The COO times and counts. Each team gets <b>15 half-sheets</b> per round.</p>
+  <span class="tag">GAME · Digital Delivery Factory · 20 min · Region best +50</span>
+  <h2>Sequential delivery vs continuous flow</h2>
+  <p class="small">Open ChaiCart Live. Six virtual changes per round: <b>Plan → Build → Test → Deploy</b>.</p>
   <div class="grid-2 grow">
-    <div>
-      <div class="card c-red frag"><h3>Round 1 — Waterfall (4 min)</h3><p class="small">Each station must finish a <b>batch of 3</b> before passing any on. QA flies them only at the end.</p></div>
-      <div class="card c-green frag" style="margin-top:.5em"><h3>Round 2 — Continuous flow (4 min)</h3><p class="small">Pass <b>one plane at a time</b>. Each station checks its own work. QA gives instant feedback.</p></div>
-    </div>
-    <div class="card c-yellow frag">
-      <h3>Measure</h3>
-      <ul class="small">
-        <li>Planes that fly 3+ metres (along your aisle)</li>
-        <li>Time until the <b>first</b> plane flew</li>
-        <li>Planes scrapped</li>
-        <li>Unfinished planes left on the table (work in progress)</li>
-      </ul>
-      <p class="small">Write the numbers on your team sheet.</p>
-    </div>
-  </div>
-  <div class="timer" data-timer="240"></div>
+    <div><div class="card c-red frag"><h3>Round 1 — Serial (3 min)</h3><p class="small">The COO moves one ticket through every stage before starting the next. Observe the queue.</p></div>
+    <div class="card c-green frag" style="margin-top:.5em"><h3>Round 2 — Team flow (3 min)</h3><p class="small">CEO plans, CTO builds, SRE tests, COO deploys. Different tickets move in parallel. Failed tests return to Build.</p></div></div>
+    <div class="card c-yellow frag"><h3>Measure in the app</h3><ul class="small"><li>Successful deployments and frequency</li><li>Median lead time</li><li>Failed tests and correction time</li></ul><p class="small">These are teaching proxies for DORA. Choose the region winner by successful deliveries, then fewer failures, then lower lead time. No paper required.</p></div>
+  </div><div class="timer" data-timer="180"></div>
 </section>
 
 <!-- 31 -->
@@ -589,7 +577,7 @@ jobs:
     <div>
       <ul>
         <li>Each team's <b>CFO</b> draws <b>3 Bill Shock cards</b></li>
-        <li>Some cards depend on your <b>Day 1 architecture</b> — CTO must prove it with the chart paper!</li>
+        <li>Some cards depend on your <b>Day 1 architecture</b> — CTO must prove it with the frozen app design!</li>
         <li>Apply the credit change to the leaderboard</li>
         <li>For every negative card: name the <b>control that would have prevented it</b> → get <b class="green">half the loss back</b></li>
       </ul>
@@ -632,9 +620,9 @@ jobs:
   <div class="grid-2 grow">
     <div>
       <ul>
-        <li>7 volunteers each hold a <b>business system card</b></li>
+        <li>7 volunteers each open their <b>digital business system card</b></li>
         <li>The <b>Order Token</b> travels from person to person</li>
-        <li>Each system <b>stamps</b> the token and says what it did out loud</li>
+        <li>Each system <b>confirms the digital handoff</b> and says what it did out loud</li>
         <li>Then chaos: <b>ERP is down for maintenance</b> — what still works? What queues up?</li>
       </ul>
     </div>
@@ -717,7 +705,7 @@ jobs:
     <div class="card"><h3>🔭 Observability Engineer</h3></div>
     <div class="card c-pink"><h3>🤖 AI / MLOps Engineer</h3></div>
   </div>
-  <p>Each member draws one card from the deck your two tables share. Read your “destiny”. Accept it, or swap once with a teammate. Then fill in your row of the <b>90-day plan</b> on the team sheet.</p>
+  <p>Each member chooses a career card in My workshop. Read your “destiny”. Accept it, or swap once with a teammate. Then fill in your row of the <b>90-day plan</b> in your individual app plan.</p>
   <div class="timer" data-timer="600"></div>
 </section>
 
@@ -768,7 +756,7 @@ jobs:
 <section class="slide">
   <span class="tag green">QUIZ · Day 2 recap · +10 per correct answer</span>
   <h2>Final quiz</h2>
-  <p>Same rules as yesterday: the COO writes answers on the quiz answer sheet, then swap with the neighbouring team to mark.</p>
+  <p>Same rules as yesterday: COO submits the team answer in ChaiCart Live. The facilitator locks each question and applies scores.</p>
   <p><a href="quiz.html#day2" target="_blank">Launch Day 2 quiz</a></p>
 </section>
 
@@ -780,7 +768,7 @@ jobs:
     <div>
       <p class="small"><b>Region round:</b> each team pitches for <b>90 seconds</b> to its region. The region votes for its finalist.<br><b>Grand final:</b> the 4 region finalists pitch for <b>3 minutes</b> on stage.</p>
       <ol class="small">
-        <li>Your cloud and architecture (show the chart paper)</li>
+        <li>Your cloud and architecture (show the saved app design)</li>
         <li>What broke, and your postmortem action items</li>
         <li>Your SLO and remaining error budget</li>
         <li>Your final Cloud Credits balance</li>
@@ -807,7 +795,7 @@ jobs:
 <section class="slide title">
   <div class="kicker">Thank you</div>
   <h1 style="font-size:3em">You built it. You broke it.<br><span class="accent">You kept it alive.</span> ☕☁️</h1>
-  <p class="muted" style="font-size:1.1em;margin-top:1em">Please fill in the feedback form · Take your cheat sheet · Keep learning</p>
+  <p class="muted" style="font-size:1.1em;margin-top:1em">Please fill in the feedback form · Save the digital cheat-sheet link · Keep learning</p>
 </section>
 
 </main>

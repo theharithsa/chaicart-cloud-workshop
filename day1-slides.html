@@ -79,9 +79,9 @@
     <div class="card"><h3>CTO</h3><p>Owns the architecture and tech choices.</p></div>
     <div class="card c-green"><h3>SRE</h3><p>Keeps things running. Owns the error budget on Day 2.</p></div>
     <div class="card c-yellow"><h3>CFO</h3><p>Guards the Cloud Credits. Owns the cloud bill.</p></div>
-    <div class="card c-purple"><h3>COO</h3><p>Keeps time, collects and returns cards, hands in forms.</p></div>
+    <div class="card c-purple"><h3>COO</h3><p>Keeps time and submits the team response in ChaiCart Live.</p></div>
   </div>
-  <p>Your <b>table card</b> shows your team name and region. Write each member's role on the team sheet.</p>
+  <p>Your <b>table card</b> shows your team name and region. Write each member's role on the app team workspace.</p>
   <div class="timer" data-timer="300"></div>
 </section>
 
@@ -157,8 +157,8 @@
   <div class="grid-2 grow">
     <div>
       <ul>
-        <li>Each team gets <b>12 event cards</b> with no years on them</li>
-        <li>Stand beside your table. Each member holds 2–3 cards and the team <b>lines up in chronological order</b></li>
+        <li>Each team gets <b>12 digital event cards</b> with no years on them</li>
+        <li>Discuss the 12 digital cards and <b>arrange them chronologically in ChaiCart Live</b></li>
         <li>Twist: <b>no talking</b> for the first 2 minutes. Gestures only</li>
         <li>Done? Raise your hands and shout <b>“DEPLOYED!”</b>. Your region captain checks the order</li>
       </ul>
@@ -564,10 +564,10 @@ az container show -g rg-chaicart-demo -n chaicart-hello \
   <div class="grid-2 grow">
     <div>
       <ul>
-        <li>Use the <b>component cards</b>, chart paper and markers</li>
+        <li>Use the <b>digital components</b> and architecture builder in ChaiCart Live</li>
         <li>Draw the path of an order: app → … → rider</li>
         <li>Label your <b>cloud provider</b> and <b>region</b></li>
-        <li>Write your team name on the sheet and keep it. You'll need it on Day 2</li>
+        <li>Save your architecture in ChaiCart Live. It will be frozen for Day 2.</li>
       </ul>
       <div class="timer" data-timer="900"></div>
     </div>
@@ -638,7 +638,7 @@ az container show -g rg-chaicart-demo -n chaicart-hello \
   <h2>Become microservices</h2>
   <p class="small">Six volunteers from six different teams come to the front. Everyone else counts, times and cheers.</p>
   <div class="grid-3 grow">
-    <div class="card c-red frag"><h3>Round 1 — Monolith (3 min)</h3><p class="small">ONE volunteer processes every order ticket alone: take order, stamp PAID, draw chai, assign rider, write SMS. The room counts orders done.</p></div>
+    <div class="card c-red frag"><h3>Round 1 — Monolith (3 min)</h3><p class="small">ONE volunteer processes every order ticket alone: confirm Order, Payment, Kitchen, Rider and SMS steps in the app. The room counts orders done.</p></div>
     <div class="card c-green frag"><h3>Round 2 — Microservices (3 min)</h3><p class="small">FIVE volunteers, one station card each. Tickets flow along the line. Each station writes its <b>time</b> on the ticket.</p></div>
     <div class="card c-chai frag"><h3>Round 3 — Chaos (3 min)</h3><p class="small">Mid-round, I tap the <b>Payment</b> person and they freeze. What happens to orders? Who notices? How fast?</p></div>
   </div>
@@ -653,7 +653,7 @@ az container show -g rg-chaicart-demo -n chaicart-hello \
     <ul>
       <li class="frag">Throughput went up — <b>parallelism &amp; independent scaling</b></li>
       <li class="frag">One frozen station blocked everything → need <b>timeouts, retries, fallbacks</b></li>
-      <li class="frag">Nobody knew <i>where</i> the order was stuck… until we read the <b>timestamps on the ticket</b></li>
+      <li class="frag">Nobody knew <i>where</i> the order was stuck… until we read the <b>timestamps on the digital token</b></li>
     </ul>
     <div class="card c-yellow frag">
       <h3>🔍 That ticket was a <u>distributed trace</u>!</h3>
@@ -680,7 +680,7 @@ az container show -g rg-chaicart-demo -n chaicart-hello \
     <div class="card c-purple"><h3>Capital One</h3><p class="small">A bank goes all-in on public cloud</p></div>
     <div class="card c-yellow"><h3>Spotify</h3><p class="small">From own data centres to Google Cloud</p></div>
   </div>
-  <p>12 poster stations, 2 teams per station. Rotate clockwise every 3 minutes. Stick notes answering <b class="accent">“Which cloud concept saved them?”</b> and <b class="accent">“What would ChaiCart copy?”</b></p>
+  <p>Read the six digital case studies in ChaiCart Live. Move to the next case every 3 minutes. Save reflections answering <b class="accent">“Which cloud concept saved them?”</b> and <b class="accent">“What would ChaiCart copy?”</b></p>
   <div class="timer" data-timer="180"></div>
 </section>
 
@@ -725,9 +725,9 @@ az container show -g rg-chaicart-demo -n chaicart-hello \
   <span class="tag green">QUIZ · 10 questions · +10 per correct answer</span>
   <h2>Day 1 recap quiz</h2>
   <ul>
-    <li>The COO writes the team's answer (A–D) for each question on the <b>quiz answer sheet</b></li>
+    <li>The COO writes the team's answer (A–D) for each question on the <b>quiz app quiz</b></li>
     <li>20 seconds per question. No changing answers after the reveal</li>
-    <li>At the end, swap sheets with the neighbouring team and mark them against the answer key</li>
+    <li>At the end, check the app results with the neighbouring team and mark them against the answer key</li>
   </ul>
   <p><a href="quiz.html#day1" target="_blank">Launch Day 1 quiz</a> &nbsp;·&nbsp; <a href="leaderboard.html" target="_blank">Leaderboard</a></p>
 </section>
@@ -738,7 +738,7 @@ az container show -g rg-chaicart-demo -n chaicart-hello \
   <h1 style="font-size:2.6em">ChaiCart launches <span class="accent">tomorrow at 9:00 AM.</span></h1>
   <p style="font-size:1.4em" class="red"><b>Something WILL break.</b></p>
   <div class="envelope frag" style="margin-top:1em"><span>DO NOT OPEN</span></div>
-  <p class="frag center muted">Each team gets a sealed envelope. Guard it. Open it only when told to on Day 2. 🕵️</p>
+  <p class="frag center muted">Your incident evidence unlocks in ChaiCart Live on Day 2. Keep your saved architecture ready. 🕵️</p>
 </section>
 
 </main>

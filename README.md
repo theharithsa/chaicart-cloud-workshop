@@ -74,11 +74,11 @@ Open `index.html` (or the live site) in Chrome, Edge or Firefox.
 
 Add `#N` to a deck's address to jump to slide N, for example `day2-slides.html#11`.
 
-The leaderboard stores scores in the browser's local storage. Run it from the same laptop and browser for both days, and use **Export CSV** as a backup.
+Use [ChaiCart Live](https://chaicloud-workshop.web.app/) as the paperless student workspace and canonical live leaderboard. Its [README](https://github.com/theharithsa/chaicart-live#readme) explains Google sign-in, captain reviews and recovery. The standalone leaderboard is an optional legacy tool that stores scores only in its browser.
 
 ### Printing
 
-Print from Chrome or Edge on **A4, 100% scale, with "Background graphics" enabled**. Each card deck states exactly how many copies to print for 24 teams; the facilitator guide has the full printing table.
+Print from Chrome or Edge on **A4, 100% scale, with "Background graphics" enabled**. Printing is optional. The facilitator guide now describes the paperless app workflow; the printable decks remain reference resources.
 
 ### Running locally
 
