@@ -122,3 +122,7 @@ The site deploys to GitHub Pages automatically on every push to `main` through [
 ## License
 
 Released under the [MIT License](LICENSE).
+
+## Observability
+
+See [observability.md](observability.md) for the complete RUM and OpenTelemetry runbook covering the workshop Pages, Azure ChaiCart Demo and Firebase ChaiCart Live.
