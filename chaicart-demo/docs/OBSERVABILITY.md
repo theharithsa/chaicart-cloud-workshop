@@ -34,7 +34,7 @@ SERVICE_VERSION=1.1.0
 OTEL_METRIC_EXPORT_INTERVAL=15000
 ```
 
-Export is OTLP/HTTP **protobuf** with gzip. The SDK appends `/v1/traces`, `/v1/metrics` and `/v1/logs` to the base URL. The token uses `Authorization: Bearer …`. Token scopes and the owning user's permissions must both include:
+Export is OTLP/HTTP **protobuf** with gzip. The SDK appends `/v1/traces`, `/v1/metrics` and `/v1/logs` to the base URL. Classic `dt0c01` tokens use `Authorization: Api-Token …`; platform tokens use `Authorization: Bearer …`. Production uses a classic token. The legacy `DYNATRACE_PLATFORM_TOKEN` setting and Function secret accept either token type. For platform tokens, token scopes and the owning user's permissions must both include:
 
 - `openpipeline:traces:ingest`
 - `openpipeline:metrics:ingest`
@@ -148,3 +148,5 @@ timeseries {
 - Do not claim complete ingestion until all three signals are visible in the tenant and a real Google-session request links from RUM to its backend trace.
 
 References: [Dynatrace OTLP endpoints](https://docs.dynatrace.com/docs/ingest-from/opentelemetry/otlp-api), [token authentication](https://docs.dynatrace.com/docs/dynatrace-api/basics/dynatrace-api-authentication), [frontend/backend linking](https://docs.dynatrace.com/docs/observe/digital-experience/new-rum-experience/web-frontends/additional-configuration/configure-frontend-backend-linking-web), [identifyUser](https://docs.dynatrace.com/javascriptapi/doc/types/dtrum.html).
+
+Classic token scopes: `openTelemetryTrace.ingest`, `metrics.ingest`, and `logs.ingest`. The direct Dynatrace endpoint supports OTLP/HTTP binary protobuf, not gRPC.

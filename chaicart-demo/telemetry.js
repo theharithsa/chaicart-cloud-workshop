@@ -13,7 +13,7 @@ import { monitorEventLoopDelay } from 'node:perf_hooks';
 
 export function createTelemetry(serviceName = 'chaicart-demo', options = {}) {
   const endpoint = options.endpoint ?? process.env.OTEL_EXPORTER_OTLP_ENDPOINT;
-  const token = options.token ?? process.env.DYNATRACE_PLATFORM_TOKEN;
+  const token = options.token ?? process.env.DYNATRACE_TOKEN ?? process.env.DYNATRACE_PLATFORM_TOKEN;
   const resource = resourceFromAttributes({ 'service.name': serviceName, 'service.namespace': 'chaicart', 'service.version': process.env.SERVICE_VERSION || '1.1.0', 'deployment.environment.name': process.env.DEPLOYMENT_ENVIRONMENT || 'workshop', 'service.instance.id': process.env.WEBSITE_INSTANCE_ID || process.env.K_REVISION || randomUUID() });
   let sdk, exporter, spanProcessor, logProcessor, metricReader;
   const exportHealth = { failures: 0, partial: 0, dropped: 0 };
@@ -28,7 +28,7 @@ export function createTelemetry(serviceName = 'chaicart-demo', options = {}) {
   }
   if (endpoint) {
     diag.setLogger({ debug() {}, info() {}, verbose() {}, error() { exportHealth.failures++; }, warn(...messages) { if (messages.some(m => typeof m === 'string' && /partial success/i.test(m))) exportHealth.partial++; if (messages.some(m => typeof m === 'string' && /dropp(ed|ing)/i.test(m))) exportHealth.dropped++; } });
-    const config = signal => ({ url: endpoint.replace(/\/$/, '') + '/v1/' + signal, headers: token ? { Authorization: 'Bearer ' + token } : {}, timeoutMillis: 5000, concurrencyLimit: 2, compression: 'gzip' });
+    const config = signal => ({ url: endpoint.replace(/\/$/, '') + '/v1/' + signal, headers: token ? { Authorization: (token.startsWith('dt0c01.') ? 'Api-Token ' : 'Bearer ') + token } : {}, timeoutMillis: 5000, concurrencyLimit: 2, compression: 'gzip' });
     exporter = watch(new OTLPTraceExporter(config('traces')));
     spanProcessor = new BatchSpanProcessor({ exporter, maxQueueSize: 1024, maxExportBatchSize: 128, scheduledDelayMillis: 2000, exportTimeoutMillis: 6000 });
     metricReader = new PeriodicExportingMetricReader({ exporter: watch(new OTLPMetricExporter({ ...config('metrics'), temporalityPreference: AggregationTemporality.DELTA })), exportIntervalMillis: Number(process.env.OTEL_METRIC_EXPORT_INTERVAL || 15000), exportTimeoutMillis: 6000 });

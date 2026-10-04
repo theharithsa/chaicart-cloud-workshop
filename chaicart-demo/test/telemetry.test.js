@@ -42,7 +42,7 @@ test('OTLP protobuf exports all signals, preserves RUM context and isolates conc
   });
   await new Promise(resolve => collector.listen(0, '127.0.0.1', resolve));
   process.env.OTEL_EXPORTER_OTLP_ENDPOINT = `http://127.0.0.1:${collector.address().port}`;
-  process.env.DYNATRACE_PLATFORM_TOKEN = 'test-only-token';
+  process.env.DYNATRACE_PLATFORM_TOKEN = 'dt0c01.test-only-token';
   const dir = await mkdtemp(tmpdir() + '/chaicart-otel-test-');
   const app = await createApp({ dataDir: dir, authMode: 'local-token', adminToken: 'local', gatewayDelay: 1,
     customerAuthorizer: async req => ({ uid: req.headers.authorization, email: req.headers.authorization + '@example.test' }) });
@@ -54,7 +54,7 @@ test('OTLP protobuf exports all signals, preserves RUM context and isolates conc
     for (const [i, response] of responses.entries()) { assert.equal(response.status, 201); assert.equal(response.headers.get('x-trace-id'), traces[i]); await response.json(); }
     await app.telemetry.flush();
     for (const path of ['/v1/traces', '/v1/logs', '/v1/metrics']) assert.ok(received.some(r => r.path === path), path);
-    for (const entry of received) { assert.equal(entry.headers.authorization, 'Bearer test-only-token'); assert.equal(entry.headers['content-type'], 'application/x-protobuf'); }
+    for (const entry of received) { assert.equal(entry.headers.authorization, 'Api-Token dt0c01.test-only-token'); assert.equal(entry.headers['content-type'], 'application/x-protobuf'); }
     const spans = received.filter(r => r.path === '/v1/traces').flatMap(r => schema.lookupType('Traces').decode(r.data).resourceSpans.flatMap(rs => rs.scopeSpans.flatMap(ss => ss.spans)));
     for (const [i, actor] of ['alice', 'bob'].entries()) {
       const actorSpans = spans.filter(s => s.traceId.toString('hex') === traces[i]);
