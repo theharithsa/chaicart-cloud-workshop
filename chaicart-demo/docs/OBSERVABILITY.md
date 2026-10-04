@@ -150,3 +150,5 @@ timeseries {
 References: [Dynatrace OTLP endpoints](https://docs.dynatrace.com/docs/ingest-from/opentelemetry/otlp-api), [token authentication](https://docs.dynatrace.com/docs/dynatrace-api/basics/dynatrace-api-authentication), [frontend/backend linking](https://docs.dynatrace.com/docs/observe/digital-experience/new-rum-experience/web-frontends/additional-configuration/configure-frontend-backend-linking-web), [identifyUser](https://docs.dynatrace.com/javascriptapi/doc/types/dtrum.html).
 
 Classic token scopes: `openTelemetryTrace.ingest`, `metrics.ingest`, and `logs.ingest`. The direct Dynatrace endpoint supports OTLP/HTTP binary protobuf, not gRPC.
+
+RUM identifies signed-in users by Google email. Signed-out visitors use `browser:<random UUID>`, persisted in local storage on each site origin. Sign-out restores that browser ID. This is not a hardware identifier and is not used for authorization; clearing storage resets it, and unavailable storage limits it to the current page.

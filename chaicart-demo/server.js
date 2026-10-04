@@ -144,7 +144,7 @@ export async function createApp({adminToken=process.env.ADMIN_TOKEN, dataDir=pro
         if(!order)return json(res,404,{error:'Order not found'});
         telemetry.enrich({'order.id':order.id,'transaction.id':order.transactionId||res.getHeader('x-transaction-id')});const age=Date.now()-order.createdAt;return json(res,200,{...publicOrder(order),status:age<10000?'Brewing':age<20000?'Packing':age<30000?'Rider assigned':'Delivered',demoTimeline:true});
       }
-      const files={'/':'index.html','/app.js':'app.js','/customer-auth.js':'customer-auth.js','/style.css':'style.css','/facilitator':'facilitator.html','/facilitator.js':'facilitator.js'};
+      const files={'/':'index.html','/rum-identity.js':'rum-identity.js','/app.js':'app.js','/customer-auth.js':'customer-auth.js','/style.css':'style.css','/facilitator':'facilitator.html','/facilitator.js':'facilitator.js'};
       if(req.method==='GET'&&files[url.pathname]){res.setHeader('content-type',url.pathname.endsWith('.js')?'text/javascript':url.pathname.endsWith('.css')?'text/css':'text/html');res.end(await readFile(path.join(publicDir,files[url.pathname])));return;}
       json(res,404,{error:'Chai not found',path:url.pathname});
     }catch(e){log('ERROR','checkout-service',e.message,{trace_id:trace.traceId});if(!res.headersSent)json(res,e.status||500,{error:e.status?e.message:'Something went wrong'});else res.end();}

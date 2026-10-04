@@ -1,9 +1,10 @@
+import { identifyRumUser } from './rum-identity.js';
 let user=null,token='',auth,signOutFn,googleSignIn,mode='firebase';
 const listeners=[];
 export const currentCustomer=()=>user;
 export const customerHeaders=async()=>{if(!user)throw new Error('Sign in before ordering');return {authorization:'Bearer '+(auth?await auth.currentUser.getIdToken():token)};};
 export const onCustomerChange=fn=>listeners.push(fn);
-function changed(){window.dtrum?.identifyUser(user?.email||'');for(const fn of listeners)fn(user);}
+function changed(){identifyRumUser(user?.email||'');for(const fn of listeners)fn(user);}
 export async function signInCustomer(){
  if(mode==='local-token'){const res=await fetch('/api/auth/demo',{method:'POST'});const data=await res.json();if(!res.ok)throw new Error(data.error);token=data.token;user=data.user;changed();}
  else if(googleSignIn)await googleSignIn();else throw new Error('Firebase sign-in is not configured');
