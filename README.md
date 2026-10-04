@@ -126,3 +126,7 @@ Released under the [MIT License](LICENSE).
 ## Observability
 
 See [observability.md](observability.md) for the complete RUM and OpenTelemetry runbook covering the workshop Pages, Azure ChaiCart Demo and Firebase ChaiCart Live.
+
+## Workshop flow at a glance
+
+Open [Workshop Flow Map](workshop-flow.html) for the three-site map and all 34 operating steps across both days. Each activity shows facilitator launch, student submission, app behavior, captain review and facilitator scoring. The full [facilitator guide](facilitator-guide.html) includes a five-minute operating reference; `facilitator.html` redirects there.

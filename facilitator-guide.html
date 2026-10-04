@@ -3,6 +3,7 @@
 <head>
 <script type="text/javascript" src="https://js-cdn.dynatrace.com/jstag/18b1df4492a/bf12470wrz/c7e71b371e8cb3b1_complete.js" crossorigin="anonymous"></script>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Facilitator Guide – ChaiCart Cloud Workshop</title>
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/print.css">
@@ -52,6 +53,7 @@
   <b>Facilitator Guide</b>
   <button onclick="window.print()">Print</button>
   <span class="hint">Your companion for both days. Slide numbers refer to the counter shown bottom-right in the decks.</span>
+  <a href="workshop-flow.html">Flow map</a>
   <a href="#contents">Contents</a>
   <a href="index.html">← Hub</a>
 </div>
@@ -65,6 +67,7 @@
     <p>A two-day, game-based workshop for 120 engineering students (5th and 7th semester) in 24 teams of five. On Day 1 they found a cloud startup; on Day 2 they keep it alive through outages, bill shocks and a murder mystery.</p>
     <h2 id="contents">Contents</h2>
     <nav class="toc" aria-label="Table of contents">
+      <a href="#quick-flow">Five-minute operating reference</a>
       <a href="#how">How the workshop works</a>
       <a href="#room">Room, regions and captains</a>
       <a href="#prep">Preparation checklist</a>
@@ -79,6 +82,24 @@
       <a href="#slip">Digital review reference</a>
     </nav>
   </div>
+</div>
+
+
+<div class="page" id="quick-flow">
+  <div class="dayhead"><div class="kick">Keep this open while facilitating</div><h1>The workshop in five handoffs</h1></div>
+  <p><b>For the simple visual view:</b> <a href="workshop-flow.html">Open the two-day Workshop Flow Map</a>. It covers all 34 operating steps, the three sites, who submits, and the next button to press. This guide keeps the longer teaching scripts.</p>
+  <table><tr><th>Who</th><th>Next action</th></tr>
+  <tr><td>Facilitator</td><td>Present the deck; in Live Console → Run, select the activity and press <b>Launch on phones</b>. Selecting alone only previews. Choose Screen: Live activity; set a timer.</td></tr>
+  <tr><td>Students</td><td>Discuss together; <b>COO submits one team answer</b>. Everyone submits their own polls, surveys, networking completion and 90-day plan. Wait for server confirmation.</td></tr>
+  <tr><td>Live app</td><td>Save answers and show response counts. <b>Open</b> accepts answers, <b>Lock</b> stops them, <b>End</b> makes phones wait. A timer is a cue; use Lock at the deadline.</td></tr>
+  <tr><td>Captain</td><td>Review your region’s six teams, add judging evidence and <b>Approve for facilitator</b>. This does not add credits. Captains cannot launch global activities or score another region.</td></tr>
+  <tr><td>Facilitator</td><td>Reviewed activities: Workshop → Captain approvals → <b>Apply once</b>. Quizzes: Run → <b>Reveal and score</b> automatically adds +10 per correct team. Mystery, Poker, Bill Shock and vote panels have their own score buttons. End and transition.</td></tr></table>
+  <h3>Use the right site</h3>
+  <p><b>Workshop Pages:</b> decks, scripts and this guide. <b>ChaiCart Live / Firebase:</b> Google join, answers, reviews, credits, awards and certificates. <b>ChaiCart Demo / Azure:</b> ordering, failure and recovery demonstration; Demo orders do not earn workshop points.</p>
+  <h3>Before / between days</h3>
+  <p>Create one Live session; Setup generates all team codes, which captains share. Project the Live Screen and keep Console and Demo controls private. Approve and freeze <b>every team’s</b> architecture before Day 2, including non-winners. Resume the same session on Day 2 so credits and designs carry forward.</p>
+  <h3>Scoring guardrails</h3>
+  <p>Use only one scoring path per award. Do not award a quiz through captain reviews or award a Shark regional win through both votes and pitch reviews. Networking stays open through Workshop, not a Run launch. Certificates are released session-wide only after attendance checks. The old static quiz/leaderboard pages are optional reference, not the live scoring system.</p>
 </div>
 
 <!-- HOW IT WORKS -->
@@ -116,7 +137,7 @@
   </table>
 
   <h3>Cloud Credits</h3>
-  <p>Each team starts with <b>1,000 credits</b>. The official scores live in <b>leaderboard.html</b>, which shows the top three overall and all four regions side by side, and saves automatically in the browser. Use <b>Enter round scores</b> to add a whole activity's results for all 24 teams at once. Show it (press P for presentation mode) at the start of every session.</p>
+  <p>Each team starts with <b>1,000 credits</b> when its Live session is created. The official scores are stored in the <b>ChaiCart Live credit ledger</b>. Project its Screen → Leaderboard at transitions. Captains approve reviews, the facilitator applies them once, and dedicated panels score quizzes and games. <code>leaderboard.html</code> is a legacy practice tool, not the workshop ledger.</p>
 
   <h3>Your rhythm for every block</h3>
   <ol>
@@ -124,7 +145,7 @@
     <li><b>Concept</b> (5–10 min): the analogy slide first, then the technical slide.</li>
     <li><b>Activity</b> (10–30 min): teams play; captains circulate in their regions.</li>
     <li><b>Debrief</b> (5 min): ask the debrief questions <i>before</i> revealing answers.</li>
-    <li><b>Score and transition:</b> captains hand in results, the scorekeeper enters them, you read the transition line.</li>
+    <li><b>Score and transition:</b> captains save reviews digitally; the facilitator applies approved credits or uses the activity’s scoring panel, then reads the transition line.</li>
   </ol>
 
   <h3 id="networking">Three networking icebreakers</h3>
@@ -159,7 +180,7 @@
     <tr><th style="width:38mm">Role</th><th>Who</th><th>Does</th></tr>
     <tr><td>Lead facilitator</td><td>You</td><td>Runs the slides, explains, debriefs, keeps time.</td></tr>
     <tr><td>Region captains ×4</td><td>Faculty members or senior volunteers</td><td>Run region rounds, review digital answers, and submit approved reviews. Share the <a href="#captain">captain briefing</a> and <a href="#slip">digital review reference</a>.</td></tr>
-    <tr><td>Scorekeeper</td><td>One volunteer with a laptop</td><td>Applies approved reviews in Workshop; projects the live leaderboard.</td></tr>
+    <tr><td>Scorekeeper</td><td>One volunteer with a laptop</td><td>Helps verify reviews and project the Live leaderboard; credit application requires an authorized facilitator account.</td></tr>
     <tr><td>Tech helper (optional)</td><td>A volunteer or lab assistant</td><td>Keeps Azure, Dynatrace and the web app running; handles the second screen.</td></tr>
   </table>
   <div class="watch">Each captain account covers one region. If you have only two helpers, assign them one region each and use the facilitator console to review the other two regions and apply scores. Without any helpers, the region rounds still work: teams vote, and region results are read out by one elected CEO per region.</div>
@@ -211,14 +232,14 @@
     <li>Open storefront and facilitator console in separate tabs. Sign into the console with a verified Google account whose email exists in Firebase <code>admins/{email}</code>. Customers need no admin entry. There is no public facilitator token.</li>
     <li>Before class, verify Google sign-in, one order, tracking, and facilitator controls. Select <b>Healthy / Roll back</b>, stop any surge, and prepare a QR code for the storefront. Health and public-route checks passed at deployment; authenticated flows and crowd capacity need rehearsal.</li>
     <li>Use a separate resource group, <code>rg-chaicart-day1</code>, for the VM/container race. Open Cloud Shell beforehand and register <code>Microsoft.ContainerInstance</code> if needed. Keep the workshop app running between Day 1 and Day 2.</li>
-    <li>The app has local metrics, structured logs and logical traces. <b>Dynatrace OTel metrics/logs/traces and Application Insights ingestion are not configured or verified yet.</b> Use the app console or a separately verified monitoring environment until that setup is complete.</li>
+    <li>The app has local metrics, structured logs and logical traces. <b>Dynatrace RUM and OTel are deployed; all three OTLP signals passed an ingestion test.</b> Rehearse a real signed-in flow and verify its tenant data before presenting. Application Insights is separate and is not established by the Dynatrace setup; use prepared evidence for unrehearsed tool tasks.</li>
     <li>The repository's <b>ChaiCart demo — test and deploy</b> workflow runs tests, but automatic Azure deployment is not enabled. Configure the deployment credentials and rehearse a green deployment before presenting CI/CD as live. See the deployment notes; a Git push alone currently does not update Azure.</li>
     <li>Backend Firebase credentials are stored in an encrypted App Service setting. Keep credentials, settings values and Google sign-in screens off the projector. Key Vault migration requires a subscription administrator. After the workshop, export evidence and remove the dedicated resources when no longer needed; stopping the app alone does not stop plan charges.</li>
   </ol>
 
   <h3 id="dynatrace-prep">Dynatrace preparation</h3>
   <ul class="check">
-    <li>Until ChaiCart OTel ingestion is implemented and verified, pick a separate instrumented environment with live services, traces and at least one recent problem. Do not describe its telemetry as coming from this app.</li>
+    <li>Rehearse the deployed ChaiCart environment and confirm a real signed-in trace is visible. For unavailable hunt questions or a recent problem, prepare separate evidence and clearly label its source.</li>
     <li>Bookmark Services, Distributed Traces, Problems, Logs and a Notebook with the treasure-hunt queries already pasted in.</li>
     <li>Run every DQL query from the Day 2 slides and the worksheet; adjust field names if your environment differs.</li>
     <li>Choose one “story” trace in advance: a failed request with an obvious slow span.</li>
@@ -256,8 +277,8 @@
     <tr><td>2</td><td>Treasure Hunt</td><td>Captain reviews all 15 stored answers and evidence (max 150)</td><td>up to +150</td></tr>
     <tr><td>2</td><td>Error Budget Poker</td><td>As shown in the app; leftover minutes × 3; budget below 0 → −100</td><td>varies</td></tr>
     <tr><td>2</td><td>Blameless postmortem</td><td>Region best · overall best (extra)</td><td>+40 · +75</td></tr>
-    <tr><td>2</td><td>Digital Delivery Factory</td><td>Most successful round-2 deployments per region; ties use lower lead time</td><td>+50</td></tr>
-    <tr><td>2</td><td>Cloud Bill Shock</td><td>As shown in the app; naming the control refunds half a loss</td><td>varies</td></tr>
+    <tr><td>2</td><td>Digital Delivery Factory</td><td>Most successful round-2 deployments per region; ties use fewer failures, then lower lead time</td><td>+50</td></tr>
+    <tr><td>2</td><td>Cloud Bill Shock</td><td>As shown in the app; selecting the correct preventing control refunds half a loss</td><td>varies</td></tr>
   </table>
 
   <h3>How scores reach the leaderboard</h3>
@@ -298,7 +319,7 @@
       <li><b>Slide 3:</b> the arc: Build → Survive → Pitch, and the 1,000 credits.</li>
       <li><b>Slide 4:</b> explain teams as availability zones and regions. Introduce the four captains by name and region; ask each region to cheer.</li>
       <li><b>Slide 5:</b> 5-minute timer. Teams assign the five roles in the app.</li>
-      <li><b>Slide 6:</b> LinkedIn icebreaker (7 min). Pair students across teams, scan the presenter’s QR, and make a useful introduction. Captains award +100 once per team after completion; existing profiles and connections count.</li>
+      <li><b>Slide 6:</b> LinkedIn icebreaker (7 min). Pair students across teams, scan the presenter’s QR, and make a useful introduction. Captains approve +100 reviews after all five members complete; the facilitator applies each review once; existing profiles and connections count.</li>
       <li><b>Slide 7:</b> everyone stands. Reveal items one by one: <i>stand = cloud, sit = not cloud</i>. Hand the mic to one student per item to justify.</li>
       <li><b>Slide 8:</b> Reveal Cloud-or-Not answers; discuss UPI and Excel as the two twists.</li>
     </ol>
@@ -317,7 +338,7 @@
     </div>
     <ol>
       <li><b>Slide 9:</b> electricity analogy; reveal the five cards. For each, ask a random table: “What's the ChaiCart example?”</li>
-      <li><b>Slide 10:</b> Teams arrange the 12 digital event cards. No talking for the first two minutes; then discuss and submit. The app locks only a correct order. Captain awards the first correct team in each region.</li>
+      <li><b>Slide 10:</b> Teams arrange the 12 digital event cards. No talking for the first two minutes; then discuss and submit. The app locks only a correct order. Captain checks server timestamps and approves the first correct team in each region; facilitator applies +50 once.</li>
       <li><b>Slide 11:</b> reveal the timeline year by year while teams check their line. Then the three eras.
         <div class="say">We went from sharing one big computer, to everyone owning their own, and now back to sharing. Only this time the sharing is global and on demand.</div></li>
       <li><b>Slide 12:</b> reveal the six drivers. Ask one team per region which driver matters most to ChaiCart.</li>
@@ -331,14 +352,14 @@
     <div class="stage-h"><span class="time">10:30 · 30 min</span><h2>Service models: IaaS, PaaS, SaaS</h2><span class="slides">Slides 13–17</span></div>
     <div class="meta">
       <div><b>Goal</b>Explain who manages what in each model and classify real products.</div>
-      <div><b>Materials</b>Service-sort sets on every table.</div>
+      <div><b>Materials</b>Service-sort choices on each team’s phones.</div>
       <div><b>Scoring</b>Captain-reviewed stored choices × 5 credits.</div>
     </div>
     <ol>
       <li><b>Slide 14:</b> Biryani-as-a-Service. Ask: “Who has ordered on Swiggy? Why not cook?” The answer is always control vs effort.</li>
       <li><b>Slide 15:</b> map the analogy to the stack, one row at a time: “In PaaS, who patches the OS? The provider. That's why developers love it.”</li>
-      <li><b>Slide 16:</b> sorting race, 6-minute timer. Cards in three columns on the table.</li>
-      <li><b>Slide 17:</b> reveal column by column. Teams count their correct cards and the COO reports the number to the captain. Discuss the tricky ones: Azure Functions (serverless, PaaS family), Blob Storage (raw infrastructure), Dynatrace (SaaS).</li>
+      <li><b>Slide 16:</b> sorting race, 6-minute timer. Run → Service Model Sort → Launch on phones; teams classify the digital cards, and COO submits.</li>
+      <li><b>Slide 17:</b> reveal column by column. Captains compare the stored classification with the protected key; the review computes five points per correct card. Facilitator applies the reviewed score once. Discuss the tricky ones: Azure Functions (serverless, PaaS family), Blob Storage (raw infrastructure), Dynatrace (SaaS).</li>
     </ol>
     <div class="label">Debrief</div>
     <ul><li>“ChaiCart has 3 developers and no ops person. Which model for the app? For email? For the database?”</li></ul>
@@ -349,7 +370,7 @@
     <div class="stage-h"><span class="time">11:15 · 25 min</span><h2>Deployment models: “Where Should They Live?”</h2><span class="slides">Slides 18–21</span></div>
     <div class="meta">
       <div><b>Goal</b>Choose between public, private, hybrid and multi-cloud based on constraints.</div>
-      <div><b>Materials</b>24 scenario cards (8 scenarios × 3), dealt one per table.</div>
+      <div><b>Materials</b>Eight digital scenarios assigned across the 24 team forms.</div>
       <div><b>Scoring</b>+30 per convincing defence.</div>
     </div>
     <ol>
@@ -389,8 +410,8 @@
       <div><b>Scoring</b>GitHub activity +100 per completing team; Bingo +30 to the first three teams.</div>
     </div>
     <ol>
-      <li><b>Slide 26:</b> GitHub networking (7 min). Improve profiles, follow peers and the presenter, and discuss one shared project idea. Captains award +100 once per team after completion; finish delayed signups during a break.</li>
-      <li><b>Slide 27, Bingo (8 min):</b> read clues from the Workshop clue caller in random order, ticking each one. The whole team shouts “AUTOSCALE!”; the captain checks the card against your ticks.</li>
+      <li><b>Slide 26:</b> GitHub networking (7 min). Improve profiles, follow peers and the presenter, and discuss one shared project idea. Captains approve +100 reviews after all five members complete; the facilitator applies each review once; finish delayed signups during a break.</li>
+      <li><b>Slide 27, Bingo (8 min):</b> read clues from the Workshop clue caller in random order, ticking each one. The COO submits a Bingo claim; captains check its digital line against called terms. Confirm the first three valid room-wide claims before applying credits.</li>
       <li><b>Slide 29:</b> house → apartment → tiffin box. “In an apartment, what's shared and what's yours? In a tiffin service?” (The kitchen = the kernel.)</li>
       <li><b>Slide 30:</b> walk both stacks from bottom to top; reveal the Kubernetes line.</li>
       <li><b>Slide 31, live demo:</b> start a VM in the portal (in <code>rg-chaicart-day1</code>), then immediately run the container commands in Cloud Shell. The room bets on which serves a page first. Open the container's IP on screen.</li>
@@ -489,7 +510,7 @@
     <ol>
       <li><b>Slide 2:</b> walk through the Day 2 agenda, breaks and final Demo Day.</li>
       <li><b>Slide 3:</b> one team per region shouts one word for Day 1. Show the leaderboard; remind everyone of the five roles.</li>
-      <li><b>Slide 4:</b> X learning circle (5 min kickoff, continuing throughout Day 2). Students improve their bio and find peers, then share workshop photos or takeaways with <b>#ChaiCartCloudWorkshop</b>. Show the hashtag search and announce the Best Workshop Post or Photo award. Collect best-post links through captains before the final awards; judge learning value, creativity and workshop spirit, not likes. Ask permission before sharing someone’s photo; no public post is required. Captains award +100 once per team after completion; posting is optional.</li>
+      <li><b>Slide 4:</b> X learning circle (5 min kickoff, continuing throughout Day 2). Students improve their bio and find peers, then share workshop photos or takeaways with <b>#ChaiCartCloudWorkshop</b>. Show the hashtag search and announce the Best Workshop Post or Photo award. Collect best-post links through captains before the final awards; judge learning value, creativity and workshop spirit, not likes. Ask permission before sharing someone’s photo; no public post is required. Captains approve +100 reviews after all five members complete; the facilitator applies each review once; posting is optional.</li>
       <li><b>Slide 5:</b> read the breaking news dramatically; reveal the “payment stuck on spinner” line and pause.</li>
     </ol>
   </div>
@@ -523,14 +544,14 @@
     <ol>
       <li><b>Slide 13:</b> Open the digital mystery evidence from Run. Captains inspect stored timestamped accusations.</li>
       <li><b>Slide 14:</b> introduce the six suspects with some theatre.</li>
-      <li><b>Slide 15:</b> rules and scoring. <b>25-minute</b> timer. COOs hand accusation forms to their captain, who writes the time on each.</li>
+      <li><b>Slide 15:</b> rules and scoring. <b>25-minute</b> timer. COOs submit one final accusation in Live; the app records the server timestamp and locks it. No paper forms or handwritten times are needed.</li>
       <li><b>Hints</b> (announce to the whole room if most teams are stuck):
         <ul>
           <li>At 10 min: “Compare database connections before and after 08:58.”</li>
           <li>At 15 min: “Look at the log lines from two days ago, then today's.”</li>
           <li>At 20 min: “In the failed trace, what's <i>missing</i>?”</li>
         </ul></li>
-      <li>While teams work, captains mark forms as they arrive using the solution page, and tell you the first correct team in their region with its time. The earliest of the four wins the +100 room bonus and the Sherlock Award.</li>
+      <li>While teams work, captains review the evidence and proposed fixes. In the facilitator mystery panel, tick good fix/prevention submissions before applying. The grader uses server timestamps to add the +100 first-correct killer-and-weapon bonus; do not award that bonus again manually. Lock, reveal the solution on the slides, then press Apply mystery credits once.</li>
       <li><b>Slide 16, reveal:</b> go suspect by suspect, innocents first. Ask the room to shout “innocent” or “guilty” before each reveal.</li>
       <li><b>Slide 17, lessons:</b> stress the irony: a cost-saving change caused the outage. After the reveal, use the deployed app companion if rehearsed: baseline in <b>Healthy / Roll back</b>, select <b>Deploy Dave: pool 50 → 5</b>, launch the surge, compare waits/504s and missing gateway spans, then roll back and stop traffic. Keep controls hidden during the incident investigation. Live timings differ from prepared evidence.</li>
     </ol>
@@ -568,8 +589,8 @@
     </div>
     <ol>
       <li><b>Slides 24–25:</b> the Treynor Sloss quote, then SLI → SLO → SLA. Do the error-budget maths live: 30 × 24 × 60 × 0.1% ≈ 43 minutes.</li>
-      <li><b>Slide 26:</b> each SRE holds the 43-minute budget. Read one card aloud and start the 60-second timer. Teams decide and hold up <b>one finger for A, two for B</b>. Issue each required team roll once from the Poker panel; COO submits its choice and staff roll.</li>
-      <li>Cards 3 and 8 depend on the Day 1 architecture: the CTO must show proof on the frozen app design to the captain.</li>
+      <li><b>Slide 26:</b> each SRE holds the 43-minute budget. Read one card aloud and start the 60-second timer. Teams discuss A/B; the COO submits the shared choice on their phone. Use Issue immutable staff rolls for this card when required, before submission. Next card advances; End the month enables Apply final credits. Apply once; do not collect separate paper choices or dice rolls.</li>
+      <li>Cards 3 and 8 depend on the Day 1 architecture: the CTO must show proof on the frozen app design to the captain. Before Day 2, approve and freeze every completed team design, not only the four winners.</li>
       <li>Card 10 ends the month. Ask the team deepest in the red what it would do differently.</li>
     </ol>
     <div class="watch">If time is short, play cards 1, 3, 5, 6 and 10. Keep card 6 (automate toil); it teaches the most.</div>
@@ -614,12 +635,12 @@
     <div class="meta">
       <div><b>Goal</b>Understand shared responsibility, core security controls, scaling methods and FinOps levers.</div>
       <div><b>Materials</b>Bill Shock cards in the app; frozen architecture designs.</div>
-      <div><b>Scoring</b>As shown in the app; naming the control refunds half a loss.</div>
+      <div><b>Scoring</b>As shown in the app; selecting the correct preventing control refunds half a loss.</div>
     </div>
     <ol>
       <li><b>Slide 34:</b> shared responsibility; callback to the Capital One poster.</li>
       <li><b>Slides 35–37:</b> move briskly. Ask one CFO per region which FinOps lever it would pull first.</li>
-      <li><b>Slide 38:</b> captains take their pile to the tables; each CFO draws 3 cards. For “depends on your design” cards, the CTO shows the frozen app design to the captain. For each negative card, naming the preventing control aloud refunds half.</li>
+      <li><b>Slide 38:</b> launch Cloud Bill Shock from Run. The app deals three cards per team; the CFO reads the costs and the CTO checks the frozen design. COO selects the preventing control and submits. The app computes design effects and half-refunds for correct controls; Lock, then Apply bill credits once.</li>
       <li>Ask each captain for the most painful card in the region, and the room: “Who has seen this happen in real life?”</li>
     </ol>
     <div class="next">Break (10 min). “Now let's leave the servers and look at the systems that actually run a business.”</div>
@@ -651,7 +672,7 @@
     </div>
     <ol>
       <li><b>Slide 45:</b> vote with hands for the trend that will matter most in five years.</li>
-      <li><b>Slide 46:</b> each student draws a card from the shared deck, reads it, may swap once with a teammate, then fills in the 90-day plan. 10-minute timer.</li>
+      <li><b>Slide 46:</b> students browse the digital career cards in My workshop and discuss roles with teammates. Launch My 90-day cloud plan from Run; every student submits their own plan, not a shared COO answer. 10-minute timer.</li>
       <li><b>Slide 47:</b> Preview the incident teaser in the deck; evidence unlocks in the app on Day 2.</li>
       <li><b>Slide 48, hot seat:</b> reveal one question at a time and take two or three answers each via the handheld mic. Close with open Q&amp;A about working in the industry.</li>
     </ol>
@@ -682,19 +703,19 @@
     <p style="margin-top:2mm"><b>Never cut:</b> the Human Kitchen chaos round, Architecture Lego, the murder mystery, and Demo Day.</p>
     <table style="margin-top:3mm">
       <tr><th style="width:42mm">Situation</th><th>What to do</th></tr>
-      <tr><td>Wi-Fi fails</td><td>Slides, quiz and leaderboard work offline. Use recordings or screenshots for the Azure and Dynatrace demos.</td></tr>
-      <tr><td>Fewer than 4 helpers</td><td>Two helpers each captain two regions. With none, elect one CEO per region as captain for voting and collecting.</td></tr>
-      <tr><td>Absent students</td><td>Teams of 4 are fine. Merge any team of 3 or fewer into a neighbouring team in the same region.</td></tr>
+      <tr><td>Wi-Fi fails</td><td>Keep downloaded decks and prepared evidence available. Pause Live submissions and scoring until connectivity returns; cached drafts are not confirmed answers. Use recordings/screenshots for demos. Do not switch to a second live leaderboard.</td></tr>
+      <tr><td>Fewer than 4 helpers</td><td>Assign each captain account one region. With two helpers, facilitator reviews the other two regions. With none, CEOs can coordinate discussion/votes, but do not acquire staff access; facilitator reviews and applies scores.</td></tr>
+      <tr><td>Absent students</td><td>Resolve team allocation before students register. Do not merge registered teams or reset roles casually. Networking +100 requires all five registered members to complete; handle attendance exceptions explicitly with the facilitator and a recorded reason.</td></tr>
       <tr><td>Quiet room</td><td>Always let teams discuss before asking for an answer; reward the first volunteer generously.</td></tr>
       <tr><td>One team dominates</td><td>Direct challenge questions to other teams; lean on region and judged awards.</td></tr>
-      <tr><td>Leaderboard closed</td><td>Scores stay saved in that browser: reopen leaderboard.html on the same laptop. Export the CSV after each session.</td></tr>
+      <tr><td>Leaderboard closed</td><td>Reopen ChaiCart Live Console with the same session. Credits remain in its persisted ledger. Do not switch to the legacy static leaderboard or reset the session; export results when connected.</td></tr>
     </table>
   </div>
 </div>
 
 <!-- CAPTAIN BRIEFING -->
 <div class="page" id="captain">
-  <div class="dayhead"><div class="kick">Hand this page to each region captain</div><h1>Region captain briefing</h1></div>
+  <div class="dayhead"><div class="kick">Share this link with each region captain</div><h1>Region captain briefing</h1></div>
   <p>Thank you for helping run the ChaiCart Cloud Workshop. 120 students work in 24 teams of five, grouped into four regions of six teams. You are the host for one region for both days.</p>
 
   <h3>Your region</h3>
@@ -704,24 +725,24 @@
   <p>Keep your six teams moving, check stored answers, and save reviews for facilitator approval.</p>
 
   <h3>Activity by activity</h3>
-  <p>Networking: LinkedIn at the Day 1 opening, GitHub after lunch on Day 1, and X at the Day 2 opening. Award +100 per team per activity when all teammates complete it; existing accounts, connections and follows count. Record each only once; maximum +300. Ask the COO for completion, not account credentials or screenshots.</p>
+  <p>Networking: LinkedIn at the Day 1 opening, GitHub after lunch on Day 1, and X at the Day 2 opening. Approve +100 per team per activity when all five teammates complete it; facilitator applies the review once; existing accounts, connections and follows count. Record each only once; maximum +300. Ask the COO for completion, not account credentials or screenshots.</p>
   <table>
     <tr><th style="width:38mm">Activity</th><th>What you do</th></tr>
-    <tr><td>Day 1 · Human Timeline</td><td>Check teams that shout “DEPLOYED!” against the answer-key card. First correct team: +50.</td></tr>
+    <tr><td>Day 1 · Human Timeline</td><td>Compare correct locked digital submissions and server timestamps. Propose +50 for the first correct team in your region.</td></tr>
     <tr><td>Day 1 · Service sort</td><td>Check stored service choices against the protected key (×5 credits).</td></tr>
     <tr><td>Day 1 · Deployment debate</td><td>Assign one digital scenario per table. Note any team that wins a defence (+30).</td></tr>
-    <tr><td>Day 1 · Shark Tank</td><td>Use the six digital briefs and platform options. Run the region round: 1-minute pitches, each team votes (not for itself). Winner +50, goes to the grand final.</td></tr>
-    <tr><td>Day 1 · Bingo</td><td>Check bingo cards against the facilitator's ticked list.</td></tr>
+    <tr><td>Day 1 · Shark Tank</td><td>Use the six digital briefs and platform options. Run the region round: 1-minute pitches, each team votes (not for itself). Vote-panel winner +50, goes to the grand final. Facilitator awards from that panel; do not also propose duplicate pitch points.</td></tr>
+    <tr><td>Day 1 · Bingo</td><td>Check the digital board against called terms. Coordinate the first three valid room-wide claims; propose +30 only for confirmed winners.</td></tr>
     <tr><td>Day 1 · Architecture</td><td>Ask “What if this box dies?” while teams build. Judge with the six questions on slide 36. Region best +50, goes to stage.</td></tr>
     <tr><td>Day 1 · Gallery Walk</td><td>Read notes during rotations; flag the best one in your region to the facilitator.</td></tr>
     <tr><td>Days 1–2 · Quizzes</td><td>Verify team submissions; the quiz panel applies +10 per correct answer.</td></tr>
     <tr><td>Day 2 · Guess the Downtime</td><td>Compare stored guesses in your region for each row (+20).</td></tr>
     <tr><td>Day 2 · Murder mystery</td><td>Review the timestamped accusations and protected rubric; flag the earliest correct team.</td></tr>
     <tr><td>Day 2 · Treasure Hunt</td><td>Review all 15 answers and proof fields, up to 150.</td></tr>
-    <tr><td>Day 2 · Error Budget Poker</td><td>For cards 3 and 8, check the CTO's frozen app design proof. Collect final credits.</td></tr>
+    <tr><td>Day 2 · Error Budget Poker</td><td>Check frozen design proof and help the SRE reason. The facilitator issues staff rolls and applies computed final credits from the Poker panel.</td></tr>
     <tr><td>Day 2 · Postmortem</td><td>Ask “what in our system allowed this?” when you hear blame. Pick the region best (+40).</td></tr>
-    <tr><td>Day 2 · Digital Factory</td><td>Compare digital round-2 successful deployments and lead time; region best +50.</td></tr>
-    <tr><td>Day 2 · Bill Shock</td><td>Take your pile to the tables; each CFO draws 3. Check design proofs; approve refunds when the control is named.</td></tr>
+    <tr><td>Day 2 · Digital Factory</td><td>Compare round-2 successes, then fewer failures, then lower lead time; approve +50 for region best.</td></tr>
+    <tr><td>Day 2 · Bill Shock</td><td>Help CFO/CTO discuss digitally dealt cards and frozen designs. COO selects controls; the app computes half-refunds. Facilitator applies bill credits.</td></tr>
     <tr><td>Day 2 · Demo Day</td><td>Run the region round: 90-second pitches, region vote. Send your finalist to the stage.</td></tr>
   </table>
   <div class="watch">Keep your region's energy up: learn the team names, cheer your region's finalists, and bring any problems (missing materials, a team of three) to the facilitator during the next break.</div>
