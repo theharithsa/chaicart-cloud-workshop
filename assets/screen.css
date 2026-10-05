@@ -539,3 +539,6 @@
 }
 
 @media screen{.page{overflow:hidden}}
+
+/* Community onboarding is shared by students and regional captains. */
+.community-card{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:32px;margin:32px 0;padding:28px;border:1px solid #cddacf;border-radius:18px;background:#e7eee8;color:#233e34}.community-card h2{margin:8px 0 14px;font-size:32px}.community-card p,.community-card li{font-size:15px;line-height:1.65}.community-card ol{padding-left:22px;margin-bottom:0}.community-card li+li{margin-top:8px}.community-actions{display:flex;flex-direction:column;justify-content:center;gap:12px}.community-actions a{display:flex;align-items:center;justify-content:center;min-height:48px;padding:12px 18px;border:1px solid #315447;border-radius:10px;text-decoration:none;text-align:center;font-weight:650;background:white}.community-actions a.community-primary{background:#233e34;color:#faf9f5}.community-actions p{font-size:13px;margin:0;color:#4c5d51}@media(max-width:700px){.community-card{grid-template-columns:1fr;padding:22px;gap:24px}}@media print{.community-card{break-inside:avoid}}
