@@ -43,6 +43,7 @@
   @media (max-width: 800px) { .two { grid-template-columns: 1fr; } h1 { font-size: 40px; } }
 </style>
 <script type="module" src="rum-identity.js"></script>
+<link rel="stylesheet" href="assets/screen.css">
 </head>
 <body>
 <div class="wrap">
@@ -51,7 +52,14 @@
   <h1>The ChaiCart Cloud Workshop</h1>
   <p class="lede">120 engineering students become founders of 24 startups in four regions. On Day 1 they build a startup in the cloud. On Day 2 they keep it alive through outages, bill shocks and a murder mystery.</p>
 
-  <h2>Start here</h2>
+
+  <nav class="entry-paths" aria-label="Choose your workshop role">
+    <a href="https://chaicloud-workshop.web.app/"><span>01 / Students</span><strong>Join your startup</strong><small>Sign in, join your team and take part in every activity.</small><b>Enter ChaiCart Live →</b></a>
+    <a href="https://chaicloud-workshop.web.app/#/captain"><span>02 / Captains</span><strong>Guide your region</strong><small>Share team codes, review answers and propose credits.</small><b>Open captain dashboard →</b></a>
+    <a href="https://chaicloud-workshop.web.app/#/console"><span>03 / Facilitator</span><strong>Run the room</strong><small>Launch activities, reveal answers and apply reviewed scores.</small><b>Open workshop console →</b></a>
+  </nav>
+  <div class="demo-link"><span>The cloud demonstration</span><a href="https://chaicart-workshop-vh-20261003.azurewebsites.net/">Explore the ChaiCart storefront ↗</a><p>Place a simulated order, then follow the system through an outage and recovery.</p></div>
+  <h2>Facilitator references</h2>
   <p class="sec-sub">Use the flow map while running the room. Open the full guide for preparation, teaching scripts and detailed judging notes. Student activities run on phones in ChaiCart Live.</p>
   <div class="grid">
     <a class="tile feature" href="facilitator-guide.html"><span class="n">Facilitator</span><b>Facilitator guide</b><small>Preparation, scoring and a step-by-step script for every stage of both days.</small></a>
@@ -64,11 +72,11 @@
     <a class="tile" href="day1-slides.html"><span class="n">Day 1 · 47 slides</span><b>Build ChaiCart</b><small>Cloud fundamentals, service and deployment models, platforms, containers, architecture, microservices, observability intro.</small></a>
     <a class="tile" href="day2-slides.html"><span class="n">Day 2 · 51 slides</span><b>Keep ChaiCart Alive</b><small>Reliability, observability, SRE, DevOps, security, cost, business systems, careers.</small></a>
     <a class="tile" href="https://chaicloud-workshop.web.app/#/console"><span class="n">Run the workshop</span><b>ChaiCart Live console</b><small>Launch on phones, review submissions, apply credits and release certificates. Use its Screen tab on the projector.</small></a>
-    <a class="tile" href="leaderboard.html"><span class="n">Legacy practice tool</span><b>Cloud Credits leaderboard</b><small>24 teams in four regions. Batch entry for whole rounds. Press P for presentation mode.</small></a>
-    <a class="tile" href="quiz.html#day1"><span class="n">Legacy practice tool</span><b>Quiz reference</b><small>Questions and explanations for preparation. Run scored workshop quizzes from ChaiCart Live.</small></a>
+    <a class="tile legacy-tile" href="leaderboard.html"><span class="n">Legacy practice tool</span><b>Cloud Credits leaderboard</b><small>24 teams in four regions. Batch entry for whole rounds. Press P for presentation mode.</small></a>
+    <a class="tile legacy-tile" href="quiz.html#day1"><span class="n">Legacy practice tool</span><b>Quiz reference</b><small>Questions and explanations for preparation. Run scored workshop quizzes from ChaiCart Live.</small></a>
   </div>
 
-  <h2>Optional reference packs</h2>
+  <h2>Reference library</h2>
   <p class="sec-sub">The workshop runs without printouts in <a href="https://chaicloud-workshop.web.app/">ChaiCart Live</a>. These legacy packs are optional backup/reference; use the flow map for current digital scoring and activities.</p>
   <div class="grid">
     <a class="tile" href="cards.html"><span class="n">Games</span><b>Card decks</b><small>Table tents, timeline, service sort, scenarios, Shark Tank, architecture, kitchen, bingo, error budget, bill shock, business systems, career tarot.</small></a>

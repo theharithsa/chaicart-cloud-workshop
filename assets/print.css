@@ -9,8 +9,8 @@
   --clay: #D97757;
   --clay-d: #A34E32;
   --clay-t: #F5E4DB;
-  --serif: "Tiempos Headline", "Copernicus", Georgia, "Times New Roman", serif;
-  --sans: "Styrene A", "Inter", "Segoe UI", system-ui, sans-serif;
+  --serif: Georgia, "Times New Roman", serif;
+  --sans: system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: "JetBrains Mono", "Cascadia Code", Consolas, monospace;
 
   --navy: #141413;

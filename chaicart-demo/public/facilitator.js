@@ -1,37 +1,293 @@
-import { identifyRumUser } from './rum-identity.js';
-const $=s=>document.querySelector(s);let loadToken='',token='',firebaseUser=null,firebaseAuth=null,firebaseSignOut=null,poll,traffic,snapshot,inflight=0,total=0,endAt;
-async function api(route,body){if(firebaseUser)token=await firebaseUser.getIdToken();const res=await fetch('/api/admin/'+route,{method:body?'POST':'GET',headers:{authorization:'Bearer '+token,'content-type':'application/json'},...(body?{body:JSON.stringify(body)}:{})});const data=await res.json();if(!res.ok)throw Object.assign(new Error(data.error),{status:res.status});return data;}
-function stop(){clearInterval(traffic);traffic=null;$('#load').disabled=false;}
-async function refresh(){try{snapshot=await api('telemetry');const d=snapshot;$('#scenario').textContent=`Scenario: ${d.mode} | pool ${d.pool.active}/${d.pool.size} active | ${d.pool.waiting} waiting | surge ${total} sent / ${inflight} pending`;
-  $('#stats').replaceChildren();const values=[['Requests / minute',d.metrics.requestsPerMinute],['Checkout p95',d.metrics.p95+' ms'],['Checkout error rate',d.metrics.errorRate.toFixed(1)+'%'],['Checkout SLI < 2s',d.metrics.sli===null?'No traffic':d.metrics.sli.toFixed(2)+'%']];for(const [label,value]of values){const el=document.createElement('div');el.className='stat';const title=document.createElement('span');title.textContent=label;const v=document.createElement('strong');v.textContent=value;el.append(title,v);$('#stats').append(el);}
-  const budget=document.createElement('p');budget.className='fine';budget.textContent=`Rolling 60s sample: ${d.metrics.checkouts} checkouts · ${d.metrics.badRequests} bad (error or ≥2s) · ${d.metrics.allowedBadRequests.toFixed(3)} allowed at 99.9% SLO. This is a demo window, not the workshop’s 30-day SLO.`;$('#stats').append(budget);
-  $('#changes').textContent=d.changes.map(x=>x.timestamp+' '+x.message).join('\n')||'No scenario changes yet.';$('#logs').textContent=d.logs.map(x=>JSON.stringify(x)).join('\n');$('#traces').replaceChildren();for(const t of d.traces.slice(-8).reverse()){const box=document.createElement('details');box.className='trace';const title=document.createElement('summary');title.textContent=`${t.timestamp} · ${t.status} · ${t.traceId}`;box.append(title);const max=Math.max(...t.spans.map(s=>s.start+s.duration))-Math.min(...t.spans.map(s=>s.start));const start=Math.min(...t.spans.map(s=>s.start));for(const s of t.spans){const row=document.createElement('div');row.className='span-row';const label=document.createElement('span');label.textContent=s.service+' / '+s.name;const track=document.createElement('div');const bar=document.createElement('div');bar.className='span-bar';bar.style.width=Math.max(1,s.duration/Math.max(1,max)*100)+'%';bar.style.marginLeft=(s.start-start)/Math.max(1,max)*100+'%';track.append(bar);const duration=document.createElement('span');duration.textContent=s.duration+' ms '+(s.status==='ERROR'?'✕':'');row.append(label,track,duration);box.append(row);}$('#traces').append(box);}
-  $('#business').replaceChildren();const table=document.createElement('table');const head=document.createElement('tr');for(const name of ['Order','System','Status']){const th=document.createElement('th');th.textContent=name;head.append(th);}table.append(head);for(const event of d.events.slice(0,20)){const row=document.createElement('tr');for(const value of [event.orderId,event.system,event.status]){const td=document.createElement('td');td.textContent=value;row.append(td);}table.append(row);}$('#business').append(table);
- }catch(e){$('#notice').textContent=e.message;clearInterval(poll);stop();if(e.status===401||e.status===403){$('#dashboard').hidden=true;$('#google-login').hidden=!firebaseAuth;}}}
-$('#login').onsubmit=async e=>{e.preventDefault();token=$('#token').value;try{await api('telemetry');$('#token').value='';$('#login').hidden=true;$('#dashboard').hidden=false;$('#notice').textContent='Connected. Evidence refreshes every 2 seconds.';clearInterval(poll);await refresh();poll=setInterval(refresh,2000);}catch(e){$('#notice').textContent=e.message;}};
-document.querySelectorAll('[data-scenario]').forEach(b=>b.onclick=async()=>{try{await api('scenario',{scenario:b.dataset.scenario});await refresh();}catch(e){$('#notice').textContent=e.message;}});
-$('#load').onclick=async()=>{if(traffic)return;try{if(firebaseUser)loadToken=await firebaseUser.getIdToken();else{const r=await fetch('/api/auth/demo',{method:'POST'});loadToken=(await r.json()).token;}}catch(e){$('#notice').textContent=e.message;return;}total=0;endAt=Date.now()+45000;$('#load').disabled=true;traffic=setInterval(()=>{if(Date.now()>=endAt){stop();return;}for(let i=0;i<6&&inflight<1100;i++){inflight++;total++;fetch('/api/checkout',{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+loadToken},body:JSON.stringify({city:'Mumbai',items:[{id:'masala',quantity:1}]})}).catch(()=>{}).finally(()=>inflight--);}},100);};
-$('#stop').onclick=stop;
-$('#logout').onclick=async()=>{if(firebaseAuth)await firebaseSignOut(firebaseAuth);stop();clearInterval(poll);token='';snapshot=null;$('#dashboard').hidden=true;$('#login').hidden=Boolean(firebaseAuth);$('#google-login').hidden=!firebaseAuth;$('#identity').textContent='';$('#notice').textContent='Disconnected';};
-$('#export').onclick=()=>{if(!snapshot)return;const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(snapshot,null,2)],{type:'application/json'}));a.download='chaicart-evidence.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);};
-window.addEventListener('beforeunload',stop);
-
-async function configureSignIn(){
- try{
-  const response=await fetch('/api/auth/config');const config=await response.json();
-  if(!config.configured){$('#notice').textContent='Facilitator sign-in needs Firebase configuration. See the authentication setup guide.';return;}
-  if(config.mode==='local-token'){$('#login').hidden=false;return;}
-  const {initializeApp}=await import('https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js');
-  const {getAuth,GoogleAuthProvider,signInWithPopup,onAuthStateChanged,setPersistence,inMemoryPersistence,signOut}=await import('https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js');
-  firebaseAuth=getAuth(initializeApp(config.firebase));firebaseSignOut=signOut;await setPersistence(firebaseAuth,inMemoryPersistence);
-  $('#google-login').hidden=false;
-  $('#google-login').onclick=async()=>{try{await signInWithPopup(firebaseAuth,new GoogleAuthProvider());}catch(e){$('#notice').textContent=e.message;}};
-  onAuthStateChanged(firebaseAuth,async user=>{
-   clearInterval(poll);stop();firebaseUser=user;identifyRumUser(user?.email||'');token='';$('#dashboard').hidden=true;$('#identity').textContent='';
-   if(!user){$('#google-login').hidden=false;return;}
-   try{const identity=await api('session');$('#identity').textContent='Signed in as '+identity.email;$('#google-login').hidden=true;$('#dashboard').hidden=false;$('#notice').textContent='Admin access verified. Evidence refreshes every 2 seconds.';await refresh();poll=setInterval(refresh,2000);}
-   catch(e){$('#notice').textContent=e.message;await signOut(firebaseAuth);}
+import { identifyRumUser } from "./rum-identity.js";
+const $ = (s) => document.querySelector(s);
+let loadToken = "",
+  token = "",
+  firebaseUser = null,
+  firebaseAuth = null,
+  firebaseSignOut = null,
+  poll,
+  traffic,
+  snapshot,
+  inflight = 0,
+  total = 0,
+  endAt;
+async function api(route, body) {
+  if (firebaseUser) token = await firebaseUser.getIdToken();
+  const res = await fetch("/api/admin/" + route, {
+    method: body ? "POST" : "GET",
+    headers: {
+      authorization: "Bearer " + token,
+      "content-type": "application/json",
+    },
+    ...(body ? { body: JSON.stringify(body) } : {}),
   });
- }catch(e){$('#notice').textContent='Sign-in could not initialize: '+e.message;}
+  const data = await res.json();
+  if (!res.ok)
+    throw Object.assign(new Error(data.error), { status: res.status });
+  return data;
+}
+function stop() {
+  clearInterval(traffic);
+  traffic = null;
+  $("#load").disabled = false;
+}
+async function refresh() {
+  try {
+    snapshot = await api("telemetry");
+    const d = snapshot;
+    document
+      .querySelectorAll("[data-scenario]")
+      .forEach((b) =>
+        b.setAttribute("aria-pressed", String(b.dataset.scenario === d.mode)),
+      );
+    $("#scenario").textContent =
+      `Scenario: ${d.mode} | pool ${d.pool.active}/${d.pool.size} active | ${d.pool.waiting} waiting | surge ${total} sent / ${inflight} pending`;
+    $("#stats").replaceChildren();
+    const values = [
+      ["Requests / minute", d.metrics.requestsPerMinute],
+      ["Checkout p95", d.metrics.p95 + " ms"],
+      ["Checkout error rate", d.metrics.errorRate.toFixed(1) + "%"],
+      [
+        "Checkout SLI < 2s",
+        d.metrics.sli === null ? "No traffic" : d.metrics.sli.toFixed(2) + "%",
+      ],
+    ];
+    for (const [label, value] of values) {
+      const el = document.createElement("div");
+      el.className = "stat";
+      const title = document.createElement("span");
+      title.textContent = label;
+      const v = document.createElement("strong");
+      v.textContent = value;
+      el.append(title, v);
+      $("#stats").append(el);
+    }
+    const budget = document.createElement("p");
+    budget.className = "fine";
+    budget.textContent = `Rolling 60s sample: ${d.metrics.checkouts} checkouts · ${d.metrics.badRequests} bad (error or ≥2s) · ${d.metrics.allowedBadRequests.toFixed(3)} allowed at 99.9% SLO. This is a demo window, not the workshop’s 30-day SLO.`;
+    $("#stats").append(budget);
+    $("#changes").textContent =
+      d.changes.map((x) => x.timestamp + " " + x.message).join("\n") ||
+      "No scenario changes yet.";
+    $("#logs").textContent = d.logs.map((x) => JSON.stringify(x)).join("\n");
+    $("#traces").replaceChildren();
+    for (const t of d.traces.slice(-8).reverse()) {
+      const box = document.createElement("details");
+      box.className = "trace";
+      const title = document.createElement("summary");
+      title.textContent = `${t.timestamp} · ${t.status} · ${t.traceId}`;
+      box.append(title);
+      const max =
+        Math.max(...t.spans.map((s) => s.start + s.duration)) -
+        Math.min(...t.spans.map((s) => s.start));
+      const start = Math.min(...t.spans.map((s) => s.start));
+      for (const s of t.spans) {
+        const row = document.createElement("div");
+        row.className = "span-row";
+        const label = document.createElement("span");
+        label.textContent = s.service + " / " + s.name;
+        const track = document.createElement("div");
+        const bar = document.createElement("div");
+        bar.className = "span-bar";
+        bar.style.width =
+          Math.max(1, (s.duration / Math.max(1, max)) * 100) + "%";
+        bar.style.marginLeft =
+          ((s.start - start) / Math.max(1, max)) * 100 + "%";
+        track.append(bar);
+        const duration = document.createElement("span");
+        duration.textContent =
+          s.duration + " ms " + (s.status === "ERROR" ? "✕" : "");
+        row.append(label, track, duration);
+        box.append(row);
+      }
+      $("#traces").append(box);
+    }
+    $("#business").replaceChildren();
+    const table = document.createElement("table");
+    const head = document.createElement("tr");
+    for (const name of ["Order", "System", "Status"]) {
+      const th = document.createElement("th");
+      th.textContent = name;
+      head.append(th);
+    }
+    table.append(head);
+    for (const event of d.events.slice(0, 20)) {
+      const row = document.createElement("tr");
+      for (const value of [event.orderId, event.system, event.status]) {
+        const td = document.createElement("td");
+        td.textContent = value;
+        row.append(td);
+      }
+      table.append(row);
+    }
+    $("#business").append(table);
+  } catch (e) {
+    $("#notice").textContent = e.message;
+    clearInterval(poll);
+    stop();
+    if (e.status === 401 || e.status === 403) {
+      $("#dashboard").hidden = true;
+      $("#google-login").hidden = !firebaseAuth;
+    }
+  }
+}
+$("#login").onsubmit = async (e) => {
+  e.preventDefault();
+  token = $("#token").value;
+  try {
+    await api("telemetry");
+    $("#token").value = "";
+    $("#login").hidden = true;
+    $("#dashboard").hidden = false;
+    $("#notice").textContent = "Connected. Evidence refreshes every 2 seconds.";
+    clearInterval(poll);
+    await refresh();
+    poll = setInterval(refresh, 2000);
+  } catch (e) {
+    $("#notice").textContent = e.message;
+  }
+};
+document.querySelectorAll("[data-scenario]").forEach(
+  (b) =>
+    (b.onclick = async () => {
+      try {
+        await api("scenario", { scenario: b.dataset.scenario });
+        await refresh();
+      } catch (e) {
+        $("#notice").textContent = e.message;
+      }
+    }),
+);
+$("#load").onclick = async () => {
+  if (traffic) return;
+  try {
+    if (firebaseUser) loadToken = await firebaseUser.getIdToken();
+    else {
+      const r = await fetch("/api/auth/demo", { method: "POST" });
+      loadToken = (await r.json()).token;
+    }
+  } catch (e) {
+    $("#notice").textContent = e.message;
+    return;
+  }
+  total = 0;
+  endAt = Date.now() + 45000;
+  $("#load").disabled = true;
+  traffic = setInterval(() => {
+    if (Date.now() >= endAt) {
+      stop();
+      return;
+    }
+    for (let i = 0; i < 6 && inflight < 1100; i++) {
+      inflight++;
+      total++;
+      fetch("/api/checkout", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          authorization: "Bearer " + loadToken,
+        },
+        body: JSON.stringify({
+          city: "Mumbai",
+          items: [{ id: "masala", quantity: 1 }],
+        }),
+      })
+        .catch(() => {})
+        .finally(() => inflight--);
+    }
+  }, 100);
+};
+$("#stop").onclick = stop;
+$("#logout").onclick = async () => {
+  if (firebaseAuth) await firebaseSignOut(firebaseAuth);
+  stop();
+  clearInterval(poll);
+  token = "";
+  snapshot = null;
+  $("#dashboard").hidden = true;
+  $("#login").hidden = Boolean(firebaseAuth);
+  $("#google-login").hidden = !firebaseAuth;
+  $("#identity").textContent = "";
+  $("#notice").textContent = "Disconnected";
+};
+$("#export").onclick = () => {
+  if (!snapshot) return;
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(
+    new Blob([JSON.stringify(snapshot, null, 2)], { type: "application/json" }),
+  );
+  a.download = "chaicart-evidence.json";
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+};
+window.addEventListener("beforeunload", stop);
+
+async function configureSignIn() {
+  try {
+    const response = await fetch("/api/auth/config");
+    const config = await response.json();
+    if (!config.configured) {
+      $("#notice").textContent =
+        "Facilitator sign-in needs Firebase configuration. See the authentication setup guide.";
+      return;
+    }
+    if (config.mode === "local-token") {
+      $("#login").hidden = false;
+      return;
+    }
+    const { initializeApp } = await import(
+      "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js"
+    );
+    const {
+      getAuth,
+      GoogleAuthProvider,
+      signInWithPopup,
+      onAuthStateChanged,
+      setPersistence,
+      inMemoryPersistence,
+      signOut,
+    } = await import(
+      "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js"
+    );
+    firebaseAuth = getAuth(initializeApp(config.firebase));
+    firebaseSignOut = signOut;
+    await setPersistence(firebaseAuth, inMemoryPersistence);
+    $("#google-login").hidden = false;
+    $("#google-login").onclick = async () => {
+      try {
+        await signInWithPopup(firebaseAuth, new GoogleAuthProvider());
+      } catch (e) {
+        $("#notice").textContent = e.message;
+      }
+    };
+    onAuthStateChanged(firebaseAuth, async (user) => {
+      clearInterval(poll);
+      stop();
+      firebaseUser = user;
+      identifyRumUser(user?.email || "");
+      token = "";
+      $("#dashboard").hidden = true;
+      $("#identity").textContent = "";
+      if (!user) {
+        $("#google-login").hidden = false;
+        return;
+      }
+      try {
+        const identity = await api("session");
+        $("#identity").textContent = "Signed in as " + identity.email;
+        $("#google-login").hidden = true;
+        $("#dashboard").hidden = false;
+        $("#notice").textContent =
+          "Admin access verified. Evidence refreshes every 2 seconds.";
+        await refresh();
+        poll = setInterval(refresh, 2000);
+      } catch (e) {
+        $("#notice").textContent = e.message;
+        await signOut(firebaseAuth);
+      }
+    });
+  } catch (e) {
+    $("#notice").textContent = "Sign-in could not initialize: " + e.message;
+  }
 }
 configureSignIn();
