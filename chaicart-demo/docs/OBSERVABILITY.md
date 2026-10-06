@@ -21,3 +21,15 @@ Routes classify the landing page as /, assets as /static/*, unsupported APIs as 
 W3C traceparent is continued by the Demo server; Dynatrace RUM owns automatic frontend fetch instrumentation. Workshop callable actions explicitly carry validated parent context and transaction IDs. The Azure Demo and Firebase Live are separate applications: unrelated activity in their tabs is not a single distributed transaction. User/session/order IDs belong on logs and spans, not metric dimensions. The auth/config endpoint itself is public and has no authenticated identity to attach.
 
 Regression verification decodes actual OTLP protobuf, checks one HTTP completion per request, trace/log IDs, simultaneous user isolation, authentication outcomes, and route classification.
+
+## Instrumentation review, round 2
+
+- `chaicart.auth.verifications` counts server identity checks by outcome, role and configured auth method. It is not a Google login counter. Firebase owns Google session creation, expiration and sign-out; the server has no reliable global active-session count.
+- `chaicart.checkout.stage.duration` measures seconds independently for cart, payment, pool, payment insert/update, gateway, fulfillment and persistence. Outcome is success/failure. These stages overlap hierarchically; do not sum parent and child durations.
+- `chaicart.cart.total_value` records validated checkout-attempt totals in INR, with small/large item-count buckets and currency-appropriate boundaries. It includes failed payment attempts and is not revenue. User/order/session IDs are excluded from metric dimensions.
+- Checkout allocates the attempted order ID before payment; payment spans include user identity, order ID, item count, value, currency and simulated payment method. A failed attempt has no persisted order. Identity verification happens before order allocation and therefore has no invented order ID.
+- Fulfillment has five `business.event.*` child spans, explicitly simulated, plus `orders.persist` for the real serialized local-file save. ERP queued events remain queued; simulation is not represented as a real external CRM/ERP call.
+- Live browser Firestore spans include operation names and team IDs for recognized team document paths. The gateway continues to replace client identity with verified token identity. No document bodies, credentials or raw document paths are exported.
+- Regression tests decode exported span status and verify ERROR for a simulated gateway outage and its payment parent, including order/user context. The sample code's shared stage stopwatch would accumulate prior stages; these stage timers instead start independently.
+
+Backend W3C continuation and the existing RUM fetch instrumentation remain in place. No second automatic fetch patcher is installed alongside Dynatrace RUM. Public auth/config reads memory, so fabricated cache/database spans and a global session count are deliberately omitted. Tenant-observed latency claims in the supplied suggestions have not been independently verified by these code-level tests.

@@ -34,7 +34,7 @@ export function createTelemetry(serviceName = 'chaicart-demo', options = {}) {
     metricReader = new PeriodicExportingMetricReader({ exporter: watch(new OTLPMetricExporter({ ...config('metrics'), temporalityPreference: AggregationTemporality.DELTA })), exportIntervalMillis: Number(process.env.OTEL_METRIC_EXPORT_INTERVAL || 15000), exportTimeoutMillis: 6000 });
     logProcessor = new BatchLogRecordProcessor({ exporter: watch(new OTLPLogExporter(config('logs'))), maxQueueSize: 1024, maxExportBatchSize: 128, scheduledDelayMillis: 2000, exportTimeoutMillis: 6000 });
     sdk = new NodeSDK({ resource, spanProcessors: [spanProcessor], metricReaders: [metricReader], logRecordProcessors: [logProcessor],
-      views: [{ instrumentType: InstrumentType.HISTOGRAM, aggregation: { type: AggregationType.EXPLICIT_BUCKET_HISTOGRAM, options: { boundaries: [0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2, 5, 10, 30, 60] } }, aggregationCardinalityLimit: 500 }],
+      views: [{ instrumentType: InstrumentType.HISTOGRAM, instrumentUnit: 's', aggregation: { type: AggregationType.EXPLICIT_BUCKET_HISTOGRAM, options: { boundaries: [0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2, 5, 10, 30, 60] } }, aggregationCardinalityLimit: 500 }, { instrumentName: 'chaicart.cart.total_value', aggregation: { type: AggregationType.EXPLICIT_BUCKET_HISTOGRAM, options: { boundaries: [50,100,200,500,1000,2000,5000,10000] } }, aggregationCardinalityLimit: 10 }],
       // This demo records every application span; no HTTP instrumentation of exporter traffic.
       sampler: { shouldSample: () => ({ decision: 2 }), toString: () => 'ChaiCartWorkshopAlwaysOn' },
     });
@@ -48,6 +48,10 @@ export function createTelemetry(serviceName = 'chaicart-demo', options = {}) {
   const checkout = meter.createCounter('chaicart.checkout.outcomes', { unit: '{checkout}' });
   const operationCount = meter.createCounter('chaicart.operation.outcomes', { unit: '{operation}' });
   const operationDuration = meter.createHistogram('chaicart.operation.duration', { unit: 's' });
+  const authChecks = meter.createCounter('chaicart.auth.verifications', { unit: '{verification}' });
+  const stageDuration = meter.createHistogram('chaicart.checkout.stage.duration', { unit: 's' });
+  const cartValue = meter.createHistogram('chaicart.cart.total_value', { unit: 'INR' });
+  const stages = { 'Validate cart & calculate total':'cart', 'Process demo payment':'payment', 'Pool.getConnection':'pool', 'INSERT pending payment':'payment_insert', 'Demo gateway charge':'gateway', 'UPDATE payment result':'payment_update', 'OrderPlaced → business systems':'fulfillment', 'orders.persist':'persistence' };
   const active = meter.createUpDownCounter('http.server.active_requests', { unit: '{request}' });
   const loop = monitorEventLoopDelay({ resolution: 20 }); loop.enable();
   const gauges = (name, unit, get) => meter.createObservableGauge(name, { unit }).addCallback(result => result.observe(get()));
@@ -82,9 +86,11 @@ export function createTelemetry(serviceName = 'chaicart-demo', options = {}) {
     const inherited = attributes(extra);
     return tracer.startActiveSpan(name, { attributes: inherited, kind }, async current => {
       current.chaicartAttributes = inherited;
+      const started = performance.now();
+      let outcome = 'success';
       try { return await work(current); }
-      catch (error) { current.setStatus({ code: SpanStatusCode.ERROR, message: error.status ? 'Request rejected' : 'Operation failed' }); current.addEvent('exception', { 'exception.type': String(error.code || error.name || 'Error').slice(0, 100) }); throw error; }
-      finally { current.end(); }
+      catch (error) { outcome = 'failure'; current.setStatus({ code: SpanStatusCode.ERROR, message: error.status ? 'Request rejected' : 'Operation failed' }); current.addEvent('exception', { 'exception.type': String(error.code || error.name || 'Error').slice(0, 100) }); throw error; }
+      finally { if (stages[name]) stageDuration.record((performance.now()-started)/1000, { stage: stages[name], outcome }); current.end(); }
     });
   }
   async function request(req, res, work) {
@@ -112,11 +118,13 @@ export function createTelemetry(serviceName = 'chaicart-demo', options = {}) {
         current.end();
       };
       res.once('finish', finish); res.once('close', finish);
-      try { return await work(current); } catch (error) { current.setStatus({ code: SpanStatusCode.ERROR }); if (!res.headersSent) { res.writeHead(500, { 'content-type': 'application/json' }); res.end('{"error":"Request failed"}'); } else res.end(); }
+      try { return await work(current); } catch (error) { outcome = 'failure'; current.setStatus({ code: SpanStatusCode.ERROR }); if (!res.headersSent) { res.writeHead(500, { 'content-type': 'application/json' }); res.end('{"error":"Request failed"}'); } else res.end(); }
     }));
   }
   function recordOperation(name, outcome, seconds, extra = {}) { const a = { operation: name, outcome, ...extra }; operationCount.add(1, a); operationDuration.record(seconds, a); }
-  return { request, span, log, enrich, gauges, recordOperation, tracer, meter, resource, exporter, exportHealth,
+  return { request, span, log, enrich, gauges, recordOperation,
+    recordAuth: (outcome, role, method) => authChecks.add(1, { outcome, role, method }),
+    recordCart: (value, count) => cartValue.record(value, { 'cart.size': count > 5 ? 'large' : 'small' }), tracer, meter, resource, exporter, exportHealth,
     current: () => trace.getSpan(context.active()),
     flush: async () => { const results = await Promise.allSettled([spanProcessor?.forceFlush(), logProcessor?.forceFlush(), metricReader?.forceFlush()]); return results.every(result => result.status === 'fulfilled'); },
     shutdown: async () => { loop.disable(); await sdk?.shutdown().catch(() => { console.warn(JSON.stringify({event:'telemetry.shutdown.failed','service.name':serviceName})); }); },

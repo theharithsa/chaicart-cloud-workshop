@@ -41,8 +41,8 @@ export async function createApp({adminToken=process.env.ADMIN_TOKEN, dataDir=pro
   });
   async function authenticate(req, role, verify){
     return telemetry.span('auth.verify.'+role,{'auth.method':authMode,'user.role':role},async()=>{
-      try { const identity=await verify(req);telemetry.enrich({'user.id':identity.uid||'local-demo','user.email':identity.email,'user.role':role});telemetry.log('INFO','Identity verified',{'event.name':'auth.identity.verified','auth.outcome':'success'});return identity; }
-      catch(error){telemetry.log(error.status===503?'ERROR':'WARN','Identity verification rejected',{'event.name':'auth.identity.rejected','auth.outcome':'failure','error.type':String(error.status||500)});throw error;}
+      try { const identity=await verify(req);telemetry.enrich({'user.id':identity.uid||'local-demo','user.email':identity.email,'user.role':role});telemetry.recordAuth('success',role,authMode);telemetry.log('INFO','Identity verified',{'event.name':'auth.identity.verified','auth.outcome':'success'});return identity; }
+      catch(error){telemetry.recordAuth('failure',role,authMode);telemetry.log(error.status===503?'ERROR':'WARN','Identity verification rejected',{'event.name':'auth.identity.rejected','auth.outcome':'failure','error.type':String(error.status||500)});throw error;}
     });
   }
   const publicOrder=order=>{const {lookupToken,customerUid,...visible}=order;return visible;};
@@ -66,9 +66,9 @@ export async function createApp({adminToken=process.env.ADMIN_TOKEN, dataDir=pro
   async function body(req){let text='';for await(const chunk of req){text+=chunk;if(text.length>16384)throw Object.assign(new Error('Request too large'),{status:413});}try{return JSON.parse(text||'{}');}catch{throw Object.assign(new Error('Invalid JSON'),{status:400});}}
   async function fulfill(order,trace){
     await span(trace,'event-worker','OrderPlaced → business systems',async()=>{
-      for(const system of ['CRM','SCM','HCM','BI','ERP'])state.events.push({id:randomUUID(),orderId:order.id,system,status:system==='ERP'&&erpPaused?'queued':'completed',timestamp:new Date().toISOString()});
+      for(const system of ['CRM','SCM','HCM','BI','ERP'])await telemetry.span('business.event.'+system,{'order.id':order.id,'business.system':system,'chaicart.simulated':true},async()=>{const status=system==='ERP'&&erpPaused?'queued':'completed';state.events.push({id:randomUUID(),orderId:order.id,system,status,timestamp:new Date().toISOString()});telemetry.enrich({'business.event.status':status});});
       if(state.events.length>3000)state.events.splice(0,state.events.length-3000);
-      await persist();
+      await telemetry.span('orders.persist',{'order.id':order.id,'storage.type':'local-file'},()=>persist());
     });
   }
   telemetry.gauges('chaicart.payment.pool.capacity','{connection}',()=>pool.size);
@@ -123,10 +123,14 @@ export async function createApp({adminToken=process.env.ADMIN_TOKEN, dataDir=pro
         const user=await authenticate(req,'customer',customer);telemetry.enrich({'user.id':user.uid,'user.email':user.email,'user.role':'customer'});
         const b=await body(req);
         if(!b||!Array.isArray(b.items)||!b.items.length||b.items.length>10||!b.items.every(x=>MENU.some(m=>m.id===x.id)&&Number.isInteger(x.quantity)&&x.quantity>0&&x.quantity<=20)||!['Mumbai','Bengaluru','Hyderabad','Delhi','Pune'].includes(b.city))return json(res,400,{error:'Choose a city and valid cart items'});
+        const orderId='CC-'+randomBytes(5).toString('hex').toUpperCase();
+        telemetry.enrich({'order.id':orderId,'cart.item_count':b.items.reduce((n,x)=>n+x.quantity,0),'payment.method':'simulated-payfast'});
         let order;
         try{
           await span(trace,'checkout-service','POST /api/checkout',async root=>{
             const items=await span(trace,'cart-service','Validate cart & calculate total',async()=>b.items.map(x=>({...x,price:MENU.find(m=>m.id===x.id).price})),root.spanId);
+            const total=10+items.reduce((sum,x)=>sum+x.price*x.quantity,0);
+            telemetry.enrich({'cart.total_value':total,'cart.currency':'INR'});telemetry.recordCart(total,items.reduce((n,x)=>n+x.quantity,0));
             await span(trace,'payment-service','Process demo payment',async payment=>{
               await span(trace,'payment-service','Pool.getConnection',async()=>{const poolStarted=performance.now();log('INFO','payment-service','Pool stats',{maximumPoolSize:pool.size,active:pool.active,waiting:pool.waiting.length,trace_id:trace.traceId});try{await pool.acquire(timeout);telemetry.recordOperation('payment.pool.acquire','success',(performance.now()-poolStarted)/1000);}catch(e){telemetry.recordOperation('payment.pool.acquire','failure',(performance.now()-poolStarted)/1000);throw e;}},payment.spanId);
               try{
@@ -135,7 +139,7 @@ export async function createApp({adminToken=process.env.ADMIN_TOKEN, dataDir=pro
                 await span(trace,'orders-db-demo','UPDATE payment result',()=>sleep(5),payment.spanId);
               }finally{pool.release();}
             },root.spanId);
-            order={customerUid:user.uid,id:'CC-'+randomBytes(5).toString('hex').toUpperCase(),lookupToken:randomBytes(24).toString('hex'),city:b.city,items,total:10+items.reduce((s,x)=>s+x.price*x.quantity,0),createdAt:Date.now(),traceId:trace.traceId,transactionId:res.getHeader('x-transaction-id')};
+            order={customerUid:user.uid,id:orderId,lookupToken:randomBytes(24).toString('hex'),city:b.city,items,total,createdAt:Date.now(),traceId:trace.traceId,transactionId:res.getHeader('x-transaction-id')};
             telemetry.enrich({'order.id':order.id,'transaction.id':order.transactionId});log('INFO','checkout','Order placed',{'event.name':'order.placed','order.id':order.id});
             state.orders.push(order);if(state.orders.length>1000)state.orders.shift();await fulfill(order,trace);
           });

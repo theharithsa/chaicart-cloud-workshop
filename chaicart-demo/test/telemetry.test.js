@@ -16,7 +16,8 @@ message Value { string stringValue=1; bool boolValue=2; int64 intValue=3; double
 message Attr { string key=1; Value value=2; }
 message Resource { repeated Attr attributes=1; }
 message Scope { string name=1; }
-message Span { bytes traceId=1; bytes spanId=2; bytes parentSpanId=4; string name=5; repeated Attr attributes=9; }
+message Status { int32 code=3; }
+message Span { bytes traceId=1; bytes spanId=2; bytes parentSpanId=4; string name=5; repeated Attr attributes=9; Status status=15; }
 message ScopeSpans { Scope scope=1; repeated Span spans=2; }
 message ResourceSpans { Resource resource=1; repeated ScopeSpans scopeSpans=2; }
 message Traces { repeated ResourceSpans resourceSpans=1; }
@@ -66,6 +67,10 @@ test('OTLP protobuf exports all signals, preserves RUM context and isolates conc
       assert.equal(attributes(payment)['user.email'], actor + '@example.test');
       assert.ok(actorSpans.every(s => !attributes(s)['user.email'] || attributes(s)['user.email'] === actor + '@example.test'));
       assert.ok(actorSpans.every(s => attributes(s)['transaction.id']));
+      assert.ok(attributes(payment)['order.id']);
+      assert.equal(attributes(payment)['cart.currency'], 'INR');
+      assert.ok(actorSpans.some(s => s.name === 'orders.persist'));
+      assert.equal(actorSpans.filter(s => s.name.startsWith('business.event.')).length, 5);
     }
     const records = received.filter(r => r.path === '/v1/logs').flatMap(r => schema.lookupType('Logs').decode(r.data).resourceLogs.flatMap(rs => rs.scopeLogs.flatMap(ss => ss.logRecords)));
     const completed = records.filter(r => attributes(r)['event.name'] === 'http.request.completed');
@@ -78,8 +83,22 @@ test('OTLP protobuf exports all signals, preserves RUM context and isolates conc
     const placed = records.filter(r => r.body.stringValue === 'Order placed'); assert.equal(placed.length, 2);
     for (const record of placed) { assert.equal(record.traceId.length, 16); assert.equal(record.spanId.length, 8); assert.ok(attributes(record)['user.email']); assert.ok(attributes(record)['order.id']); }
     const metricData = received.filter(r => r.path === '/v1/metrics').flatMap(r => schema.lookupType('Metrics').decode(r.data).resourceMetrics.flatMap(rs => rs.scopeMetrics.flatMap(ss => ss.metrics)));
+    for (const name of ['chaicart.auth.verifications','chaicart.checkout.stage.duration','chaicart.cart.total_value']) assert.ok(metricData.some(m => m.name === name), name);
     assert.equal(metricData.find(m => m.name === 'chaicart.http.requests').sum.aggregationTemporality, 1);
     assert.equal(metricData.find(m => m.name === 'http.server.request.duration').histogram.aggregationTemporality, 1);
+    received.length = 0;
+    const scenario = await fetch(url + '/api/admin/scenario', { method:'POST', headers:{authorization:'Bearer local','content-type':'application/json'}, body:JSON.stringify({scenario:'gateway-down'}) });
+    assert.equal(scenario.status, 200);
+    const failed = await fetch(url + '/api/checkout', { method:'POST', headers:{authorization:'alice','content-type':'application/json'}, body:JSON.stringify({city:'Mumbai',items:[{id:'coffee',quantity:1}]}) });
+    assert.equal(failed.status, 504);
+    await app.telemetry.flush();
+    const failedSpans = received.filter(r => r.path === '/v1/traces').flatMap(r => schema.lookupType('Traces').decode(r.data).resourceSpans.flatMap(rs => rs.scopeSpans.flatMap(ss => ss.spans)));
+    const gateway = failedSpans.find(s => s.name === 'Demo gateway charge');
+    assert.equal(gateway.status.code, 2);
+    assert.ok(attributes(gateway)['order.id']);
+    assert.equal(attributes(gateway)['user.email'], 'alice@example.test');
+    assert.equal(failedSpans.find(s => s.name === 'Process demo payment').status.code, 2);
+
   } catch (error) { console.error(error.stack); throw error; } finally {
     await app.close(); await new Promise(resolve => collector.close(resolve)); await rm(dir, { recursive: true, force: true });
     delete process.env.OTEL_EXPORTER_OTLP_ENDPOINT; delete process.env.DYNATRACE_PLATFORM_TOKEN;
