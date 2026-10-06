@@ -10,6 +10,10 @@ The workshop materials are plain HTML, CSS and JavaScript and work offline. The 
 
 ---
 
+## Understand the project
+
+Start with the [illustrated project guide](https://theharithsa.github.io/chaicart-cloud-workshop/project-explained.html) for the three sites, people, activity handoffs, data boundaries and code map. Use the [workshop flow map](workshop-flow.html) while running the room. The reusable [Ian Xiaohei illustration skill](skills/README.md) is bundled for future projects.
+
 ## At a glance
 
 | | |
@@ -30,8 +34,8 @@ The workshop materials are plain HTML, CSS and JavaScript and work offline. The 
 | [`facilitator-guide.html`](facilitator-guide.html) | Printable guide: setup, printing quantities, region captains, scoring, and a step-by-step script for every stage |
 | [`day1-slides.html`](day1-slides.html) | Day 1 deck (47 slides): *Build ChaiCart* |
 | [`day2-slides.html`](day2-slides.html) | Day 2 deck (51 slides): *Keep ChaiCart Alive* |
-| [`leaderboard.html`](leaderboard.html) | Live Cloud Credits scoring for 24 teams in 4 regions, with batch round entry and presentation mode |
-| [`quiz.html`](quiz.html) | Recap quizzes for both days with timer, reveal and answer key |
+| [`leaderboard.html`](leaderboard.html) | Legacy practice/reference scoring stored in the browser; use ChaiCart Live for official credits |
+| [`quiz.html`](quiz.html) | Reference quizzes for preparation; run scored quizzes from ChaiCart Live |
 
 ### Print
 
