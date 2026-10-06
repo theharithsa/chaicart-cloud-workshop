@@ -1,3 +1,4 @@
+import { withRumAction } from "./rum-actions.js";
 import { identifyRumUser } from "./rum-identity.js";
 const $ = (s) => document.querySelector(s);
 let loadToken = "",
@@ -11,7 +12,8 @@ let loadToken = "",
   inflight = 0,
   total = 0,
   endAt;
-async function api(route, body) {
+function api(route, body) { const names={session:"Verify Facilitator Access",scenario:"Change Demo Scenario"};return names[route] ? withRumAction(names[route],()=>request(route,body)) : request(route,body); }
+async function request(route, body) {
   if (firebaseUser) token = await firebaseUser.getIdToken();
   const res = await fetch("/api/admin/" + route, {
     method: body ? "POST" : "GET",
@@ -135,7 +137,7 @@ $("#login").onsubmit = async (e) => {
   e.preventDefault();
   token = $("#token").value;
   try {
-    await api("telemetry");
+    await withRumAction("Facilitator Login",()=>api("telemetry"));
     $("#token").value = "";
     $("#login").hidden = true;
     $("#dashboard").hidden = false;
@@ -199,7 +201,7 @@ $("#load").onclick = async () => {
 };
 $("#stop").onclick = stop;
 $("#logout").onclick = async () => {
-  if (firebaseAuth) await firebaseSignOut(firebaseAuth);
+  if (firebaseAuth) await withRumAction("User Logout",()=>firebaseSignOut(firebaseAuth));
   stop();
   clearInterval(poll);
   token = "";
@@ -255,7 +257,7 @@ async function configureSignIn() {
     $("#google-login").hidden = false;
     $("#google-login").onclick = async () => {
       try {
-        await signInWithPopup(firebaseAuth, new GoogleAuthProvider());
+        await withRumAction("User Login",()=>signInWithPopup(firebaseAuth, new GoogleAuthProvider()));
       } catch (e) {
         $("#notice").textContent = e.message;
       }

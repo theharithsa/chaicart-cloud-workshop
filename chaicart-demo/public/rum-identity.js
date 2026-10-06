@@ -17,7 +17,7 @@ export function identifyRumUser(email = '') {
   const identity = email || anonymousIdentity();
   let attempts = 0;
   const identify = () => {
-    try { if (window.dtrum) { window.dtrum.identifyUser(identity); return true; } } catch { /* RUM must not interrupt the app. */ }
+    try { if (window.dynatrace?.identifyUser) { window.dynatrace.identifyUser(identity); return true; } if (window.dtrum) { window.dtrum.identifyUser(identity); return true; } } catch { /* RUM must not interrupt the app. */ }
     return false;
   };
   if (!identify()) timer = setInterval(() => { if (identify() || ++attempts >= 20) clearInterval(timer); }, 500);

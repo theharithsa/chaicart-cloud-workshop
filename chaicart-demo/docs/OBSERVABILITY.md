@@ -33,3 +33,17 @@ Regression verification decodes actual OTLP protobuf, checks one HTTP completion
 - Regression tests decode exported span status and verify ERROR for a simulated gateway outage and its payment parent, including order/user context. The sample code's shared stage stopwatch would accumulate prior stages; these stage timers instead start independently.
 
 Backend W3C continuation and the existing RUM fetch instrumentation remain in place. No second automatic fetch patcher is installed alongside Dynatrace RUM. Public auth/config reads memory, so fabricated cache/database spans and a global session count are deliberately omitted. Tenant-observed latency claims in the supplied suggestions have not been independently verified by these code-level tests.
+
+## RUM business actions
+
+The compatibility adapter uses the current `dynatrace.userActions.create()` API when available, reuses/renames an active automatic action, and falls back to Classic `dtrum.enterAction/leaveAction`. The supplied guide's `createUserAction`, `onUserActionUpdate`, nested `properties` payload, and claim that Classic APIs were universally removed are not used. Official references: https://docs.dynatrace.com/docs/observe/digital-experience/rum/web-frontends/new-javascript-api and https://docs.dynatrace.com/javascriptapi/doc/types/dtrum.html .
+
+User identification prefers `dynatrace.identifyUser(email)` with a Classic fallback. Anonymous users retain a random `browser:` ID, never an authorization credential or hardware identifier. Agent calls are guarded so missing, disabled or broken RUM cannot interrupt workshop work.
+
+Demo actions: User Login/Logout, Load Auth Config, Load Menu, Add Item to Cart, Submit Checkout, Verify Facilitator Access and Change Demo Scenario. Checkout properties include the shared transaction ID, item count, currency and successful order ID; a semantic checkout_success event carries the validated response total. Background tracking and dashboard polls do not create custom user actions. No server payment stages are invented as frontend timings. Demo is not a route-based SPA.
+
+Live actions: User Login/Logout, Save/Update/Submit Workshop Work, Save Workshop Transaction, Award Reviewed Credits, Adjust Team Credits, Score/Undo Cloud Answers and Delete Workshop Session. Inner Firestore writes do not interrupt an already tracked workflow. Hash routes emit page_view events with fixed page labels; query strings and student answers are omitted. Pages names selected workshop/demo links. The Pages build includes the adapter module.
+
+Current API events use flat `event_properties.*` fields from an allowlist. No per-checkout event modifier is installed. Current user-action API availability depends on the enabled agent modules; Classic fallback supports custom action names and identity, while the new custom event payload is emitted only by the current API. Event/session property visibility may require corresponding Dynatrace configuration; that configuration was not changed. No new session properties or fictional user tier are introduced.
+
+Tests cover current/Classic/missing/throwing agents, completion after failure, nested-action suppression and automatic-action reuse. Local browser verification exercised login, cart, checkout transaction/order properties, and logout back to anonymous identity with a controlled API stub. This verifies calls, not Dynatrace beacon receipt or tenant event visibility.

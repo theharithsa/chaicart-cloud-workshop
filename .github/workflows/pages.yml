@@ -26,7 +26,7 @@ jobs:
       - name: Assemble site
         run: |
           mkdir _site
-          cp -r *.html rum-identity.js assets .nojekyll _site/
+          cp -r *.html rum-identity.js rum-actions.js assets .nojekyll _site/
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site

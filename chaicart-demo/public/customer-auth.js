@@ -1,3 +1,4 @@
+import { withRumAction } from './rum-actions.js';
 import { identifyRumUser } from './rum-identity.js';
 let user=null,token='',auth,signOutFn,googleSignIn,mode='firebase';
 const listeners=[];
@@ -5,13 +6,13 @@ export const currentCustomer=()=>user;
 export const customerHeaders=async()=>{if(!user)throw new Error('Sign in before ordering');return {authorization:'Bearer '+(auth?await auth.currentUser.getIdToken():token)};};
 export const onCustomerChange=fn=>listeners.push(fn);
 function changed(){identifyRumUser(user?.email||'');for(const fn of listeners)fn(user);}
-export async function signInCustomer(){
+export function signInCustomer(){ return withRumAction('User Login',async()=>{
  if(mode==='local-token'){const res=await fetch('/api/auth/demo',{method:'POST'});const data=await res.json();if(!res.ok)throw new Error(data.error);token=data.token;user=data.user;changed();}
  else if(googleSignIn)await googleSignIn();else throw new Error('Firebase sign-in is not configured');
-}
-export async function signOutCustomer(){if(auth)await signOutFn(auth);token='';user=null;changed();}
+}); }
+export function signOutCustomer(){return withRumAction('User Logout',async()=>{if(auth)await signOutFn(auth);token='';user=null;changed();});}
 export async function initializeCustomerAuth(){
- const response=await fetch('/api/auth/config');const config=await response.json();mode=config.mode;
+ const config=await withRumAction('Load Auth Config',async()=>{const response=await fetch('/api/auth/config');if(!response.ok)throw new Error('Configuration unavailable');return response.json();});mode=config.mode;
  const button=document.querySelector('#customer-login');
  if(mode==='local-token'){button.disabled=false;button.textContent='Sign in (demo)';document.querySelector('#customer-name').textContent='Local preview · Google sign-in needs Firebase setup' ;return;}
  if(!config.configured){button.textContent='Sign-in unavailable';document.querySelector('#customer-name').textContent='Firebase configuration is required to order.';return;}

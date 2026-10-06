@@ -1,3 +1,4 @@
+import { beginRumAction, withRumAction, rumEvent } from './rum-actions.js';
 import {
   currentCustomer,
   customerHeaders,
@@ -46,8 +47,10 @@ function render() {
       );
       b.disabled = busy;
       b.onclick = () => {
+        const action=beginRumAction("Add Item to Cart");
         cart[m.id] = Math.min(20, Math.max(0, cart[m.id] + delta));
         render();
+        action.end();
       };
       controls.append(b);
       if (delta === -1) {
@@ -117,6 +120,9 @@ $("#checkout").onclick = async () => {
     }
     return;
   }
+  const transactionId=crypto.randomUUID();
+  const rumAction=beginRumAction("Submit Checkout",{transaction_id:transactionId,item_count:menu.reduce((n,m)=>n+(cart[m.id]||0),0),currency:"INR"});
+  let checkoutOutcome="failure";
   busy = true;
   render();
   $("#feedback").className = "";
@@ -127,7 +133,7 @@ $("#checkout").onclick = async () => {
       method: "POST",
       headers: {
         "content-type": "application/json",
-        "x-transaction-id": crypto.randomUUID(),
+        "x-transaction-id": transactionId,
         ...(await customerHeaders()),
       },
       body: JSON.stringify({
@@ -145,6 +151,8 @@ $("#checkout").onclick = async () => {
           (data.traceId || res.headers.get("x-trace-id")),
       );
     order = data;
+    checkoutOutcome="success";
+    rumEvent("checkout_success",{order_id:data.id,transaction_id:transactionId,total_value:data.total,currency:"INR"});
     cart = {};
     await history();
     $("#feedback").textContent = "Order placed. Time for a chai break.";
@@ -160,13 +168,14 @@ $("#checkout").onclick = async () => {
     $("#feedback").className = "error";
     $("#feedback").textContent = e.message;
   } finally {
+    rumAction.end(checkoutOutcome,{...(order && checkoutOutcome === "success" ? {order_id:order.id} : {})});
     busy = false;
     render();
   }
 };
 async function init() {
   try {
-    const res = await fetch("/api/menu");
+    const res = await withRumAction("Load Menu",()=>fetch("/api/menu"));
     if (!res.ok) throw new Error("Menu unavailable");
     menu = (await res.json()).items;
     for (const key of Object.keys(cart))
@@ -182,8 +191,10 @@ async function init() {
       el.className = "product";
       el.innerHTML = `<div class="product-art"><span class="tag">${m.tag}</span>${m.id === "samosa" ? snackArt : cupArt}</div><h3>${m.name}</h3><p>${m.description}</p><div class="product-bottom"><strong>₹${m.price}</strong><button class="add" aria-label="Add ${m.name}">Add +</button></div>`;
       el.querySelector("button").onclick = () => {
+        const action=beginRumAction("Add Item to Cart");
         cart[m.id] = Math.min(20, (cart[m.id] || 0) + 1);
         render();
+        action.end();
       };
       $("#menu-items").append(el);
     });
