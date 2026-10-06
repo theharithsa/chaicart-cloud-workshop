@@ -30,14 +30,21 @@ class Pool {
 }
 const publicDir=fileURLToPath(new URL('./public/',import.meta.url));
 export async function createApp({adminToken=process.env.ADMIN_TOKEN, dataDir=process.env.DATA_DIR||'data', timeout=Number(process.env.POOL_TIMEOUT_MS||30000), gatewayDelay=Number(process.env.GATEWAY_DELAY_MS||205), customerAuthorizer, authMode=process.env.AUTH_MODE||'firebase', authorizer, firebaseConfig={apiKey:process.env.FIREBASE_API_KEY,authDomain:process.env.FIREBASE_AUTH_DOMAIN,projectId:process.env.FIREBASE_PROJECT_ID,appId:process.env.FIREBASE_APP_ID}}={}) {
-  const telemetry=createTelemetry();
-  const authorize=authorizer||await createAuthorizer({mode:authMode,adminToken,projectId:firebaseConfig.projectId});
+  const logs=[];
+  const telemetry=createTelemetry('chaicart-demo',{onLog:entry=>{logs.push(entry);if(logs.length>500)logs.shift();console.log(JSON.stringify(entry));}});
+  const authorize=authorizer||await createAuthorizer({mode:authMode,adminToken,projectId:firebaseConfig.projectId,observe:(name,attributes,work)=>telemetry.span(name,attributes,work)});
   const demoSessions=new Map();
   const customer=customerAuthorizer||authorize.customer|| (async req=>{
     const token=(req.headers.authorization||'').replace(/^Bearer /,'');const session=demoSessions.get(token);
     if(authMode!=='local-token'||!session||session.expires<Date.now())throw authError(401,'Sign in to place or view orders');
     return session.user;
   });
+  async function authenticate(req, role, verify){
+    return telemetry.span('auth.verify.'+role,{'auth.method':authMode,'user.role':role},async()=>{
+      try { const identity=await verify(req);telemetry.enrich({'user.id':identity.uid||'local-demo','user.email':identity.email,'user.role':role});telemetry.log('INFO','Identity verified',{'event.name':'auth.identity.verified','auth.outcome':'success'});return identity; }
+      catch(error){telemetry.log(error.status===503?'ERROR':'WARN','Identity verification rejected',{'event.name':'auth.identity.rejected','auth.outcome':'failure','error.type':String(error.status||500)});throw error;}
+    });
+  }
   const publicOrder=order=>{const {lookupToken,customerUid,...visible}=order;return visible;};
   const pool=new Pool();
   let state={orders:[],events:[]}, mode='healthy', erpPaused=false;
@@ -45,8 +52,8 @@ export async function createApp({adminToken=process.env.ADMIN_TOKEN, dataDir=pro
   try{state=JSON.parse(await readFile(path.join(dataDir,'state.json'),'utf8'));}catch(e){if(e.code!=='ENOENT')throw e;}
   let saving=Promise.resolve();
   function persist(){const snapshot=JSON.stringify(state);const task=saving.then(async()=>{const p=path.join(dataDir,'state.json');await writeFile(p+'.tmp',snapshot);await rename(p+'.tmp',p);});saving=task.catch(()=>{});return task;}
-  const logs=[], traces=[], samples=[], changes=[];
-  function log(level,service,message,extra={}){const e={timestamp:new Date().toISOString(),loglevel:level,'service.name':'chaicart-demo',component:service,message,...telemetry.log(level,message,{component:service,...extra})};logs.push(e);if(logs.length>500)logs.shift();console.log(JSON.stringify(e));}
+  const traces=[], samples=[], changes=[];
+  function log(level,service,message,extra={}){telemetry.log(level,message,{component:service,...extra});}
   function change(message){const e={timestamp:new Date().toISOString(),message};changes.push(e);if(changes.length>100)changes.shift();log('INFO','payment-service',message);}
   async function span(localTrace,service,name,work,parentId){
     return telemetry.span(name,{'chaicart.component':service,'chaicart.simulated':service.includes('demo')||['cart-service','payment-service','event-worker'].includes(service)},async current=>{
@@ -80,12 +87,11 @@ export async function createApp({adminToken=process.env.ADMIN_TOKEN, dataDir=pro
     res.on('finish',()=>{
       if(!url.pathname.startsWith('/api/admin')){
         const sample={time:Date.now(),duration:Date.now()-started,status:res.statusCode,path:url.pathname};samples.push(sample);if(samples.length>5000)samples.shift();
-        log(res.statusCode>=500?'ERROR':res.statusCode>=400?'WARN':'INFO','checkout-service',`${req.method} ${url.pathname} ${res.statusCode}`,{duration_ms:sample.duration,trace_id:trace.traceId});
       }
     });
     try{
       if(url.pathname.startsWith('/api/admin')){
-        const identity=await telemetry.span('Authorize facilitator',{},()=>authorize(req));telemetry.enrich({'user.id':identity.uid||'local-demo','user.email':identity.email,'user.role':'facilitator'});
+        const identity=await authenticate(req,'facilitator',authorize);telemetry.enrich({'user.id':identity.uid||'local-demo','user.email':identity.email,'user.role':'facilitator'});
         if(req.method==='GET'&&url.pathname==='/api/admin/session')return json(res,200,identity);
         if(req.method==='GET'&&url.pathname==='/api/admin/telemetry'){
           const recent=samples.filter(x=>x.time>Date.now()-60000);const checkout=recent.filter(x=>x.path==='/api/checkout');const durations=checkout.map(x=>x.duration).sort((a,b)=>a-b);const good=checkout.filter(x=>x.status<400&&x.duration<2000).length;
@@ -106,15 +112,15 @@ export async function createApp({adminToken=process.env.ADMIN_TOKEN, dataDir=pro
         if(authMode!=='local-token')return json(res,404,{error:'Not found'});
         for(const [key,s]of demoSessions)if(s.expires<Date.now())demoSessions.delete(key);
         if(demoSessions.size>=200)return json(res,429,{error:'Too many demo sessions; restart the local demo'});
-        const token=randomBytes(32).toString('hex');const user={uid:randomUUID(),email:'Local demo customer'};demoSessions.set(token,{user,expires:Date.now()+3600000});return json(res,201,{token,user,demo:true});
+        const token=randomBytes(32).toString('hex');const user={uid:randomUUID(),email:'Local demo customer'};demoSessions.set(token,{user,expires:Date.now()+3600000});telemetry.enrich({'user.id':user.uid,'user.role':'customer'});telemetry.log('INFO','Local demo session created',{'event.name':'auth.session.created','auth.method':'local-demo'});return json(res,201,{token,user,demo:true});
       }
-      if(req.method==='GET'&&url.pathname==='/api/auth/me'){const user=await telemetry.span('Verify customer identity',{},()=>customer(req));telemetry.enrich({'user.id':user.uid,'user.email':user.email});return json(res,200,user);}
-      if(req.method==='GET'&&url.pathname==='/api/orders'){const user=await telemetry.span('Verify customer identity',{},()=>customer(req));telemetry.enrich({'user.id':user.uid,'user.email':user.email,'user.role':'customer'});return json(res,200,{orders:state.orders.filter(x=>x.customerUid===user.uid).slice(-20).reverse().map(publicOrder)});}
+      if(req.method==='GET'&&url.pathname==='/api/auth/me'){const user=await authenticate(req,'customer',customer);telemetry.enrich({'user.id':user.uid,'user.email':user.email});return json(res,200,user);}
+      if(req.method==='GET'&&url.pathname==='/api/orders'){const user=await authenticate(req,'customer',customer);telemetry.enrich({'user.id':user.uid,'user.email':user.email,'user.role':'customer'});return json(res,200,{orders:state.orders.filter(x=>x.customerUid===user.uid).slice(-20).reverse().map(publicOrder)});}
       if(req.method==='GET'&&url.pathname==='/api/auth/config')return json(res,200,{mode:authMode,configured:authMode==='local-token'?Boolean(adminToken):Boolean(firebaseConfig.apiKey&&firebaseConfig.authDomain&&firebaseConfig.projectId&&firebaseConfig.appId),...(authMode==='firebase'?{firebase:firebaseConfig}:{})});
       if(req.method==='GET'&&url.pathname==='/health')return json(res,200,{status:'ok',service:'chaicart',storage:'local-file-demo'});
       if(req.method==='GET'&&url.pathname==='/api/menu')return json(res,200,{items:MENU,deliveryFee:10});
       if(req.method==='POST'&&url.pathname==='/api/checkout'){
-        const user=await telemetry.span('Verify customer identity',{},()=>customer(req));telemetry.enrich({'user.id':user.uid,'user.email':user.email,'user.role':'customer'});
+        const user=await authenticate(req,'customer',customer);telemetry.enrich({'user.id':user.uid,'user.email':user.email,'user.role':'customer'});
         const b=await body(req);
         if(!b||!Array.isArray(b.items)||!b.items.length||b.items.length>10||!b.items.every(x=>MENU.some(m=>m.id===x.id)&&Number.isInteger(x.quantity)&&x.quantity>0&&x.quantity<=20)||!['Mumbai','Bengaluru','Hyderabad','Delhi','Pune'].includes(b.city))return json(res,400,{error:'Choose a city and valid cart items'});
         let order;
@@ -139,7 +145,7 @@ export async function createApp({adminToken=process.env.ADMIN_TOKEN, dataDir=pro
         return;
       }
       if(req.method==='GET'&&url.pathname.startsWith('/api/orders/')){
-        const user=await telemetry.span('Verify customer identity',{},()=>customer(req));telemetry.enrich({'user.id':user.uid,'user.email':user.email,'user.role':'customer'});
+        const user=await authenticate(req,'customer',customer);telemetry.enrich({'user.id':user.uid,'user.email':user.email,'user.role':'customer'});
         const order=state.orders.find(x=>x.id===url.pathname.split('/').pop()&&x.customerUid===user.uid);
         if(!order)return json(res,404,{error:'Order not found'});
         telemetry.enrich({'order.id':order.id,'transaction.id':order.transactionId||res.getHeader('x-transaction-id')});const age=Date.now()-order.createdAt;return json(res,200,{...publicOrder(order),status:age<10000?'Brewing':age<20000?'Packing':age<30000?'Rider assigned':'Delivered',demoTimeline:true});

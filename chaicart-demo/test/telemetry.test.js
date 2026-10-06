@@ -52,6 +52,9 @@ test('OTLP protobuf exports all signals, preserves RUM context and isolates conc
   try {
     const responses = await Promise.all(['alice', 'bob'].map((actor, index) => fetch(url + '/api/checkout', { method: 'POST', headers: { 'content-type': 'application/json', authorization: actor, traceparent: `00-${traces[index]}-1234567890abcdef-01` }, body: JSON.stringify({ city: 'Mumbai', items: [{ id: 'coffee', quantity: 1 }] }) })));
     for (const [i, response] of responses.entries()) { assert.equal(response.status, 201); assert.equal(response.headers.get('x-trace-id'), traces[i]); await response.json(); }
+    await fetch(url + '/api/auth/config');
+    await fetch(url + '/missing.css');
+    await fetch(url + '/api/unknown');
     await app.telemetry.flush();
     for (const path of ['/v1/traces', '/v1/logs', '/v1/metrics']) assert.ok(received.some(r => r.path === path), path);
     for (const entry of received) { assert.equal(entry.headers.authorization, 'Api-Token dt0c01.test-only-token'); assert.equal(entry.headers['content-type'], 'application/x-protobuf'); }
@@ -65,6 +68,13 @@ test('OTLP protobuf exports all signals, preserves RUM context and isolates conc
       assert.ok(actorSpans.every(s => attributes(s)['transaction.id']));
     }
     const records = received.filter(r => r.path === '/v1/logs').flatMap(r => schema.lookupType('Logs').decode(r.data).resourceLogs.flatMap(rs => rs.scopeLogs.flatMap(ss => ss.logRecords)));
+    const completed = records.filter(r => attributes(r)['event.name'] === 'http.request.completed');
+    assert.equal(completed.length, 5, 'exactly one completion per request');
+    assert.ok(completed.every(r => r.traceId.length === 16 && r.spanId.length === 8 && attributes(r)['request.id'] && attributes(r)['transaction.id']));
+    assert.ok(spans.some(s => attributes(s)['http.route'] === '/static/*'));
+    assert.ok(spans.some(s => attributes(s)['http.route'] === '/api/unmatched'));
+    assert.ok(spans.every(s => !s.name.includes('static-or-unknown')));
+    assert.equal(records.filter(r => attributes(r)['event.name'] === 'auth.identity.verified').length, 2);
     const placed = records.filter(r => r.body.stringValue === 'Order placed'); assert.equal(placed.length, 2);
     for (const record of placed) { assert.equal(record.traceId.length, 16); assert.equal(record.spanId.length, 8); assert.ok(attributes(record)['user.email']); assert.ok(attributes(record)['order.id']); }
     const metricData = received.filter(r => r.path === '/v1/metrics').flatMap(r => schema.lookupType('Metrics').decode(r.data).resourceMetrics.flatMap(rs => rs.scopeMetrics.flatMap(ss => ss.metrics)));

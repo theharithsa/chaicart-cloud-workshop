@@ -66,17 +66,21 @@ export function createTelemetry(serviceName = 'chaicart-demo', options = {}) {
   }
   function log(level, message, extra = {}, ctx = context.active()) {
     const sc = trace.getSpanContext(ctx);
-    const a = attributes(extra);
+    const current = trace.getSpan(ctx);
+    const a = { ...(current?.chaicartAttributes || {}), ...extra };
+    const record = { timestamp: new Date().toISOString(), loglevel: level, 'service.name': serviceName, message, ...a, ...(sc && trace.isSpanContextValid(sc) ? { trace_id: sc.traceId, span_id: sc.spanId } : {}) };
+    if (options.onLog) options.onLog(record);
+    else console.log(JSON.stringify(record));
     logger.emit({ context: ctx, severityText: level, severityNumber: SeverityNumber[level] || SeverityNumber.INFO, body: message, attributes: a });
-    return { ...a, ...(sc && trace.isSpanContextValid(sc) ? { trace_id: sc.traceId, span_id: sc.spanId } : {}) };
+    return record;
   }
   function enrich(extra) {
     const span = trace.getSpan(context.active());
     if (span) { span.chaicartAttributes = { ...(span.chaicartAttributes || {}), ...extra }; span.setAttributes(extra); }
   }
-  async function span(name, extra, work) {
+  async function span(name, extra, work, kind = SpanKind.INTERNAL) {
     const inherited = attributes(extra);
-    return tracer.startActiveSpan(name, { attributes: inherited }, async current => {
+    return tracer.startActiveSpan(name, { attributes: inherited, kind }, async current => {
       current.chaicartAttributes = inherited;
       try { return await work(current); }
       catch (error) { current.setStatus({ code: SpanStatusCode.ERROR, message: error.status ? 'Request rejected' : 'Operation failed' }); current.addEvent('exception', { 'exception.type': String(error.code || error.name || 'Error').slice(0, 100) }); throw error; }
@@ -85,7 +89,7 @@ export function createTelemetry(serviceName = 'chaicart-demo', options = {}) {
   }
   async function request(req, res, work) {
     const path = new URL(req.url, 'http://localhost').pathname;
-    const route = path.startsWith('/api/orders/') ? '/api/orders/:orderId' : ['/api/menu', '/api/checkout', '/api/orders', '/api/auth/me', '/api/auth/config', '/api/auth/demo', '/api/admin/session', '/api/admin/scenario', '/api/admin/telemetry', '/health'].includes(path) ? path : 'static-or-unknown';
+    const route = path.startsWith('/api/orders/') ? '/api/orders/:orderId' : ['/api/menu', '/api/checkout', '/api/orders', '/api/auth/me', '/api/auth/config', '/api/auth/demo', '/api/admin/session', '/api/admin/scenario', '/api/admin/telemetry', '/api/telemetry', '/health'].includes(path) ? path : path.startsWith('/api/') ? '/api/unmatched' : path === '/' ? '/' : '/static/*';
     const requestId = randomUUID();
     const transactionId = /^[0-9a-f-]{36}$/i.test(req.headers['x-transaction-id'] || '') ? req.headers['x-transaction-id'] : randomUUID();
     const parent = propagation.extract(context.active(), req.headers);

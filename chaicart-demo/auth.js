@@ -32,12 +32,12 @@ export function firebaseCredential({projectId,serviceAccountJson,applicationDefa
     throw new Error('Firebase service-account configuration is invalid or unresolved. Check the Key Vault reference and project.');
   }
 }
-export async function createAuthorizer({mode,adminToken,projectId,serviceAccountJson=process.env.FIREBASE_SERVICE_ACCOUNT_JSON}){
+export async function createAuthorizer({mode,adminToken,projectId,serviceAccountJson=process.env.FIREBASE_SERVICE_ACCOUNT_JSON,observe=async(name,attributes,work)=>work()}){
   if(mode==='local-token')return async req=>{const a=Buffer.from(req.headers.authorization||'');const b=Buffer.from('Bearer '+adminToken);if(!adminToken||a.length!==b.length||!timingSafeEqual(a,b))throw authError(401,'Local facilitator token required');return {email:'local-demo'};};
   if(mode!=='firebase'||!projectId)return async()=>{throw authError(503,'Firebase facilitator sign-in is not configured');};
   const {initializeApp,applicationDefault,cert}=await import('firebase-admin/app');
   const {getAuth}=await import('firebase-admin/auth');const {getFirestore}=await import('firebase-admin/firestore');
   const credential=firebaseCredential({projectId,serviceAccountJson,applicationDefault,cert});
   const app=initializeApp({projectId,credential},'chaicart-'+randomUUID());
-  return firebaseAuthorizer({verifyIdToken:(token,revoked)=>getAuth(app).verifyIdToken(token,revoked),hasAdmin:async email=>(await getFirestore(app).collection('admins').doc(email).get()).exists});
+  return firebaseAuthorizer({verifyIdToken:(token,revoked)=>observe('auth.firebase.verify_token',{'auth.method':'google'},()=>getAuth(app).verifyIdToken(token,revoked)),hasAdmin:async email=>observe('firestore.admin.read',{'db.system.name':'firestore','db.collection.name':'admins'},async()=>(await getFirestore(app).collection('admins').doc(email).get()).exists)});
 }
