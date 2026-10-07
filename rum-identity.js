@@ -30,6 +30,6 @@ const pages = { 'day1-slides.html':'Day 1 Slides', 'day2-slides.html':'Day 2 Sli
 document.addEventListener('click', event => {
   const link=event.target?.closest?.('a[href]');if(!link)return;
   let target;try{target=new URL(link.href,location.href);}catch{return;}
-  const name=target.origin===location.origin ? pages[target.pathname.split('/').pop()] : target.hostname==='chaicloud-workshop.web.app' ? 'ChaiCart Live' : target.hostname==='chaicart-workshop-vh-20261003.azurewebsites.net' ? 'ChaiCart Demo' : undefined;
+  const name=target.origin===location.origin ? pages[target.pathname.split('/').pop()] : target.hostname==='gmu.inspi.in' ? 'ChaiCart Live' : target.hostname==='chaicart-workshop-vh-20261003.azurewebsites.net' ? 'ChaiCart Demo' : undefined;
   if(name){const action=beginRumAction('Open '+name);action.end();}
 });

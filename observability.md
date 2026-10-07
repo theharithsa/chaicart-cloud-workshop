@@ -24,7 +24,7 @@ Deployment snapshot: 5 October 2026. This runbook covers the workshop website, A
 |---|---|---|---|
 | Workshop and facilitator materials | https://theharithsa.github.io/chaicart-cloud-workshop/ | GitHub Pages, static HTML | None; RUM only |
 | ChaiCart Demo | https://chaicart-workshop-vh-20261003.azurewebsites.net/ | Azure Linux App Service, Node.js | `chaicart-demo` |
-| ChaiCart Live | https://chaicloud-workshop.web.app/ | Firebase Hosting, Auth, Firestore; Node.js 22 telemetry Function | `chaicart-live-browser`, `chaicart-live-telemetry` |
+| ChaiCart Live | https://gmu.inspi.in/ | Firebase Hosting, Auth, Firestore; Node.js 22 telemetry Function | `chaicart-live-browser`, `chaicart-live-telemetry` |
 
 ```mermaid
 flowchart LR

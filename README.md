@@ -18,7 +18,7 @@ Start with the [illustrated project guide](https://theharithsa.github.io/chaicar
 
 | | |
 |---|---|
-| **Audience** | Engineering students (designed for 120 students from 5th and 7th semester) |
+| **Audience** | GM University CSE - Cloud Computing, 2nd, 3rd and 4th year students (120 participants) |
 | **Format** | 24 teams of 5, grouped into 4 regions of 6 teams |
 | **Duration** | 2 days, 09:30–17:00 |
 | **Style** | Games, role-play and live demos rather than lectures |
@@ -78,7 +78,7 @@ Open `index.html` (or the live site) in Chrome, Edge or Firefox.
 
 Add `#N` to a deck's address to jump to slide N, for example `day2-slides.html#11`.
 
-Use [ChaiCart Live](https://chaicloud-workshop.web.app/) as the paperless student workspace and canonical live leaderboard. Its [README](https://github.com/theharithsa/chaicart-live#readme) explains Google sign-in, captain reviews and recovery. The standalone leaderboard is an optional legacy tool that stores scores only in its browser.
+Use [ChaiCart Live](https://gmu.inspi.in/) as the paperless student workspace and canonical live leaderboard. Its [README](https://github.com/theharithsa/chaicart-live#readme) explains Google sign-in, captain reviews and recovery. The standalone leaderboard is an optional legacy tool that stores scores only in its browser.
 
 ### Printing
 

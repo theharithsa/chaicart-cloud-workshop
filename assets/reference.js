@@ -20,7 +20,7 @@
   const link = document.createElement("a");
   link.href = guide
     ? "workshop-flow.html"
-    : "https://chaicloud-workshop.web.app/";
+    : "https://gmu.inspi.in/";
   link.textContent = guide ? "Open the flow map →" : "Open ChaiCart Live →";
   banner.append(strong, text, link);
   const toolbar = document.querySelector(".toolbar");
