@@ -1,0 +1,14 @@
+{
+  "hosting": {
+    "site": "chaicart-gmu0810",
+    "public": ".firebase-site",
+    "predeploy": "node scripts/build-hosting.mjs",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "headers": [
+      {
+        "source": "**/*.html",
+        "headers": [{ "key": "Cache-Control", "value": "no-cache" }]
+      }
+    ]
+  }
+}

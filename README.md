@@ -121,6 +121,27 @@ The materials stay hosted on GitHub Pages. The backend must run on a compute ser
 
 ## Deployment
 
+### Firebase Hosting
+
+Workshop materials use site `chaicart-gmu0810` in Firebase project
+`chaicloud-workshop`, separate from ChaiCart Live.
+Default URL: https://chaicart-gmu0810.web.app/.
+Custom domain: https://gmu0810.inspi.in/ (pending DNS and HTTPS readiness).
+
+GoDaddy DNS: CNAME name `gmu0810`, value `chaicart-gmu0810.web.app`, default TTL.
+
+Deploy from this repository root:
+
+```sh
+npx firebase-tools deploy --only hosting --project chaicloud-workshop
+```
+
+The predeploy script copies only workshop HTML, RUM scripts and public assets.
+Backend code and local files are excluded. GitHub Pages still publishes
+through the existing workflow; Firebase deployments use the command above.
+
+### GitHub Pages
+
 The site deploys to GitHub Pages automatically on every push to `main` through [`.github/workflows/pages.yml`](.github/workflows/pages.yml). In the repository settings, **Pages → Build and deployment → Source** must be set to **GitHub Actions**.
 
 ## License
